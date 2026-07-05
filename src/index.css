@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* Brand tokens — extracted from brand assets (see reference/BRIEF.md §2). Do not deviate. */
+@theme {
+  --color-brand-teal: #41cad2;
+  --color-brand-black: #000000;
+  --color-brand-gray: #808080;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-brand-black);
+  color: white;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
