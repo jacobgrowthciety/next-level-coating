@@ -4,6 +4,7 @@ import Process from '../sections/Process'
 import AboutPreview from '../sections/AboutPreview'
 import ServicesGrid from '../sections/ServicesGrid'
 import Reviews from '../sections/Reviews'
+import FinalCTA from '../sections/FinalCTA'
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <AboutPreview />
       <ServicesGrid />
       <Reviews />
+      <FinalCTA />
     </main>
   )
 }
