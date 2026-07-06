@@ -120,19 +120,28 @@ A cinematic ~8 second video plays once on page load, then settles on its final f
 
 ## 5B. SERVICES GRID SECTION (elevated from a plain bullet list)
 
-The original site has no dedicated Services section on the homepage — just a plain text list at the end of the educational/polyaspartic copy ("At Next Level Coatings, we specialize in: Garage floors, Commercial projects, Patios/sidewalks/driveways, Grind 'n seal, Pool decks, Pavers"). This is a genuine enhancement opportunity, not just preservation: elevate it into an actual clickable services grid.
+The original site has no dedicated Services section on the homepage — just a plain text list at the end of the educational/polyaspartic copy. This is a genuine enhancement opportunity: an interactive grid where one service is always shown in expanded "detail" form, and clicking any other service swaps it into that role.
 
-**Content:** One card per real service page (per sitemap, section 8): Garage Flooring, Commercial, Residential, Patios/Sidewalks/Driveways, Pool Decks, Paver Sealing, Grind & Seal, Polished Concrete, Concrete Coatings. Each card links to its real page.
+**Interaction pattern:** A fixed "detail slot" (top-left, larger) always displays the currently-selected service: number, name, one-line description, and an "Explore" link to its real page. The remaining services sit as compact cards (number, name, arrow) in a grid around it. Clicking any compact card swaps its content into the detail slot (animated), while the previously-selected service returns to compact form in the grid. Defaults to Garage Flooring selected on load. Use Framer Motion shared-layout animation (layoutId) so the transition feels like one element smoothly changing content/size, not a jarring swap.
 
-**Design:** Grid layout (e.g. 3 columns desktop, 1-2 mobile), each card with a short label/name and a simple icon or minimal visual treatment, clean hover state (border/scale/color shift) indicating clickability.
+**Content (name + one-line description each):**
+- Garage Flooring: "Our specialty — 1-day polyaspartic systems, prepped, chipped, and clear coated in a single day."
+- Commercial: "Durable, slip-resistant coatings built for warehouses, showrooms, and commercial kitchens — installed fast to minimize downtime."
+- Residential: "4X stronger than epoxy, UV-stable, and low maintenance — a lasting upgrade for garages, patios, and pool decks."
+- Patios, Sidewalks & Driveways: "100% UV-stable and 4X stronger than epoxy, with extra chip texture for slip resistance outdoors."
+- Pool Decks: "Non-slip and UV-stable — and it drastically drops surface temperature, so bare feet stay comfortable even in Arizona summers."
+- Paver Sealing: "Commercial-grade acrylic urethane sealer, backed by a 4-year warranty even under the Arizona sun."
+- Grind & Seal: ⚠️ placeholder only — real copy not yet sourced (see section 11), use a short generic line until replaced
+- Polished Concrete: ⚠️ placeholder only — real copy not yet sourced (see section 11), use a short generic line until replaced
+- Concrete Coatings: "Premium resurfacing for garages, warehouses, offices, and patios — tailored coating systems built to last."
 
-**Placement:** After the About preview section. The educational/polyaspartic paragraphs (trimmed, per section 9) can serve as a short intro above the grid, rather than ending in the plain bullet list — the grid replaces that list entirely.
+Each card/detail links to its real page per section 8.
 
-**Color:** Continue the alternating rhythm (2A) — About preview is light, so this section should be dark, continuing the alternation.
+**Design:** Sharp/minimal corner radius, single teal accent stripe per card (not full border), numbered treatment matching the Process section's rail typography — established in the previous pass, keep as-is.
 
-**Animation:** Staggered scroll-triggered reveal per card, consistent with patterns used elsewhere (Why Trust Us, Process).
+**Accessibility:** Cards must be real focusable links (not div+onClick), with visible keyboard focus states, not just hover.
 
-**Transition:** Use the rough-edge-mask divider pattern (4A) for the About → Services transition.
+**Placement:** After the About preview section. **Color:** dark background, continuing alternating rhythm (2A). **Transition:** rough-edge-mask divider (4A) for About → Services. **Animation:** staggered scroll-triggered reveal on initial load, consistent with Why Trust Us and Process.
 
 Fields: First Name, Last Name, Email, Phone, Zip Code, Project Description (dropdown: 2 Car / 3 Car / RV Garage / Commercial / Other). Plus a persistent "Call Now" button linking to `tel:+16232241097`.
 
