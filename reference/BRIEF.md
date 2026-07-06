@@ -54,7 +54,7 @@ Original font files are not available — select the closest free Google Fonts m
 
 ## 5. HERO SECTION — SIGNATURE SEQUENCE
 
-A cinematic ~8 second video, controlled by SCROLL POSITION rather than autoplay — the visitor scrolls to "drive" the video forward (and backward on scroll-up), turning the sequence into an interactive moment rather than a passive background loop.
+A cinematic ~8 second video plays once on page load, then settles on its final frame as the persistent hero background behind the lead capture form.
 
 **Sequence:** Camera starts on a wide establishing shot of the real branded truck/trailer parked in the driveway of a real Arizona home → pushes forward and pans toward the (single, real) garage door → door lifts open → camera moves through the doorway into the garage interior → settles on the owner (Chase) mid-motion throwing flake chips across a freshly coated floor.
 
@@ -63,11 +63,25 @@ A cinematic ~8 second video, controlled by SCROLL POSITION rather than autoplay 
 - End frame: AI-generated still of Chase (using his real photo as a likeness reference) throwing small black/gray flake chips — flake size and color corrected to match real product (fine, subtle, NOT large or colorful)
 - Video interpolation: generated with Seedance 2.0 (start_image/end_image roles), 1080p, 16:9, 8 seconds
 - Final pass: upscaled with Higgsfield's video upscaler (Topaz, 1080p) for sharpness
-- Re-encoded with dense keyframes (every 1-2 frames) specifically to support smooth scroll-scrubbing seek performance
+- Single web-optimized encode is sufficient — no scroll-scrubbing, so no need for dense keyframes or a separate desktop/mobile version. Compress to a reasonable web file size (aim under ~8-10MB) for both devices.
 
-**Behavior (desktop):** Scroll-scrubbed. The hero section is tall (~300-400vh) with the video sticky-positioned in the viewport while the user scrolls through that distance. Scroll progress (0-1) within the hero section maps directly to the video's `currentTime`. Content layers in at scroll milestones: headline/subhead fade in around 40% progress (garage door opening), lead capture form fades in around 90-100% progress (Chase's shot in frame). After the hero's scroll distance ends, the page continues normally into the next section.
+**Behavior (all devices):** Video autoplays once on load (muted, playsInline) → settles on its last frame as the static hero background → lead capture form fades in on top once the video finishes → sticky mobile "Call Now" button always visible.
 
-**Behavior (mobile/touch):** Falls back to simple autoplay-once-in-view (not scroll-scrubbed, which feels janky on touch) — plays once, settles on last frame as static background, lead form overlaid, sticky "Call Now" button always visible.
+**Mobile layout (distinct from desktop):** On mobile, the hero does NOT use a full-bleed video-with-text-overlay layout for its FINAL settled state — this caused headline text to visually collide with the subject's face/body, and felt cramped with the full form competing for the same space. However, the video's initial PLAYBACK should still feel immersive, not immediately cramped into a small zone. Sequence:
+
+1. **On load:** video plays at full viewport height (100dvh), full-bleed, no text/form visible yet — this is the cinematic "wow" moment, same energy as the original full-bleed concept.
+2. **On video `ended`:** the video container smoothly animates (height/scale, ~0.8-1s easeInOut) from full viewport down to a compact top zone (~50-55vh). Simultaneously, the bottom panel (previously collapsed/hidden) expands and its content fades in — headline, subhead, form. This should read as one coordinated, deliberate transition, not two separate unrelated animations.
+3. **Final settled state:** compact video zone on top (~50-55vh) showing Chase's upper body/head clearly (see cropping note below), solid dark panel below with headline/subhead/form.
+
+**Cropping fix:** The compact top zone must NOT cut off Chase's head. Since the zone is short and the video is landscape, use `object-position` biased toward the top of the frame (e.g. `center 15-20%` rather than `center center`) so his head and shoulders stay fully visible — it's fine to lose visibility of his feet/the floor at the bottom of frame in the compact state, since attention has shifted to the text/form below by that point anyway.
+
+- Header (logo + hamburger + call icon) stays fixed on top throughout, low-opacity/scrim background as already approved
+- Sticky bottom "Call Now" bar remains throughout
+- Since most site traffic will be mobile, this sequence deserves an extra review pass — check the exact frame/crop after implementation via screenshot before considering it final
+
+**Optional nice-to-have (not required for launch):** A subtle parallax effect as the user scrolls past the hero — the settled video/image container shifts slightly slower than the rest of the page (a simple CSS transform tied to scroll position, no video `currentTime` manipulation involved). This is a cheap way to add polish without the complexity of true scroll-scrubbing — only add this after the core hero is working and if time allows.
+
+**Explicitly decided against:** Scroll-scrubbed video (scroll position driving `video.currentTime`). Evaluated and rejected — added significant build complexity (device branching, dual video encodes, imperative scrub logic, performance risk) for a benefit that mostly only reaches desktop visitors, when most traffic to this site will be mobile. Not worth the fragility for a small business site where trust and speed matter more than technical showmanship in the hero specifically.
 
 **Known pitfalls already solved (do not repeat):**
 - Do not attempt to reframe/outpaint portrait video into landscape — this caused morphing artifacts. The video was built natively in 16:9 via start/end frame interpolation instead.
@@ -79,6 +93,18 @@ A cinematic ~8 second video, controlled by SCROLL POSITION rather than autoplay 
 ## 6. LEAD CAPTURE FORM (every page needs this or a clear CTA)
 
 Fields: First Name, Last Name, Email, Phone, Zip Code, Project Description (dropdown: 2 Car / 3 Car / RV Garage / Commercial / Other). Plus a persistent "Call Now" button linking to `tel:+16232241097`.
+
+---
+
+## 6A. NAVIGATION / HEADER (persistent across every page — was missing from initial Hero build, add now)
+
+A sticky header, present on every page (not just Home), containing:
+- Logo (top-left), using the exact brand logo file — links back to Home
+- Nav links matching the sitemap in section 8: Home, Services (dropdown or grouped: Garage Flooring, Commercial, Residential, Patios/Sidewalks/Driveways, Pool Decks, Paver Sealing, Grind & Seal, Polished Concrete), Flake Color Chart, Solid Color Chart, About, Blog, Contact
+- A visible "Call Now" button in the header, always present, linking to `tel:+16232241097`
+- On the Home page specifically, the header sits on top of the hero video/image — style it so it's legible against both the dark video background and lighter settled frame (e.g. semi-transparent dark background bar, or a subtle backdrop blur)
+- Sticky/fixed position so it remains accessible while scrolling
+- Mobile: collapse into a hamburger menu, keep the logo and Call Now button visible even when collapsed
 
 ---
 

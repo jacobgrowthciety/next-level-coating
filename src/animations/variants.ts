@@ -16,3 +16,44 @@ export const staggerContainer: Variants = {
     transition: { staggerChildren: 0.12 },
   },
 }
+
+/**
+ * Hero reveal — slow easeOut fade + subtle upward translate, used when the hero video ends.
+ * Each element reads its own delay via `custom` for a deliberate top-to-bottom cascade.
+ */
+export const heroReveal: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: (delay: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1, ease: [0.16, 1, 0.3, 1], delay },
+  }),
+}
+
+/** Like heroReveal, plus a gentle scale-in so the form panel settles into place. */
+export const heroFormReveal: Variants = {
+  hidden: { opacity: 0, y: 16, scale: 0.97 },
+  show: (delay: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 1, ease: [0.16, 1, 0.3, 1], delay },
+  }),
+}
+
+/** Headline: container orchestrates a word-by-word rise (reads more premium than one block). */
+export const headlineContainer: Variants = {
+  hidden: {},
+  show: { transition: { delayChildren: 0.14, staggerChildren: 0.06 } },
+}
+
+export const headlineWord: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
+}
+
+/** Group wrapper that just propagates the show/hidden label to hero reveal children. */
+export const heroRevealGroup: Variants = {
+  hidden: {},
+  show: {},
+}

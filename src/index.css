@@ -5,6 +5,10 @@
   --color-brand-teal: #41cad2;
   --color-brand-black: #000000;
   --color-brand-gray: #808080;
+
+  /* Brand fonts — closest free Google Fonts to the original two brand faces (§2). */
+  --font-display: "Anton", system-ui, sans-serif; /* bold condensed — "NEXT LEVEL" / major headers */
+  --font-script: "Permanent Marker", cursive; /* brush/marker — "COATINGS" / section headlines */
 }
 
 :root {
