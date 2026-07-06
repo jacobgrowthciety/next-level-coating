@@ -118,7 +118,21 @@ A cinematic ~8 second video plays once on page load, then settles on its final f
 
 ---
 
-## 6. LEAD CAPTURE FORM (every page needs this or a clear CTA)
+## 5B. SERVICES GRID SECTION (elevated from a plain bullet list)
+
+The original site has no dedicated Services section on the homepage — just a plain text list at the end of the educational/polyaspartic copy ("At Next Level Coatings, we specialize in: Garage floors, Commercial projects, Patios/sidewalks/driveways, Grind 'n seal, Pool decks, Pavers"). This is a genuine enhancement opportunity, not just preservation: elevate it into an actual clickable services grid.
+
+**Content:** One card per real service page (per sitemap, section 8): Garage Flooring, Commercial, Residential, Patios/Sidewalks/Driveways, Pool Decks, Paver Sealing, Grind & Seal, Polished Concrete, Concrete Coatings. Each card links to its real page.
+
+**Design:** Grid layout (e.g. 3 columns desktop, 1-2 mobile), each card with a short label/name and a simple icon or minimal visual treatment, clean hover state (border/scale/color shift) indicating clickability.
+
+**Placement:** After the About preview section. The educational/polyaspartic paragraphs (trimmed, per section 9) can serve as a short intro above the grid, rather than ending in the plain bullet list — the grid replaces that list entirely.
+
+**Color:** Continue the alternating rhythm (2A) — About preview is light, so this section should be dark, continuing the alternation.
+
+**Animation:** Staggered scroll-triggered reveal per card, consistent with patterns used elsewhere (Why Trust Us, Process).
+
+**Transition:** Use the rough-edge-mask divider pattern (4A) for the About → Services transition.
 
 Fields: First Name, Last Name, Email, Phone, Zip Code, Project Description (dropdown: 2 Car / 3 Car / RV Garage / Commercial / Other). Plus a persistent "Call Now" button linking to `tel:+16232241097`.
 
