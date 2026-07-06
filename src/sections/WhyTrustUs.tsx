@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
-import maskUrl from '../assets/dividers/rough-edge-mask.png'
+import RoughDivider from '../components/RoughDivider'
 
-// Section background — the rough divider strip and the solid body share this exact color
-// so the masked edge connects seamlessly into the body below. Dark charcoal (BRIEF.md §2 neutrals).
-const SECTION_BG = '#0a0a0c'
+// Light section in the page's alternating color rhythm (reference/BRIEF.md §2A): off-white
+// body with dark text — the inverse of the dark sections. The rough top edge is filled with
+// this same color so the torn shape connects seamlessly into the body below.
+const SECTION_BG = '#f4f3ef'
 
 /** "Why Trust Us" trust points (reference/BRIEF.md §9). */
 const TRUST = [
@@ -30,40 +31,12 @@ const TRUST = [
   },
 ]
 
-// Shared mask props. Force luminance interpretation — the PNG's alpha is fully opaque, so the
-// default alpha-based mask would show everything; luminance uses the black/white RGB instead.
-// `WebkitMaskSourceType` is WebKit's equivalent for older Safari (< 15.4).
-const maskStyle = {
-  WebkitMaskImage: `url(${maskUrl})`,
-  maskImage: `url(${maskUrl})`,
-  WebkitMaskSize: '100% 100%',
-  maskSize: '100% 100%',
-  WebkitMaskRepeat: 'no-repeat',
-  maskRepeat: 'no-repeat',
-  maskMode: 'luminance',
-  WebkitMaskSourceType: 'luminance',
-} as React.CSSProperties
-
-const HIGHLIGHT_OFFSET = 3 // px the teal copy peeks above the dark edge = stroke thickness
-
-// Main dark shape (top layer) — its solid lower portion connects seamlessly into the body.
-const darkLayerStyle: React.CSSProperties = { ...maskStyle, backgroundColor: SECTION_BG }
-// Teal outline (behind, nudged up) — only the sliver above the dark edge shows, tracing the fray.
-const highlightLayerStyle: React.CSSProperties = {
-  ...maskStyle,
-  backgroundColor: '#41CAD2',
-  transform: `translateY(-${HIGHLIGHT_OFFSET}px)`,
-}
-
 export default function WhyTrustUs() {
   return (
     <section className="relative z-10">
-      {/* Rough brush top edge. Two stacked copies of the same mask: a teal outline nudged up
-          behind the dark shape, so a thin teal sliver traces the frayed edge against any background. */}
-      <div aria-hidden="true" className="relative h-32 w-full sm:h-40 lg:h-52">
-        <div className="absolute inset-0" style={highlightLayerStyle} />
-        <div className="absolute inset-0" style={darkLayerStyle} />
-      </div>
+      {/* Hero → Why Trust Us (dark → light): the frayed off-white shape reveals the dark,
+          stickied hero video through its torn gaps (no revealColor = transparent overlap). */}
+      <RoughDivider fillColor={SECTION_BG} />
 
       {/* Solid body */}
       <div className="px-6 pb-24 pt-4" style={{ backgroundColor: SECTION_BG }}>
@@ -88,7 +61,7 @@ export default function WhyTrustUs() {
                 variants={fadeUp}
                 className="flex flex-col items-center gap-4 text-center"
               >
-                <span className="flex h-16 w-16 items-center justify-center rounded-full border border-brand-teal/40 bg-brand-teal/10">
+                <span className="flex h-16 w-16 items-center justify-center rounded-full border border-brand-teal/50 bg-brand-teal/10">
                   <svg
                     viewBox="0 0 24 24"
                     className="h-8 w-8 text-brand-teal"
@@ -98,7 +71,7 @@ export default function WhyTrustUs() {
                     <path d={item.path} />
                   </svg>
                 </span>
-                <p className="text-sm font-semibold uppercase tracking-wide text-white">
+                <p className="text-sm font-semibold uppercase tracking-wide text-brand-black">
                   {item.label}
                 </p>
               </motion.div>

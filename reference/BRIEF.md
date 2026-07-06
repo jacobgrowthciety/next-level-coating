@@ -31,6 +31,18 @@ Original font files are not available — select the closest free Google Fonts m
 
 ---
 
+## 2A. SECTION COLOR RHYTHM (alternate light/dark, per the original site)
+
+The build has drifted toward every section being black/dark, losing the visual separation the original site had. The original site alternated: white/light hero → black process section → white "Why Trust Us" → black About → white educational/SEO section → black footer. Reintroduce this rhythm — do NOT introduce any new colors, stay strictly within teal/black/white/gray:
+
+- Alternate section backgrounds between black/near-black and white/off-white as sections stack down the page, following the original site's pattern where reasonable (Hero stays dark per its video; sections after can alternate from there)
+- Within consecutive dark sections (where alternation isn't practical), vary the exact shade slightly (e.g. pure black vs. a near-black charcoal like #0A0A0A vs. #121212) so adjacent dark sections aren't visually identical/flat
+- Light sections use white or off-white backgrounds with black/dark text (inverse of dark sections' white text on black)
+- The rough-edge-mask divider (section 4A) should be used at every section transition regardless of light/dark combination — it needs to work both ways (dark section transitioning to light, and light to dark), so the mask/stroke treatment may need a light-section variant (e.g. a white or light-gray shape instead of black, with the teal highlight stroke still tracing the edge either way)
+- Teal can also be used sparingly as a full section background for a high-impact moment (e.g. a stat callout or final CTA band) — use deliberately, not as a default
+
+---
+
 ## 3. TECH STACK
 
 - React + Vite + TypeScript
@@ -52,7 +64,23 @@ Original font files are not available — select the closest free Google Fonts m
 
 ---
 
-## 5. HERO SECTION — SIGNATURE SEQUENCE
+## 4A. SECTION TRANSITIONS (reusable pattern, site-wide)
+
+Sections transition using a "pinned-reveal" technique: the section above uses `position: sticky; top: 0` and stays pinned while the next section rises over it in normal document flow (higher z-index). The boundary is marked with `rough-edge-mask.png` (a brush-stroke/torn-paper shape) applied as a CSS mask-image on the top edge of the rising section, recreating the original site's jagged divider style. Since black-on-black (divider against dark sections) has low contrast, add a thin 2-3px brand-teal (#41CAD2) highlight stroke tracing the jagged edge so it reads clearly regardless of what's behind it. This transition pattern should be reused for other major section boundaries on the page, not just Hero → Why Trust Us.
+
+---
+
+## 5A. PROCESS SECTION — SIGNATURE INTERACTION ("The Next Level Process," 6 steps)
+
+This section gets the most motion attention on the page (per section 4).
+
+**Desktop:** Pinned step-cycling layout. The section container is tall (6 steps × ~80-100vh of scroll distance), with a sticky inner layout (`position: sticky; top: 0; height: 100vh`) that stays fixed while the user scrolls through that distance. Layout is split:
+- **Left: persistent step rail** — all 6 steps listed (numbers 01-06 + names: GRIND, REPAIR, COAT, FLAKE, SCRAPE, SEAL). The currently active step is highlighted (brand-teal, bolder/larger); inactive steps are dimmed. A connecting progress line/fill between rail items tracks overall progress through the section.
+- **Right: swapping detail panel** — shows the full description text for the currently active step, crossfading (opacity + slight vertical slide) as the user scrolls from one step to the next.
+- Map scroll progress (0-1 across the section's scroll distance) to an active step index (0-5) using 6 equal segments, driving both the rail highlight and detail panel content.
+- After the 6th step, the section releases and the page continues scrolling normally into the next section.
+
+**Mobile:** Do NOT use the pinned/cycling interaction — consistent with the Hero decision, scroll-pinning/scrubbing effects are unreliable and feel janky on touch devices, and most site traffic is mobile. Instead, use a normal stacked sequence: each of the 6 steps as its own full-width card in regular document flow, with the same scroll-triggered staggered fade/slide-in animation used elsewhere on mobile (e.g. trust badges).
 
 A cinematic ~8 second video plays once on page load, then settles on its final frame as the persistent hero background behind the lead capture form.
 
