@@ -3,6 +3,7 @@ import WhyTrustUs from '../sections/WhyTrustUs'
 import Process from '../sections/Process'
 import AboutPreview from '../sections/AboutPreview'
 import ServicesGrid from '../sections/ServicesGrid'
+import Reviews from '../sections/Reviews'
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Process />
       <AboutPreview />
       <ServicesGrid />
+      <Reviews />
     </main>
   )
 }

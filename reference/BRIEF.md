@@ -33,7 +33,9 @@ Original font files are not available — select the closest free Google Fonts m
 
 ## 2A. SECTION COLOR RHYTHM (alternate light/dark, per the original site)
 
-The build has drifted toward every section being black/dark, losing the visual separation the original site had. The original site alternated: white/light hero → black process section → white "Why Trust Us" → black About → white educational/SEO section → black footer. Reintroduce this rhythm — do NOT introduce any new colors, stay strictly within teal/black/white/gray:
+**Actual, definitive Home page section order (as built):** Hero → Why Trust Us → Process → About Preview → Services Grid → Reviews → Final CTA → Footer. This is the authoritative order — if anything elsewhere in this brief seems to suggest a different order (e.g. background/rationale notes referencing the original site's layout), this list wins.
+
+The build had drifted toward every section being black/dark, losing the visual separation the original site had. Reintroduce alternation for visual rhythm — do NOT introduce any new colors, stay strictly within teal/black/white/gray:
 
 - Alternate section backgrounds between black/near-black and white/off-white as sections stack down the page, following the original site's pattern where reasonable (Hero stays dark per its video; sections after can alternate from there)
 - Within consecutive dark sections (where alternation isn't practical), vary the exact shade slightly (e.g. pure black vs. a near-black charcoal like #0A0A0A vs. #121212) so adjacent dark sections aren't visually identical/flat
@@ -70,17 +72,7 @@ Sections transition using a "pinned-reveal" technique: the section above uses `p
 
 ---
 
-## 5A. PROCESS SECTION — SIGNATURE INTERACTION ("The Next Level Process," 6 steps)
-
-This section gets the most motion attention on the page (per section 4).
-
-**Desktop:** Pinned step-cycling layout. The section container is tall (6 steps × ~80-100vh of scroll distance), with a sticky inner layout (`position: sticky; top: 0; height: 100vh`) that stays fixed while the user scrolls through that distance. Layout is split:
-- **Left: persistent step rail** — all 6 steps listed (numbers 01-06 + names: GRIND, REPAIR, COAT, FLAKE, SCRAPE, SEAL). The currently active step is highlighted (brand-teal, bolder/larger); inactive steps are dimmed. A connecting progress line/fill between rail items tracks overall progress through the section.
-- **Right: swapping detail panel** — shows the full description text for the currently active step, crossfading (opacity + slight vertical slide) as the user scrolls from one step to the next.
-- Map scroll progress (0-1 across the section's scroll distance) to an active step index (0-5) using 6 equal segments, driving both the rail highlight and detail panel content.
-- After the 6th step, the section releases and the page continues scrolling normally into the next section.
-
-**Mobile:** Do NOT use the pinned/cycling interaction — consistent with the Hero decision, scroll-pinning/scrubbing effects are unreliable and feel janky on touch devices, and most site traffic is mobile. Instead, use a normal stacked sequence: each of the 6 steps as its own full-width card in regular document flow, with the same scroll-triggered staggered fade/slide-in animation used elsewhere on mobile (e.g. trust badges).
+## 5. HERO SECTION — SIGNATURE SEQUENCE
 
 A cinematic ~8 second video plays once on page load, then settles on its final frame as the persistent hero background behind the lead capture form.
 
@@ -118,6 +110,20 @@ A cinematic ~8 second video plays once on page load, then settles on its final f
 
 ---
 
+## 5A. PROCESS SECTION — SIGNATURE INTERACTION ("The Next Level Process," 6 steps)
+
+This section gets the most motion attention on the page (per section 4).
+
+**Desktop:** Pinned step-cycling layout. The section container is tall (6 steps × ~80-100vh of scroll distance), with a sticky inner layout (`position: sticky; top: 0; height: 100vh`) that stays fixed while the user scrolls through that distance. Layout is split:
+- **Left: persistent step rail** — all 6 steps listed (numbers 01-06 + names: GRIND, REPAIR, COAT, FLAKE, SCRAPE, SEAL). The currently active step is highlighted (brand-teal, bolder/larger); inactive steps are dimmed. A connecting progress line/fill between rail items tracks overall progress through the section.
+- **Right: swapping detail panel** — shows the full description text for the currently active step, crossfading (opacity + slight vertical slide) as the user scrolls from one step to the next.
+- Map scroll progress (0-1 across the section's scroll distance) to an active step index (0-5) using 6 equal segments, driving both the rail highlight and detail panel content.
+- After the 6th step, the section releases and the page continues scrolling normally into the next section.
+
+**Mobile:** Do NOT use the pinned/cycling interaction — consistent with the Hero decision, scroll-pinning/scrubbing effects are unreliable and feel janky on touch devices, and most site traffic is mobile. Instead, use a normal stacked sequence: each of the 6 steps as its own full-width card in regular document flow, with the same scroll-triggered staggered fade/slide-in animation used elsewhere on mobile (e.g. trust badges).
+
+---
+
 ## 5B. SERVICES GRID SECTION (elevated from a plain bullet list)
 
 The original site has no dedicated Services section on the homepage — just a plain text list at the end of the educational/polyaspartic copy. This is a genuine enhancement opportunity: an interactive grid where one service is always shown in expanded "detail" form, and clicking any other service swaps it into that role.
@@ -142,6 +148,38 @@ Each card/detail links to its real page per section 8.
 **Accessibility:** Cards must be real focusable links (not div+onClick), with visible keyboard focus states, not just hover.
 
 **Placement:** After the About preview section. **Color:** dark background, continuing alternating rhythm (2A). **Transition:** rough-edge-mask divider (4A) for About → Services. **Animation:** staggered scroll-triggered reveal on initial load, consistent with Why Trust Us and Process.
+
+---
+
+## 5C. REVIEWS SECTION (missing from original build plan — was on the original site, never captured in the brief)
+
+Placement: after Services Grid, before the final CTA/footer.
+
+**Design:** Unlike Hero/Process/Services, this section's job is credibility, not showmanship — keep it understated and clean rather than adding more interactive complexity. A simple grid of review cards (e.g. 3 columns x 2 rows on desktop, stacked on mobile) works well. Reuse the established card styling (sharp corners, single teal accent stripe, dark background) for visual consistency with Services Grid, but static — no click/expand interaction needed here.
+
+Each card: 5-star icon row, reviewer name, review text.
+
+**Content (6 reviews, all verified 5-star, pulled directly from Google):**
+
+1. **Will Gray:** "All I can say is WOW!!! The crew at Next Level Coatings did a phenomenal job on my garage floor! I had serious stem wall issues that needed drastic repair. Chase, the owner, came by and gave an honest assessment and came up with a plan to repair it the right way. Kyle & Christian came out and had their new Elite System installed and completed in only 2 days. I am absolutely blown away at the end result and the finished job. I highly recommend Next Level Coatings to anyone. 10 out of 10!"
+
+2. **C OJ:** "Crew was on time, professional and fast. They explained the process and time line before they started and made sure that I was clear on the process. Next Level's equipment kept the dust to a minimum and very controlled mess during the process. My garage floor looks amazing! The crew left my property clean and with no evidence of them even being there! Job was complete in one day! Thank you again Next Level and I highly recommend for any of your floor coating needs!"
+
+3. **Clint Tallmadge:** "The team at Next Level Coatings did an amazing job on the garage floor at my cabin in Happy Jack! Communication was top notch and Chase's guys were professional, on time and did a very thorough cleanup when they were done. I couldn't be happier with the results and would recommend them to anyone that is looking for a contractor that checks all the boxes. 10/10!"
+
+4. **Kristie McGehee:** "Absolutely love my new patio! The whole experience from the estimate to finished patio was great! I highly recommend them."
+
+5. **Cheryl Clemens:** "These guys are the best ... they were able to do the job in the time I needed at the price I wanted and the results are amazing!"
+
+6. **Chris Johnson:** "Great product, Great results, and even better customer service! 10/10 would recommend Next Level to all my friends and family! Thanks again!"
+
+**"Leave a Review" link:** https://form.trustmary.com/c/G51dCrMfO?source=widget — this is a review-collection form, not a display widget. Do NOT make this the primary focus of the section (it's for prospects to leave new reviews, not read existing ones). Place it as a small, secondary link at the bottom of the section (e.g. "Leave us a review" as understated text/link, not a large button competing with the featured testimonials).
+
+**Color:** continue alternating rhythm (2A). **Transition:** rough-edge-mask divider (4A) for Services → Reviews and Reviews → final CTA.
+
+---
+
+## 6. LEAD CAPTURE FORM (every page needs this or a clear CTA)
 
 Fields: First Name, Last Name, Email, Phone, Zip Code, Project Description (dropdown: 2 Car / 3 Car / RV Garage / Commercial / Other). Plus a persistent "Call Now" button linking to `tel:+16232241097`.
 
