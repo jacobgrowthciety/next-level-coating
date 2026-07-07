@@ -16,6 +16,9 @@ const maskStyle = {
 
 const HIGHLIGHT_OFFSET = 3 // px the teal outline peeks above the torn edge = stroke thickness
 
+// Shared compact divider size for short-content sections (About Preview, Why Trust Us).
+export const COMPACT_DIVIDER_HEIGHT = 'h-16 w-full sm:h-20 lg:h-24'
+
 /**
  * Torn brush divider sitting at the TOP of a "rising" section (reference/BRIEF.md §4A, §2A).
  *

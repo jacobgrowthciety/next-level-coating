@@ -15,6 +15,18 @@
   color-scheme: dark;
 }
 
+/* Shared vertical rhythm for short-content sections (About Preview, Why Trust Us, etc.) — flex
+   centers the content so space above/below stays equal regardless of exact content height,
+   instead of fixed asymmetric padding. min-height is a starting point; adjust to taste.
+   Apply alongside px-* for horizontal padding. */
+@utility section-compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+}
+
 html,
 body,
 #root {

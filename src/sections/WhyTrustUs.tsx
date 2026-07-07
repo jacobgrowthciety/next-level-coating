@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
-import RoughDivider from '../components/RoughDivider'
+import RoughDivider, { COMPACT_DIVIDER_HEIGHT } from '../components/RoughDivider'
 
 // Light section in the page's alternating color rhythm (reference/BRIEF.md §2A): off-white
 // body with dark text — the inverse of the dark sections. The rough top edge is filled with
@@ -36,10 +36,10 @@ export default function WhyTrustUs() {
     <section className="relative z-10">
       {/* Hero → Why Trust Us (dark → light): the frayed off-white shape reveals the dark,
           stickied hero video through its torn gaps (no revealColor = transparent overlap). */}
-      <RoughDivider fillColor={SECTION_BG} />
+      <RoughDivider fillColor={SECTION_BG} className={COMPACT_DIVIDER_HEIGHT} />
 
       {/* Solid body */}
-      <div className="px-6 pb-24 pt-4" style={{ backgroundColor: SECTION_BG }}>
+      <div className="section-compact px-6" style={{ backgroundColor: SECTION_BG }}>
         <motion.div
           variants={staggerContainer}
           initial="hidden"

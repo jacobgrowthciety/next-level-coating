@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
-import RoughDivider from '../components/RoughDivider'
+import RoughDivider, { COMPACT_DIVIDER_HEIGHT } from '../components/RoughDivider'
 
 // Light section continuing the alternating color rhythm (reference/BRIEF.md §2A). Process
 // above is dark, so this About teaser is off-white with dark text. A hair warmer/lighter
@@ -17,9 +17,13 @@ export default function AboutPreview() {
     <section className="relative z-30" style={{ backgroundColor: SECTION_BG }}>
       {/* Process → About (dark → light): light torn shape over the charcoal section above
           (revealColor), a self-contained boundary between two in-flow sections. */}
-      <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
+      <RoughDivider
+        fillColor={SECTION_BG}
+        revealColor={PREV_SECTION_BG}
+        className={COMPACT_DIVIDER_HEIGHT}
+      />
 
-      <div className="px-6 pb-24 pt-4">
+      <div className="section-compact px-6">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
