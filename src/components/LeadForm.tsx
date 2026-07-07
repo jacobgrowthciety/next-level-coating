@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { FormEvent } from 'react'
 
 /** Lead capture form — fields per reference/BRIEF.md §6. Reused across pages. */
@@ -23,8 +23,19 @@ const initialState = {
 const fieldClass =
   'w-full rounded-md border border-white/15 bg-black/40 px-3 py-2.5 text-sm text-white placeholder:text-white/40 outline-none transition focus:border-brand-teal focus:ring-1 focus:ring-brand-teal'
 
+const GOHIGHLEVEL_WEBHOOK_URL =
+  'https://services.leadconnectorhq.com/hooks/YWEIkN47BTWMMU9mVr8B/webhook-trigger/6964db57-b3f2-4969-a608-35dcc99347d6'
+
 export default function LeadForm() {
   const [values, setValues] = useState(initialState)
+  const [submitted, setSubmitted] = useState(false)
+  const idPrefix = useId()
+  const firstNameId = `${idPrefix}firstName`
+  const lastNameId = `${idPrefix}lastName`
+  const emailId = `${idPrefix}email`
+  const phoneId = `${idPrefix}phone`
+  const zipId = `${idPrefix}zip`
+  const projectId = `${idPrefix}project`
 
   function update(field: keyof typeof initialState, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }))
@@ -32,8 +43,52 @@ export default function LeadForm() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // TODO: wire to real submission endpoint / CRM.
-    console.log('Lead submitted:', values)
+    // Always show the confirmation state — a failed background submission shouldn't block it.
+    setSubmitted(true)
+
+    fetch(GOHIGHLEVEL_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        phone: values.phone,
+        zipCode: values.zip,
+        projectDescription: values.project,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.error('GoHighLevel webhook returned an error status:', response.status)
+        }
+      })
+      .catch((error) => {
+        console.error('GoHighLevel webhook submission failed:', error)
+      })
+  }
+
+  if (submitted) {
+    return (
+      <div className="flex w-full flex-col items-center rounded-xl border border-white/10 bg-black/50 p-8 text-center backdrop-blur-md sm:p-10">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-teal/15">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-9 w-9 text-brand-teal"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M5 12.5 9.5 17 19 7" />
+          </svg>
+        </div>
+        <p className="mt-5 font-script text-4xl text-brand-teal sm:text-5xl">Thank You!</p>
+        <p className="mt-3 text-sm text-white/70 sm:text-base">We'll be in touch soon.</p>
+      </div>
+    )
   }
 
   return (
@@ -50,11 +105,11 @@ export default function LeadForm() {
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <label htmlFor="firstName" className="sr-only">
+          <label htmlFor={firstNameId} className="sr-only">
             First Name
           </label>
           <input
-            id="firstName"
+            id={firstNameId}
             name="firstName"
             type="text"
             autoComplete="given-name"
@@ -66,11 +121,11 @@ export default function LeadForm() {
           />
         </div>
         <div>
-          <label htmlFor="lastName" className="sr-only">
+          <label htmlFor={lastNameId} className="sr-only">
             Last Name
           </label>
           <input
-            id="lastName"
+            id={lastNameId}
             name="lastName"
             type="text"
             autoComplete="family-name"
@@ -82,11 +137,11 @@ export default function LeadForm() {
           />
         </div>
         <div className="sm:col-span-2">
-          <label htmlFor="email" className="sr-only">
+          <label htmlFor={emailId} className="sr-only">
             Email
           </label>
           <input
-            id="email"
+            id={emailId}
             name="email"
             type="email"
             autoComplete="email"
@@ -98,11 +153,11 @@ export default function LeadForm() {
           />
         </div>
         <div>
-          <label htmlFor="phone" className="sr-only">
+          <label htmlFor={phoneId} className="sr-only">
             Phone
           </label>
           <input
-            id="phone"
+            id={phoneId}
             name="phone"
             type="tel"
             autoComplete="tel"
@@ -114,11 +169,11 @@ export default function LeadForm() {
           />
         </div>
         <div>
-          <label htmlFor="zip" className="sr-only">
+          <label htmlFor={zipId} className="sr-only">
             Zip Code
           </label>
           <input
-            id="zip"
+            id={zipId}
             name="zip"
             type="text"
             inputMode="numeric"
@@ -131,11 +186,11 @@ export default function LeadForm() {
           />
         </div>
         <div className="sm:col-span-2">
-          <label htmlFor="project" className="sr-only">
+          <label htmlFor={projectId} className="sr-only">
             Project Description
           </label>
           <select
-            id="project"
+            id={projectId}
             name="project"
             required
             className={`${fieldClass} ${values.project === '' ? 'text-white/40' : ''}`}
