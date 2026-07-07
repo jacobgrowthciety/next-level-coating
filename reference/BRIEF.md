@@ -185,6 +185,8 @@ Each card: 5-star icon row, reviewer name, review text.
 
 Fields: First Name, Last Name, Email, Phone, Zip Code, Project Description (dropdown: 2 Car / 3 Car / RV Garage / Commercial / Other). Plus a persistent "Call Now" button linking to `tel:+16232241097`.
 
+**Submission confirmation:** On submit, show a clear "Thank you" confirmation state (e.g. a teal checkmark icon + brush-script "Thank You!" + a line like "We'll be in touch soon") in place of or alongside the form — this applies to every instance of the lead form site-wide (Hero, every page's final CTA), not just one. The site doesn't yet have a real backend/CRM connection, so this confirmation is a client-side UI state for now, not an actual submission to GoHighLevel or similar — that integration is a separate future task, not blocking for the demo.
+
 ---
 
 ## 6A. NAVIGATION / HEADER (persistent across every page — was missing from initial Hero build, add now)
@@ -196,6 +198,15 @@ A sticky header, present on every page (not just Home), containing:
 - On the Home page specifically, the header sits on top of the hero video/image — style it so it's legible against both the dark video background and lighter settled frame (e.g. semi-transparent dark background bar, or a subtle backdrop blur)
 - Sticky/fixed position so it remains accessible while scrolling
 - Mobile: collapse into a hamburger menu, keep the logo and Call Now button visible even when collapsed
+- On navigation to a new route, the Services dropdown (or any open nav menu) must close automatically, and the page must scroll to the top — do not leave stale open menus or retained scroll position after a route change
+
+## 6B. "COMING SOON" PLACEHOLDER PAGE (reusable, for any route not yet built)
+
+Any sitemap URL (section 8) that doesn't have a real built page yet must NOT 404 or show a blank page — use a shared "Coming Soon" placeholder component instead:
+- Keeps the standard header/nav and footer (site still feels whole, not broken)
+- Body: brush-script "Coming Soon" text (the same script font used for "Family Owned & Operated" etc.), a brief supporting line, and a way back (e.g. a button to Home or Call Now) so it's not a dead end
+- Color: dark background, consistent with site rhythm
+- Applies to: Commercial, Residential, Patios/Sidewalks/Driveways, Pool Decks, Paver Sealing, Grind & Seal, Polished Concrete, Concrete Coatings, Flake Color Chart, Solid Color Chart, Blog, Contact — any route not yet individually built. Swap out for the real page as each is built later.
 
 ---
 

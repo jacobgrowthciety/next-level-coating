@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 /** Sitemap (reference/BRIEF.md §6A + §8). Slugs cleaned up per the brief's rename recommendations. */
 const SERVICES = [
@@ -33,6 +33,15 @@ function PhoneIcon({ className }: { className?: string }) {
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [servicesOpen, setServicesOpen] = useState(false)
+  const location = useLocation()
+
+  // Close any open nav menu on every route change (reference/BRIEF.md §6A) — don't leave a
+  // stale open dropdown or mobile menu after navigating.
+  useEffect(() => {
+    setMobileOpen(false)
+    setServicesOpen(false)
+  }, [location.pathname])
 
   const navLinkClass =
     'text-sm font-medium text-white/85 transition-colors hover:text-brand-teal'
@@ -42,13 +51,13 @@ export default function Header() {
       {/* Dark gradient scrim behind the bar so any overlap with the hero reads as intentional. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/85 via-black/40 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/85 via-black/40 to-transparent"
       />
       <div className="relative bg-black/25 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         {/* Logo → Home — fills most of the bar height without making it taller. */}
         <Link to="/" className="flex shrink-0 items-center" aria-label="Next Level Coatings — Home">
-          <img src="/logo.png" alt="Next Level Coatings" className="h-12 w-auto sm:h-[52px]" />
+          <img src="/logo.png" alt="Next Level Coatings" className="h-14 w-auto sm:h-16" />
         </Link>
 
         {/* Desktop nav */}
@@ -57,12 +66,19 @@ export default function Header() {
             Home
           </Link>
 
-          {/* Services dropdown (hover / focus-within) */}
-          <div className="group relative">
+          {/* Services dropdown — controlled (not pure CSS :hover) so it can be force-closed on navigation. */}
+          <div
+            className="relative"
+            onMouseEnter={() => setServicesOpen(true)}
+            onMouseLeave={() => setServicesOpen(false)}
+          >
             <button
               type="button"
               className={`${navLinkClass} inline-flex items-center gap-1`}
               aria-haspopup="true"
+              aria-expanded={servicesOpen}
+              onClick={() => setServicesOpen((v) => !v)}
+              onFocus={() => setServicesOpen(true)}
             >
               Services
               <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor">
@@ -76,12 +92,17 @@ export default function Header() {
                 />
               </svg>
             </button>
-            <div className="invisible absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-3 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+            <div
+              className={`absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-3 transition-all duration-150 ${
+                servicesOpen ? 'visible opacity-100' : 'invisible opacity-0'
+              }`}
+            >
               <div className="rounded-xl border border-white/10 bg-black/90 p-2 shadow-xl backdrop-blur-md">
                 {SERVICES.map((s) => (
                   <Link
                     key={s.to}
                     to={s.to}
+                    onClick={() => setServicesOpen(false)}
                     className="block rounded-md px-3 py-2 text-sm text-white/85 transition-colors hover:bg-white/10 hover:text-brand-teal"
                   >
                     {s.label}

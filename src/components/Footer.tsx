@@ -71,7 +71,7 @@ export default function Footer() {
           {/* Brand + service area + license */}
           <div>
             <Link to="/" aria-label="Next Level Coatings — Home">
-              <img src="/logo.png" alt="Next Level Coatings" className="h-14 w-auto" />
+              <img src="/logo.png" alt="Next Level Coatings" className="h-16 w-auto" />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
               Servicing all of Arizona.
