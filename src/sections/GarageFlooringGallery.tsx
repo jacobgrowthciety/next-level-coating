@@ -16,50 +16,25 @@ const PREV_SECTION_BG = '#000000' // GarageFlooringIntro's section background
 // border-l teal DNA established in Services Grid / Reviews (reference/BRIEF.md §5B, §5C).
 const CARD_BG = '#1c1c1c'
 
-// PLACEHOLDER PHOTOS — real project photography not yet sourced. Swap `caption` copy to match
-// each real photo and replace <PlaceholderPhoto /> with an <img src="..." /> once available.
-// Kept intentionally varied in size (one featured, four supporting, one wide) rather than a
-// uniform grid (reference/BRIEF.md §9A).
-const PHOTOS: { id: string; caption: string; size: 'featured' | 'small' | 'wide' }[] = [
-  { id: 'p1', caption: '3-Car Garage · Full Broadcast Flake', size: 'featured' },
-  { id: 'p2', caption: 'Gray & Black Flake Close-Up', size: 'small' },
-  { id: 'p3', caption: 'Stem Wall Repair Detail', size: 'small' },
-  { id: 'p4', caption: 'Solid Color Finish', size: 'small' },
-  { id: 'p5', caption: 'Edge & Trim Detail', size: 'small' },
-  { id: 'p6', caption: 'Freshly Coated — Cure In Progress', size: 'wide' },
+// Real project photography (public/services/garage-flooring/). Captions are intentionally
+// generic — no car counts, locations, or specific color-chip names — since these are unverified
+// against the individual jobs. Kept intentionally varied in size (one featured, four supporting,
+// two wide) rather than a uniform grid (reference/BRIEF.md §9A) — this exact mix (1 featured +
+// 4 small + 2 wide = 12 grid cells) tiles the grid with no leftover gap at both the 2-col mobile
+// and 4-col desktop breakpoints, so keep the size/count balanced this way if photos are added.
+const PHOTOS: { id: string; src: string; caption: string; size: 'featured' | 'small' | 'wide' }[] = [
+  { id: 'p1', src: '/services/garage-flooring/Garage-Flooring-5.webp', caption: 'Full Broadcast Flake Finish', size: 'featured' },
+  { id: 'p2', src: '/services/garage-flooring/Garage-Flooring-6.webp', caption: 'Freshly Coated Garage Floor', size: 'small' },
+  { id: 'p3', src: '/services/garage-flooring/Garage-Flooring-3.webp', caption: '1-Day Installation', size: 'small' },
+  { id: 'p4', src: '/services/garage-flooring/Garage-Flooring-4.webp', caption: 'Full Broadcast Flake Finish', size: 'small' },
+  { id: 'p5', src: '/services/garage-flooring/Garage-Flooring-1.webp', caption: 'Freshly Coated Garage Floor', size: 'small' },
+  { id: 'p6', src: '/services/garage-flooring/Garage-Flooring-2.webp', caption: '1-Day Installation', size: 'wide' },
+  { id: 'p7', src: '/services/garage-flooring/Garage-Flooring-7.webp', caption: 'Full Broadcast Flake Finish', size: 'wide' },
 ]
 
 // TODO (reference/BRIEF.md §9A): a drag-to-reveal before/after slider is the planned next
 // enhancement for this gallery, once real before/after photo pairs are sourced from the owner.
 // High priority — noted as the highest-converting visual pattern for this business.
-
-function CameraIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 8h3l2-2h6l2 2h3v11H4z" />
-      <circle cx="12" cy="13.5" r="3.5" />
-    </svg>
-  )
-}
-
-/** PLACEHOLDER — stand-in for real project photography until it's sourced. */
-function PlaceholderPhoto({ className = '' }: { className?: string }) {
-  return (
-    <div
-      aria-hidden="true"
-      className={`relative flex h-full w-full items-center justify-center overflow-hidden ${className}`}
-      style={{
-        backgroundImage:
-          'repeating-linear-gradient(135deg, #1f1f1f, #1f1f1f 14px, #171717 14px, #171717 28px)',
-      }}
-    >
-      <CameraIcon className="h-8 w-8 text-white/15 sm:h-10 sm:w-10" />
-      <span className="absolute right-2 top-2 font-display text-[0.6rem] uppercase tracking-[0.2em] text-brand-teal/60">
-        Placeholder
-      </span>
-    </div>
-  )
-}
 
 const SIZE_CLASSES: Record<(typeof PHOTOS)[number]['size'], string> = {
   featured: 'col-span-2 row-span-2',
@@ -146,7 +121,12 @@ export default function GarageFlooringGallery() {
                 onClick={() => setOpenIndex(index)}
                 className={`group relative overflow-hidden rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-[#141414] ${SIZE_CLASSES[photo.size]}`}
               >
-                <PlaceholderPhoto />
+                <img
+                  src={photo.src}
+                  alt={photo.caption}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
                 {/* Hover/focus caption reveal (§9A) */}
                 <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
                   <span className="p-3 text-left text-xs font-medium leading-snug text-white sm:text-sm">
@@ -241,7 +221,11 @@ export default function GarageFlooringGallery() {
                 onClick={(e) => e.stopPropagation()}
                 className="aspect-[4/3] w-full max-w-2xl"
               >
-                <PlaceholderPhoto className="rounded-sm" />
+                <img
+                  src={PHOTOS[openIndex].src}
+                  alt={PHOTOS[openIndex].caption}
+                  className="h-full w-full rounded-sm object-cover"
+                />
                 <p className="mt-4 text-center text-sm text-white/70">{PHOTOS[openIndex].caption}</p>
               </motion.div>
 
