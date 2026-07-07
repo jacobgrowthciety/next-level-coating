@@ -46,7 +46,10 @@ export default function AboutStory() {
           (revealColor), a self-contained boundary between two in-flow sections. */}
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
 
-      <div className="px-6 pb-24 pt-4">
+      {/* pb-8 (not the site's usual pb-24) — this section's content already reads tall (photo +
+          copy blocks), so the standard bottom padding stacked with the CTA's own torn-edge
+          transition read as an oversized dead-space gap before "Free Quotes" (BRIEF.md §4A). */}
+      <div className="px-6 pb-8 pt-4">
         <div className="mx-auto flex max-w-5xl flex-col gap-20">
           {STORY.map((block, index) => (
             <motion.div

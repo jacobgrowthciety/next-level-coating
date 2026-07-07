@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 
 /** Sitemap (reference/BRIEF.md §6A + §8). Slugs cleaned up per the brief's rename recommendations. */
@@ -34,6 +35,7 @@ function PhoneIcon({ className }: { className?: string }) {
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
   const location = useLocation()
 
   // Close any open nav menu on every route change (reference/BRIEF.md §6A) — don't leave a
@@ -41,6 +43,7 @@ export default function Header() {
   useEffect(() => {
     setMobileOpen(false)
     setServicesOpen(false)
+    setMobileServicesOpen(false)
   }, [location.pathname])
 
   const navLinkClass =
@@ -146,27 +149,63 @@ export default function Header() {
           </button>
         </div>
       </div>
+      </div>
 
-      {/* Mobile menu panel */}
-      {mobileOpen && (
-        <div className="border-t border-white/10 bg-black/95 backdrop-blur-md lg:hidden">
+      {/* Mobile menu panel — portaled to document.body so it isn't trapped inside the header's own
+          z-40 stacking context (same fix as the GarageFlooringGallery lightbox): page sections use
+          z-index up to z-[60] locally, which would otherwise rank above the header regardless of
+          any z-index given to a element nested inside it. Fixed, full-viewport, with its own
+          scroll (never trap content with no way to reach it). */}
+      {mobileOpen &&
+        createPortal(
+          <div
+            className="fixed inset-x-0 top-20 bottom-0 z-[100] overflow-y-auto overscroll-contain border-t border-white/10 bg-black/95 backdrop-blur-md lg:hidden"
+            style={{ maxHeight: 'calc(100dvh - 5rem)' }}
+          >
           <nav className="mx-auto max-w-7xl space-y-1 px-4 py-4">
             <Link to="/" onClick={() => setMobileOpen(false)} className="block rounded-md px-3 py-2 text-white/90 hover:bg-white/10">
               Home
             </Link>
-            <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-brand-gray">
-              Services
-            </div>
-            {SERVICES.map((s) => (
-              <Link
-                key={s.to}
-                to={s.to}
-                onClick={() => setMobileOpen(false)}
-                className="block rounded-md px-3 py-2 pl-5 text-sm text-white/85 hover:bg-white/10"
+
+            {/* Services accordion — collapsed by default so the 8 service links don't force the
+                whole menu past the viewport height (was cutting off Primary links with no way to
+                scroll to them). */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setMobileServicesOpen((v) => !v)}
+                aria-expanded={mobileServicesOpen}
+                className="flex w-full items-center justify-between rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wide text-brand-gray hover:bg-white/10"
               >
-                {s.label}
-              </Link>
-            ))}
+                Services
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 20 20"
+                  className={`h-4 w-4 transition-transform duration-200 ${mobileServicesOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                >
+                  <path d="M5.2 7.5 10 12l4.8-4.5" />
+                </svg>
+              </button>
+              {mobileServicesOpen && (
+                <div className="space-y-1 pb-1">
+                  {SERVICES.map((s) => (
+                    <Link
+                      key={s.to}
+                      to={s.to}
+                      onClick={() => setMobileOpen(false)}
+                      className="block rounded-md px-3 py-2 pl-5 text-sm text-white/85 hover:bg-white/10"
+                    >
+                      {s.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="my-2 h-px bg-white/10" />
             {PRIMARY_LINKS.map((l) => (
               <Link
@@ -179,9 +218,9 @@ export default function Header() {
               </Link>
             ))}
           </nav>
-        </div>
-      )}
-      </div>
+          </div>,
+          document.body,
+        )}
     </header>
   )
 }

@@ -38,8 +38,9 @@ export default function WhyTrustUs() {
           stickied hero video through its torn gaps (no revealColor = transparent overlap). */}
       <RoughDivider fillColor={SECTION_BG} className={COMPACT_DIVIDER_HEIGHT} />
 
-      {/* Solid body */}
-      <div className="section-compact px-6" style={{ backgroundColor: SECTION_BG }}>
+      {/* Solid body. pb-10 gives the next section's rising divider breathing room instead of
+          butting the icon grid flush against it (BRIEF.md §4A). */}
+      <div className="section-compact px-6 pb-10" style={{ backgroundColor: SECTION_BG }}>
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -55,11 +56,15 @@ export default function WhyTrustUs() {
           </motion.h2>
 
           <div className="mt-12 grid grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-5">
-            {TRUST.map((item) => (
+            {TRUST.map((item, index) => (
               <motion.div
                 key={item.label}
                 variants={fadeUp}
-                className="flex flex-col items-center gap-4 text-center"
+                className={`flex flex-col items-center gap-4 text-center ${
+                  // Odd item out in the 2-col grid (mobile/tablet only — lg is a full 5-col row):
+                  // span both columns and re-center instead of stranding it alone on the left.
+                  index === TRUST.length - 1 ? 'col-span-2 lg:col-span-1' : ''
+                }`}
               >
                 <span className="flex h-16 w-16 items-center justify-center rounded-full border border-brand-teal/50 bg-brand-teal/10">
                   <svg

@@ -23,7 +23,9 @@ export default function AboutPreview() {
         className={COMPACT_DIVIDER_HEIGHT}
       />
 
-      <div className="section-compact px-6">
+      {/* pb-10 gives the next section's rising divider breathing room instead of butting this
+          content flush against it (BRIEF.md §4A). */}
+      <div className="section-compact px-6 pb-10">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
