@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
+import RoughDivider from '../components/RoughDivider'
 
-// Dark section immediately following the compact header (reference/BRIEF.md §9A) — Intro,
-// Gallery, and the Reviews callout below form one continuous dark "proof" cluster with no
-// divider between them, so this sits right after Intro with no RoughDivider at its top. A
-// distinct near-black shade from Intro's pure black (#000000) so the two dark sections in the
-// cluster don't read as one identical flat surface (§2A shade variance).
+// Dark section immediately following the compact header (reference/BRIEF.md §9A, §4A) — Intro,
+// Gallery, and the Reviews callout below form one continuous dark "proof" cluster, marked at
+// its top with the site-wide rough-edge-mask divider. A distinct near-black shade from Intro's
+// pure black (#000000) so the two dark sections in the cluster don't read as one identical
+// flat surface (§2A shade variance).
 const SECTION_BG = '#141414'
+const PREV_SECTION_BG = '#000000' // GarageFlooringIntro's section background
 
 // Slightly lighter than the section background so review cards read as raised, same
 // border-l teal DNA established in Services Grid / Reviews (reference/BRIEF.md §5B, §5C).
@@ -112,7 +114,11 @@ export default function GarageFlooringGallery() {
 
   return (
     <section className="relative z-20" style={{ backgroundColor: SECTION_BG }}>
-      <div className="px-6 pb-24 pt-16 sm:pt-20">
+      {/* Intro → Gallery (dark → dark): near-black torn shape over Intro's pure black section
+          above (revealColor), a self-contained boundary between two in-flow sections. */}
+      <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
+
+      <div className="px-6 pb-24 pt-4">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
