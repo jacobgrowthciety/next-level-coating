@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Home from './pages/Home'
+import GarageFlooring from './pages/GarageFlooring'
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/garage-flooring" element={<GarageFlooring />} />
         {/* Placeholder until the full About page (reference/BRIEF.md §9) is built — keeps the
             homepage "Read Full Story" CTA from 404-ing. */}
         <Route
