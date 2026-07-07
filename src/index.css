@@ -9,6 +9,8 @@
   /* Brand fonts — closest free Google Fonts to the original two brand faces (§2). */
   --font-display: "Anton", system-ui, sans-serif; /* bold condensed — "NEXT LEVEL" / major headers */
   --font-script: "Permanent Marker", cursive; /* brush/marker — "COATINGS" / section headlines */
+  /* Site-wide body/paragraph font (§2) — replaces the plain system-ui stack everywhere. */
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 :root {
@@ -37,14 +39,7 @@ body {
   margin: 0;
   background-color: var(--color-brand-black);
   color: white;
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

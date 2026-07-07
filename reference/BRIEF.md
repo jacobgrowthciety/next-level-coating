@@ -29,6 +29,8 @@ neutrals: white, black, and charcoal/gray shades only
 
 Original font files are not available — select the closest free Google Fonts match for each and confirm with a side-by-side comparison before locking in.
 
+**Body/paragraph font:** Currently defaulting to a plain system sans-serif, which reads as generic/plain wherever there's a meaningful block of paragraph text (most noticeable on the About page's story section, but this is site-wide). Replace with a considered body font that pairs well with the two display fonts above — something with a bit more character than a bare system stack while staying highly readable at paragraph length (e.g. Inter, Manrope, Plus Jakarta Sans, or Work Sans are reasonable candidates — pick one, show a comparison, confirm before locking in). Apply this as the site-wide base body font token, not just on one page, since this affects Services descriptions, Reviews text, and all service page body copy consistently.
+
 ---
 
 ## 2A. SECTION COLOR RHYTHM (alternate light/dark, per the original site)
@@ -266,9 +268,16 @@ A sticky header, present on every page (not just Home), containing:
 ---
 
 ### ABOUT (`/team-3`)
-"Founded in 2020, we are a family-owned and operated garage floor coating company committed to delivering exceptional results with every project. I am Chase Gray, the owner and operator, and alongside my dedicated team, we ensure that each installation is completed to the highest standards of quality and craftsmanship. As a detail-oriented professional, I have spent years in the field personally training our crew to meet my exacting standards. While our company is growing rapidly, we remain focused on maintaining the highest level of quality in everything we do. To ensure the best possible results, we utilize top-of-the-line equipment, advanced technology, and premium materials, all designed to provide our customers with the fastest turnaround time without compromising on quality. My wife, Lisa, and I manage the business while balancing the joys and challenges of raising our four children: Bryley, Paxton, Nixon, and Remi."
+"Founded in 2020, we are a family-owned and operated garage floor coating company committed to delivering exceptional results with every project. I am Chase Gray, the owner and operator, and alongside my dedicated team, we ensure that each installation is completed to the highest standards of quality and craftsmanship. As a detail-oriented professional, I have spent years in the field personally training our crew to meet my exacting standards. While our company is growing rapidly, we remain focused on maintaining the highest level of quality in everything we do. To ensure the best possible results, we utilize top-of-the-line equipment, advanced technology, and premium materials, all designed to provide our customers with the fastest turnaround time without compromising on quality. My wife, Lisa, and I manage the business while balancing the joys and challenges of raising our four children: Bryley, Paxton, Nixon, and Remi. With ages ranging from 15 to 1, our family thrives on staying busy, and we take great pride in everything we do—both in business and at home. We are passionate about delivering an exceptional experience to our customers, and we look forward to continuing to serve you with integrity and excellence."
 
 *(Do not trim — this is unique, personal, differentiating trust content.)*
+
+**Photos (3 real images, need to be sourced/uploaded before final build):**
+1. Family portrait — Chase, wife Lisa, and the (older) kids, outdoor/winter setting
+2. Chase and Lisa together at a promotional/networking event (e.g. a local home show)
+3. One of the kids (branded Next Level Coatings apparel) at an outdoor event
+
+Layout should interleave these three images alongside the three paragraphs of the story (one image per paragraph roughly), similar to how the current live site does it — not all three dumped in one gallery block.
 
 ---
 
