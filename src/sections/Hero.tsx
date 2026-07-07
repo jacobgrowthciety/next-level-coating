@@ -10,7 +10,7 @@ import {
 import LeadForm from '../components/LeadForm'
 import CallNowButton from '../components/CallNowButton'
 
-const HERO_VIDEO = '/hero-video-final.mp4' // served from public/; correct logo throughout
+const HERO_VIDEO = '/hero_video_trimmed_sharp.mp4' // served from public/; correct logo throughout
 const HERO_POSTER = '/hero-poster.jpg' // video's last frame — poster + reduced-motion still
 
 // Split for the word-by-word headline reveal.
