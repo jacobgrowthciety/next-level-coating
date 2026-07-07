@@ -3,11 +3,11 @@ import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
 import LeadForm from '../components/LeadForm'
 
-// Dark section closing out the page's alternating rhythm (reference/BRIEF.md §2A) — Details
-// above is light, so the lead-capture CTA returns to dark. Full teal is reserved for Home's
-// one deliberate high-impact moment (§2A "use deliberately, not as a default"), so this page's
-// close stays near-black instead of repeating that same teal treatment.
-const SECTION_BG = '#0a0a0a'
+// Full-teal final CTA (reference/BRIEF.md §2A standing rule) — every page's closing CTA uses
+// this same teal treatment site-wide as a consistent "time to convert" signal, mirroring
+// Home's FinalCTA. Text flips to black-on-teal since the section's own teal would vanish
+// against itself.
+const SECTION_BG = '#41CAD2'
 const PREV_SECTION_BG = '#f4f3ef' // GarageFlooringDetails' light body
 
 const PHONE_HREF = 'tel:+16232241097'
@@ -25,7 +25,7 @@ function PhoneIcon({ className }: { className?: string }) {
 export default function GarageFlooringCTA() {
   return (
     <section id="quote" className="relative z-40 scroll-mt-20" style={{ backgroundColor: SECTION_BG }}>
-      {/* Details → CTA (light → dark): near-black torn shape over the off-white section above
+      {/* Details → CTA (light → teal): teal torn shape over the off-white section above
           (revealColor), a self-contained boundary between two in-flow sections. */}
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
 
@@ -40,19 +40,19 @@ export default function GarageFlooringCTA() {
           <div className="max-w-xl text-center lg:text-left">
             <motion.p
               variants={fadeUp}
-              className="font-display text-xs uppercase tracking-[0.35em] text-white/50"
+              className="font-display text-xs uppercase tracking-[0.35em] text-brand-black/60"
             >
               Free Quotes · No Obligation
             </motion.p>
             <motion.h2
               variants={fadeUp}
-              className="mt-3 font-script text-4xl text-brand-teal sm:text-5xl lg:text-6xl"
+              className="mt-3 font-script text-4xl text-brand-black sm:text-5xl lg:text-6xl"
             >
               Ready For Your Next Level Garage?
             </motion.h2>
             <motion.p
               variants={fadeUp}
-              className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-white/70 lg:mx-0"
+              className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-brand-black/80 lg:mx-0"
             >
               One-day installs, a lifetime warranty, and the flake or solid-color finish you
               want — let's get your quote started.
@@ -64,14 +64,14 @@ export default function GarageFlooringCTA() {
             >
               <a
                 href={PHONE_HREF}
-                className="inline-flex items-center gap-2 rounded-full bg-brand-teal px-7 py-3.5 text-sm font-semibold uppercase tracking-wide text-brand-black transition-colors duration-300 hover:bg-white"
+                className="inline-flex items-center gap-2 rounded-full bg-brand-black px-7 py-3.5 text-sm font-semibold uppercase tracking-wide text-white transition-colors duration-300 hover:bg-white hover:text-brand-black"
               >
                 <PhoneIcon className="h-4 w-4" />
                 Call Now
               </a>
               <a
                 href={PHONE_HREF}
-                className="font-display text-2xl tracking-tight text-white transition-opacity hover:opacity-70"
+                className="font-display text-2xl tracking-tight text-brand-black transition-opacity hover:opacity-70"
               >
                 {PHONE_DISPLAY}
               </a>
