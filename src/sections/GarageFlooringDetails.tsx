@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
-import { INTRO_BG } from './GarageFlooringIntro'
 
-// Light section continuing the alternating rhythm (reference/BRIEF.md §2A) — Intro above is
-// dark/photographic, so the main content returns to off-white with dark text.
+// Light section continuing the alternating rhythm (reference/BRIEF.md §2A) — the header +
+// gallery + reviews cluster above is dark, so the body copy/comparison cards return to
+// off-white with dark text.
 const SECTION_BG = '#f4f3ef'
+const PREV_SECTION_BG = '#141414' // GarageFlooringGallery's section background
 
 // Dark comparison cards on the light body, reusing the Services/Reviews card DNA (sharp
 // corners, single teal accent stripe) called out in the task brief for these two options.
@@ -40,10 +41,10 @@ const OPTIONS: {
 /** Garage Flooring main content (reference/BRIEF.md §8 `/garage-flooring`, §9, verbatim copy). */
 export default function GarageFlooringDetails() {
   return (
-    <section className="relative z-20" style={{ backgroundColor: SECTION_BG }}>
-      {/* Intro → Details (dark → light): light torn shape over the intro's photographic
-          background, whose overlay resolves to solid black at its bottom edge (revealColor). */}
-      <RoughDivider fillColor={SECTION_BG} revealColor={INTRO_BG} />
+    <section className="relative z-30" style={{ backgroundColor: SECTION_BG }}>
+      {/* Gallery/Reviews → Details (dark → light): light torn shape over the dark cluster
+          above (revealColor), a self-contained boundary between two in-flow sections. */}
+      <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
 
       <div className="px-6 pb-24 pt-4">
         <motion.div

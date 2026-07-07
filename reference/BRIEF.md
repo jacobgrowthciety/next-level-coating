@@ -41,7 +41,7 @@ The build had drifted toward every section being black/dark, losing the visual s
 - Within consecutive dark sections (where alternation isn't practical), vary the exact shade slightly (e.g. pure black vs. a near-black charcoal like #0A0A0A vs. #121212) so adjacent dark sections aren't visually identical/flat
 - Light sections use white or off-white backgrounds with black/dark text (inverse of dark sections' white text on black)
 - The rough-edge-mask divider (section 4A) should be used at every section transition regardless of light/dark combination — it needs to work both ways (dark section transitioning to light, and light to dark), so the mask/stroke treatment may need a light-section variant (e.g. a white or light-gray shape instead of black, with the teal highlight stroke still tracing the edge either way)
-- Teal can also be used sparingly as a full section background for a high-impact moment (e.g. a stat callout or final CTA band) — use deliberately, not as a default
+- Teal can also be used sparingly as a full section background for a high-impact moment (e.g. a stat callout or final CTA band) — use deliberately, not as a default. **Standing rule: the final CTA section, specifically, uses this teal full-section treatment on every page, site-wide** (Home and all service pages) — this is a consistent, recognizable "time to convert" signal, not a violation of "sparingly," since it's the same type of moment repeated, not teal used throughout a page.
 
 ---
 
@@ -344,6 +344,23 @@ Content for these pages needs to be pulled directly from the live site (copy/pas
 
 ### CONTACT (`/contact`)
 "NEXTLEVELCOATINGSAZ@GMAIL.COM · 623-224-1097 · Here at Next Level Coatings our name speaks for itself. We strive off of attention to detail. All floors are backed with a 15 year warranty. Servicing: Peoria, Surprise, Sun City, Glendale, Phoenix, Scottsdale, Paradise Valley, Cave Creek, Goodyear..." *(get full uncut service-area list from owner)*
+
+---
+
+## 9A. SERVICE PAGE PATTERN (reusable across Garage Flooring, Commercial, Residential, Patios, Pool Decks, Paver Sealing, etc.)
+
+**Header:** Service pages do NOT use the full video hero (that's homepage-only). Use a compact page header instead: breadcrumb (Home / Services / [Page Name]), category tag (e.g. "Our Specialty" for Garage Flooring), headline, one-line subhead, no video, minimal vertical space — get visitors to real content quickly.
+
+**Photo gallery (real project photos, placeholder until sourced):**
+- **Varied-size grid**, not uniform — one or two larger "featured" photos, smaller supporting ones around them (same principle as Services Grid: uniform grids read as generic/templated, intentional hierarchy reads as curated)
+- **Lightbox on click** — opens a full-screen larger view with next/prev navigation, so visitors can inspect finish/texture detail up close
+- **Hover caption reveal** — small overlay on hover with brief context (e.g. "3-Car Garage · Gray/Black Flake"), reads as professional/documented
+- **Before/after slider** (future enhancement, high priority once real before/after photo pairs are sourced from the owner) — a drag-to-reveal comparison slider; this is the single highest-converting visual pattern for a renovation/coating business and should be pursued actively, not left as a someday nice-to-have
+- Use placeholder images until real project photos are sourced (clearly marked as placeholders in code/comments) — swap-in should be trivial once real photos exist
+
+**Reviews callout:** Where relevant reviews exist that mention the specific service (e.g. Will Gray and Clint Tallmadge for Garage Flooring, both in section 5C), feature 1-2 of them on that service's page near the gallery or final CTA — reinforces trust with content that already exists, no new copy needed.
+
+**Everything else** (comparison/differentiator cards, body copy, lead form/CTA, footer) follows the same established site patterns.
 
 ---
 

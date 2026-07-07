@@ -8,7 +8,7 @@ import LeadForm from '../components/LeadForm'
 // one deliberate high-impact moment (§2A "use deliberately, not as a default"), so this page's
 // close stays near-black instead of repeating that same teal treatment.
 const SECTION_BG = '#0a0a0a'
-const PREV_SECTION_BG = '#f4f3ef'
+const PREV_SECTION_BG = '#f4f3ef' // GarageFlooringDetails' light body
 
 const PHONE_HREF = 'tel:+16232241097'
 const PHONE_DISPLAY = '(623) 224-1097'
@@ -24,7 +24,7 @@ function PhoneIcon({ className }: { className?: string }) {
 /** Lead capture CTA for the Garage Flooring page (reference/BRIEF.md §6, §8). */
 export default function GarageFlooringCTA() {
   return (
-    <section id="quote" className="relative z-30 scroll-mt-20" style={{ backgroundColor: SECTION_BG }}>
+    <section id="quote" className="relative z-40 scroll-mt-20" style={{ backgroundColor: SECTION_BG }}>
       {/* Details → CTA (light → dark): near-black torn shape over the off-white section above
           (revealColor), a self-contained boundary between two in-flow sections. */}
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
