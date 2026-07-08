@@ -73,10 +73,18 @@ export default function GarageFlooringDetails() {
           </motion.p>
 
           {/* Visual callout for the two upsell differentiators (task brief: pull these out of
-              paragraph text rather than leaving them buried). */}
+              paragraph text rather than leaving them buried). Heading added so the two option
+              h3s below sit under their own h2 instead of skipping straight from the page's h1
+              (SEO audit fix — this section previously had no heading of its own). */}
+          <motion.h2
+            variants={fadeUp}
+            className="mt-12 font-script text-3xl text-brand-teal sm:text-4xl"
+          >
+            Two Ways To Level Up
+          </motion.h2>
           <motion.div
             variants={fadeUp}
-            className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2"
+            className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
           >
             {OPTIONS.map((option) => (
               <div

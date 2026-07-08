@@ -22,14 +22,66 @@ const CARD_BG = '#1c1c1c'
 // two wide) rather than a uniform grid (reference/BRIEF.md §9A) — this exact mix (1 featured +
 // 4 small + 2 wide = 12 grid cells) tiles the grid with no leftover gap at both the 2-col mobile
 // and 4-col desktop breakpoints, so keep the size/count balanced this way if photos are added.
-const PHOTOS: { id: string; src: string; caption: string; size: 'featured' | 'small' | 'wide' }[] = [
-  { id: 'p1', src: '/services/garage-flooring/Garage-Flooring-5.webp', caption: 'Full Broadcast Flake Finish', size: 'featured' },
-  { id: 'p2', src: '/services/garage-flooring/Garage-Flooring-6.webp', caption: 'Freshly Coated Garage Floor', size: 'small' },
-  { id: 'p3', src: '/services/garage-flooring/Garage-Flooring-3.webp', caption: '1-Day Installation', size: 'small' },
-  { id: 'p4', src: '/services/garage-flooring/Garage-Flooring-4.webp', caption: 'Full Broadcast Flake Finish', size: 'small' },
-  { id: 'p5', src: '/services/garage-flooring/Garage-Flooring-1.webp', caption: 'Freshly Coated Garage Floor', size: 'small' },
-  { id: 'p6', src: '/services/garage-flooring/Garage-Flooring-2.webp', caption: '1-Day Installation', size: 'wide' },
-  { id: 'p7', src: '/services/garage-flooring/Garage-Flooring-7.webp', caption: 'Full Broadcast Flake Finish', size: 'wide' },
+//
+// `alt` is deliberately distinct per photo (SEO audit fix — several photos previously shared the
+// exact same alt text via `caption`) even though several share the same generic `caption` used
+// for the on-screen hover/lightbox label — the two are separate fields on purpose.
+const PHOTOS: {
+  id: string
+  src: string
+  caption: string
+  alt: string
+  size: 'featured' | 'small' | 'wide'
+}[] = [
+  {
+    id: 'p1',
+    src: '/services/garage-flooring/Garage-Flooring-5.webp',
+    caption: 'Full Broadcast Flake Finish',
+    alt: 'Garage floor with a full broadcast flake polyaspartic coating, Next Level Coatings project in Arizona',
+    size: 'featured',
+  },
+  {
+    id: 'p2',
+    src: '/services/garage-flooring/Garage-Flooring-6.webp',
+    caption: 'Freshly Coated Garage Floor',
+    alt: 'Freshly coated garage floor with a glossy polyaspartic finish',
+    size: 'small',
+  },
+  {
+    id: 'p3',
+    src: '/services/garage-flooring/Garage-Flooring-3.webp',
+    caption: '1-Day Installation',
+    alt: 'Next Level Coatings crew installing a 1-day garage floor coating',
+    size: 'small',
+  },
+  {
+    id: 'p4',
+    src: '/services/garage-flooring/Garage-Flooring-4.webp',
+    caption: 'Full Broadcast Flake Finish',
+    alt: 'Close-up of a full broadcast flake garage floor coating',
+    size: 'small',
+  },
+  {
+    id: 'p5',
+    src: '/services/garage-flooring/Garage-Flooring-1.webp',
+    caption: 'Freshly Coated Garage Floor',
+    alt: 'Freshly coated garage floor ready for use',
+    size: 'small',
+  },
+  {
+    id: 'p6',
+    src: '/services/garage-flooring/Garage-Flooring-2.webp',
+    caption: '1-Day Installation',
+    alt: 'Wide view of a 1-day garage floor coating installation in progress',
+    size: 'wide',
+  },
+  {
+    id: 'p7',
+    src: '/services/garage-flooring/Garage-Flooring-7.webp',
+    caption: 'Full Broadcast Flake Finish',
+    alt: 'Wide view of a full broadcast flake finish on a residential garage floor',
+    size: 'wide',
+  },
 ]
 
 // TODO (reference/BRIEF.md §9A): a drag-to-reveal before/after slider is the planned next
@@ -123,7 +175,7 @@ export default function GarageFlooringGallery() {
               >
                 <img
                   src={photo.src}
-                  alt={photo.caption}
+                  alt={photo.alt}
                   loading="lazy"
                   className="h-full w-full object-cover"
                 />
@@ -223,7 +275,7 @@ export default function GarageFlooringGallery() {
               >
                 <img
                   src={PHOTOS[openIndex].src}
-                  alt={PHOTOS[openIndex].caption}
+                  alt={PHOTOS[openIndex].alt}
                   className="h-full w-full rounded-sm object-cover"
                 />
                 <p className="mt-4 text-center text-sm text-white/70">{PHOTOS[openIndex].caption}</p>
