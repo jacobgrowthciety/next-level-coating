@@ -13,11 +13,13 @@
       href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <title>Next Level Coatings — Arizona's Top Concrete Coatings Specialists</title>
-    <meta
-      name="description"
-      content="Specializing in garage floors, commercial, patios, sidewalks, driveways, grind n' seal, pool decks, and pavers across Arizona."
-    />
+    <!-- Fallback title only — every route sets its own <title>/<meta name="description"> via
+         react-helmet-async (see src/components/Seo.tsx), which replaces this on mount. There's
+         deliberately no static meta description here: react-helmet-async only manages tags it
+         creates itself, so a static one here would sit alongside (not get replaced by) each
+         route's real description instead of being overridden, and crawlers pick whichever
+         description tag comes first in the DOM — i.e. this stale one, not the per-page one. -->
+    <title>Next Level Coatings | Arizona Concrete Coating Experts</title>
   </head>
   <body>
     <div id="root"></div>

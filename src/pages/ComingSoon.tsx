@@ -1,12 +1,30 @@
 import { Link } from 'react-router-dom'
 import CallNowButton from '../components/CallNowButton'
+import Seo from '../components/Seo'
 
 const PHONE_HREF = 'tel:+16232241097'
 
-/** Shared placeholder for any sitemap route not yet built (reference/BRIEF.md §6B). */
-export default function ComingSoon() {
+/** Shared placeholder for any sitemap route not yet built (reference/BRIEF.md §6B). Each route
+ * gets its own generic-but-relevant title/description (rather than sharing Home's) and is
+ * marked `noindex` — thin placeholder content shouldn't be indexed or listed in the sitemap
+ * until the real page is built. */
+export default function ComingSoon({
+  path,
+  label,
+  noindex = true,
+}: {
+  path: string
+  label: string
+  noindex?: boolean
+}) {
   return (
     <main>
+      <Seo
+        title={`${label} | Next Level Coatings`}
+        description={`${label} at Next Level Coatings is coming soon. Call (623) 224-1097 for Arizona's top-rated concrete coating specialists — we're happy to help right away.`}
+        path={path}
+        noindex={noindex}
+      />
       <section
         className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pb-20 pt-28 text-center"
         style={{ backgroundColor: '#000000' }}
