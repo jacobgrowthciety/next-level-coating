@@ -21,11 +21,16 @@ const HEADLINE_WORDS = "Arizona's Top Concrete Coatings Specialists".split(' ')
 // top-anchored scale does the actual reframing). Tuned by screenshot. Applied from the start
 // (no longer animated in from a full-bleed intro) so the header/headline/subhead/form below are
 // visible immediately instead of waiting for the video to finish playing.
-const MOBILE_COMPACT_HEIGHT = 'h-[52dvh]'
-const MOBILE_COMPACT_SCALE = 1.5
+// `svh` (not `dvh`) deliberately, matching DesktopHero below — `dvh` tracks the *current*
+// mobile browser toolbar state, so it jumps (and reflows everything below it) the moment
+// Safari's address bar collapses on first scroll, which is what caused the "zoom"/flicker and
+// stray seams at lower section boundaries. `svh` assumes the toolbar is always shown, so the
+// layout never has to reflow when it actually collapses.
+const MOBILE_COMPACT_HEIGHT = 'h-[52svh]'
+const MOBILE_COMPACT_SCALE = 1.15
 // Nudge the zoomed frame down in the compact state so Chase's head clears the fixed header
 // (the sliver this opens at the very top is hidden under the header's dark scrim). Tuned by screenshot.
-const MOBILE_COMPACT_SHIFT = 32
+const MOBILE_COMPACT_SHIFT = 22
 
 /** Shared reveal content — kicker → headline (word-by-word) → subhead → call button → form. */
 function HeroContent({
@@ -180,7 +185,7 @@ function MobileHero({ reducedMotion }: { reducedMotion: boolean }) {
   }, [reducedMotion])
 
   return (
-    <section className="relative z-0 flex min-h-[100dvh] flex-col overflow-hidden">
+    <section className="relative z-0 flex min-h-[100svh] flex-col overflow-hidden">
       {/* Compact video zone, sized and cropped from the start (no shrink animation to wait on). */}
       <div className={`relative w-full shrink-0 overflow-hidden ${MOBILE_COMPACT_HEIGHT}`}>
         {/* Top-anchored zoom frames Chase's head/shoulders in the compact zone. */}
@@ -191,7 +196,7 @@ function MobileHero({ reducedMotion }: { reducedMotion: boolean }) {
           <HeroMedia
             reducedMotion={reducedMotion}
             videoRef={videoRef}
-            className="h-full w-full object-cover object-[38%_15%]"
+            className="h-full w-full object-cover object-[38%_30%]"
           />
         </div>
 
