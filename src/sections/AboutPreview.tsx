@@ -23,9 +23,9 @@ export default function AboutPreview() {
         className={COMPACT_DIVIDER_HEIGHT}
       />
 
-      {/* pb-10 gives the next section's rising divider breathing room instead of butting this
-          content flush against it (BRIEF.md §4A). */}
-      <div className="section-compact px-6 pb-10">
+      {/* Symmetric py (rather than a bottom-only pb) keeps this content actually centered in the
+          section instead of hugging the top with a lopsided gap below (same fix as WhyTrustUs). */}
+      <div className="section-compact px-6 py-5">
         <motion.div
           variants={staggerContainer}
           initial="hidden"

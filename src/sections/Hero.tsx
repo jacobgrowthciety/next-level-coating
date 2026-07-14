@@ -16,12 +16,12 @@ const HERO_POSTER = '/hero-poster.jpg' // video's last frame — poster + reduce
 // Split for the word-by-word headline reveal.
 const HEADLINE_WORDS = "Arizona's Top Concrete Coatings Specialists".split(' ')
 
-const MEDIA_DURATION = 0.9
-const MEDIA_EASE = [0.65, 0, 0.35, 1] as const // easeInOut
-// Compact mobile video zone as a fraction of the viewport, and the zoom that frames
-// Chase's head/shoulders there (the zone is portrait + the source landscape, so object-position
-// alone can't crop vertically — a top-anchored scale does the actual reframing). Tuned by screenshot.
-const MOBILE_COMPACT_FRACTION = 0.52
+// Compact mobile video zone height, and the zoom that frames Chase's head/shoulders there (the
+// zone is portrait + the source landscape, so object-position alone can't crop vertically — a
+// top-anchored scale does the actual reframing). Tuned by screenshot. Applied from the start
+// (no longer animated in from a full-bleed intro) so the header/headline/subhead/form below are
+// visible immediately instead of waiting for the video to finish playing.
+const MOBILE_COMPACT_HEIGHT = 'h-[52dvh]'
 const MOBILE_COMPACT_SCALE = 1.5
 // Nudge the zoomed frame down in the compact state so Chase's head clears the fixed header
 // (the sliver this opens at the very top is hidden under the header's dark scrim). Tuned by screenshot.
@@ -166,55 +166,43 @@ function DesktopHero({ reducedMotion }: { reducedMotion: boolean }) {
 }
 
 /**
- * Mobile (< lg): immersive 100dvh full-bleed playback → on `ended`, the video zone shrinks to a
- * compact top zone while the solid panel below expands + its content fades in — one coordinated
- * transition (reference/BRIEF.md §5 "Mobile layout").
+ * Mobile (< lg): the video plays within its already-compact top zone from the start, with the
+ * header/headline/subhead/form visible immediately below it — rather than an immersive 100dvh
+ * intro the viewer has to wait through before the rest of the page appears (revised from the
+ * original full-bleed → shrink sequence in BRIEF.md §5 "Mobile layout").
  */
 function MobileHero({ reducedMotion }: { reducedMotion: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const revealed = useHeroReveal(reducedMotion, videoRef)
-  // Pixel heights (from the visible viewport) so the height tween is smooth.
-  const [fullHeight] = useState(() =>
-    typeof window !== 'undefined' ? window.innerHeight : 0,
-  )
-  const compactHeight = Math.round(fullHeight * MOBILE_COMPACT_FRACTION)
-  const transition = { duration: MEDIA_DURATION, ease: MEDIA_EASE }
+
+  useEffect(() => {
+    if (reducedMotion) return
+    videoRef.current?.play().catch(() => {})
+  }, [reducedMotion])
 
   return (
     <section className="relative z-0 flex min-h-[100dvh] flex-col overflow-hidden">
-      {/* Video zone — animates full viewport → compact top zone. */}
-      <motion.div
-        className="relative w-full shrink-0 overflow-hidden"
-        initial={false}
-        animate={{ height: revealed ? compactHeight : fullHeight }}
-        transition={transition}
-      >
-        {/* Inner scale layer — top-anchored zoom frames head/shoulders in the compact state. */}
-        <motion.div
+      {/* Compact video zone, sized and cropped from the start (no shrink animation to wait on). */}
+      <div className={`relative w-full shrink-0 overflow-hidden ${MOBILE_COMPACT_HEIGHT}`}>
+        {/* Top-anchored zoom frames Chase's head/shoulders in the compact zone. */}
+        <div
           className="absolute inset-0 origin-top"
-          initial={false}
-          animate={{
-            scale: revealed ? MOBILE_COMPACT_SCALE : 1,
-            y: revealed ? MOBILE_COMPACT_SHIFT : 0,
-          }}
-          transition={transition}
+          style={{ transform: `scale(${MOBILE_COMPACT_SCALE}) translateY(${MOBILE_COMPACT_SHIFT}px)` }}
         >
           <HeroMedia
             reducedMotion={reducedMotion}
             videoRef={videoRef}
             className="h-full w-full object-cover object-[38%_15%]"
           />
-        </motion.div>
+        </div>
 
-        {/* Legibility/mood overlay — same treatment as DesktopHero, kept as a sibling of the
-            scaling inner layer so the gradient itself isn't zoomed/panned along with the video. */}
+        {/* Legibility/mood overlay — same treatment as DesktopHero. */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/25" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
-      </motion.div>
+      </div>
 
-      {/* Bottom panel — expands into view as the video shrinks; content fades in on the same trigger. */}
+      {/* Bottom panel — visible immediately, no longer gated behind the video's `ended` event. */}
       <div className="flex-1 bg-brand-black px-6 py-12">
-        <HeroContent revealed={revealed} reducedMotion={reducedMotion} />
+        <HeroContent revealed reducedMotion={reducedMotion} />
       </div>
 
       <CallNowButton />

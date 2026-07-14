@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
@@ -111,11 +111,19 @@ const Arrow = ({ className }: { className?: string }) => (
 
 /**
  * Services grid (reference/BRIEF.md §5B) — an interactive grid where one service is always
- * shown in an expanded "detail" slot (number, name, one-line description, Explore link), and
- * the other 8 sit as compact cards (number, name, arrow). Clicking a compact card swaps it
- * into the detail slot while the previously-selected service returns to compact form — a
- * shared-layout animation (`layout` + `layoutId`) rather than a jarring content swap.
- * Defaults to Garage Flooring (the flagship service, per its own page notes in §9).
+ * shown in an expanded "detail" form (number, name, one-line description, Explore link), and
+ * the rest sit as compact cards (number, name, arrow).
+ *
+ * Desktop/tablet (sm+): clicking a compact card swaps it into a fixed top-left detail slot
+ * while the previously-selected service returns to compact form — a shared-layout animation
+ * (`layout` + `layoutId`) rather than a jarring content swap. Defaults to Garage Flooring (the
+ * flagship service, per its own page notes in §9).
+ *
+ * Mobile (single-column list): the grid is reordered so this doesn't apply the same way — a
+ * swap-to-top-slot would move the expanded card off-screen above whichever compact card the
+ * viewer just tapped further down the list, forcing them to scroll back up to see it. Instead
+ * the tapped card expands in place, right where it is in the list, and the list order never
+ * changes.
  *
  * Each card is a real `<Link>` whose `href` always points at its own page — the compact/detail
  * distinction is only a visual preview state, never a change of destination. Clicking a
@@ -128,10 +136,22 @@ const Arrow = ({ className }: { className?: string }) => (
 export default function ServicesGrid() {
   const [selected, setSelected] = useState(FLAGSHIP_SLUG)
 
-  const ordered = [
-    SERVICES.find((s) => s.to === selected)!,
-    ...SERVICES.filter((s) => s.to !== selected),
-  ]
+  // Below `sm` (640px) the grid is a single column, where BRIEF.md's swap-to-top-slot pattern
+  // reads as the page jumping the expanded card away from what the viewer just tapped — see the
+  // docstring above. This only changes list order/positioning, not the compact/detail styling.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 639.98px)').matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639.98px)')
+    const onChange = () => setIsMobile(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
+  const ordered = isMobile
+    ? SERVICES
+    : [SERVICES.find((s) => s.to === selected)!, ...SERVICES.filter((s) => s.to !== selected)]
 
   const selectService = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
@@ -180,9 +200,10 @@ export default function ServicesGrid() {
             </motion.p>
           </div>
 
-          {/* Detail slot is always the first item in `ordered`, so it always lands in the
-              grid's first (top-left) cell — a fixed position regardless of which service
-              currently occupies it. The other 8 auto-flow around it in their fixed order. */}
+          {/* Desktop/tablet: the detail slot is always the first item in `ordered`, so it always
+              lands in the grid's first (top-left) cell regardless of which service currently
+              occupies it, with the rest auto-flowing around it in their fixed order. Mobile:
+              `ordered` is just `SERVICES` unchanged, so the selected card expands in place. */}
           <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {ordered.map((service) => {
               const isDetail = service.to === selected
