@@ -38,9 +38,15 @@ export default function WhyTrustUs() {
           stickied hero video through its torn gaps (no revealColor = transparent overlap). */}
       <RoughDivider fillColor={SECTION_BG} className={COMPACT_DIVIDER_HEIGHT} />
 
-      {/* Solid body. pb-10 gives the next section's rising divider breathing room instead of
-          butting the icon grid flush against it (BRIEF.md §4A). */}
-      <div className="section-compact px-6 pb-10" style={{ backgroundColor: SECTION_BG }}>
+      {/* Solid body. Symmetric py (rather than a bottom-only pb) keeps the heading/icon block
+          actually centered instead of hugging the top with a large bottom-heavy gap before the
+          divider; the inline minHeight (below section-compact's shared 240px floor) lets this
+          desktop-heavy section sit slightly shorter without touching that shared utility, which
+          other short-content sections (About Preview, etc.) still rely on at 240px. */}
+      <div
+        className="section-compact px-6 py-4"
+        style={{ backgroundColor: SECTION_BG, minHeight: '200px' }}
+      >
         <motion.div
           variants={staggerContainer}
           initial="hidden"
