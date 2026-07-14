@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import GarageFlooring from './pages/GarageFlooring'
 import About from './pages/About'
 import FlakeColorChart from './pages/FlakeColorChart'
+import Contact from './pages/Contact'
 import ComingSoon from './pages/ComingSoon'
 
 /** Sitemap routes without a real page yet (reference/BRIEF.md §6B, §8). `label` drives each
@@ -23,7 +24,6 @@ const COMING_SOON_ROUTES = [
   { path: '/concrete-coatings', label: 'Concrete Coatings' },
   { path: '/solid-color-chart', label: 'Solid Color Chart' },
   { path: '/blog', label: 'Blog' },
-  { path: '/contact', label: 'Contact' },
   { path: '/privacy-policy', label: 'Privacy Policy' },
   { path: '/terms-conditions', label: 'Terms & Conditions' },
 ]
@@ -43,6 +43,7 @@ export default function App() {
         <Route path="/garage-flooring" element={<GarageFlooring />} />
         <Route path="/about" element={<About />} />
         <Route path="/flake-color-chart" element={<FlakeColorChart />} />
+        <Route path="/contact" element={<Contact />} />
         {COMING_SOON_ROUTES.map(({ path, label }) => (
           <Route key={path} path={path} element={<ComingSoon path={path} label={label} />} />
         ))}

@@ -1,7 +1,11 @@
 import { useId, useState } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 
-/** Lead capture form — fields per reference/BRIEF.md §6. Reused across pages. */
+/** Lead capture form — fields per reference/BRIEF.md §6. Reused across pages.
+ * The SMS consent checkbox is intentionally optional (not `required`) — leads should still be
+ * captured whether or not it's checked. Its state is sent to GoHighLevel as `smsConsent` so a
+ * workflow can branch on it (only opted-in leads get enrolled in automated SMS). */
 
 const PROJECT_OPTIONS = [
   '2 Car',
@@ -28,6 +32,7 @@ const GOHIGHLEVEL_WEBHOOK_URL =
 
 export default function LeadForm() {
   const [values, setValues] = useState(initialState)
+  const [smsConsent, setSmsConsent] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const idPrefix = useId()
   const firstNameId = `${idPrefix}firstName`
@@ -36,6 +41,7 @@ export default function LeadForm() {
   const phoneId = `${idPrefix}phone`
   const zipId = `${idPrefix}zip`
   const projectId = `${idPrefix}project`
+  const consentId = `${idPrefix}consent`
 
   function update(field: keyof typeof initialState, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }))
@@ -56,6 +62,7 @@ export default function LeadForm() {
         phone: values.phone,
         zipCode: values.zip,
         projectDescription: values.project,
+        smsConsent,
       }),
     })
       .then((response) => {
@@ -208,6 +215,36 @@ export default function LeadForm() {
           </select>
         </div>
       </div>
+
+      {/* Optional (not `required`) — unchecked by default so consent is opt-in, per TCPA.
+          Leaving it unchecked still submits the lead; it only withholds SMS consent. */}
+      <label
+        htmlFor={consentId}
+        className="mt-4 flex items-start gap-2.5 text-xs leading-relaxed text-white/50"
+      >
+        <input
+          id={consentId}
+          name="smsConsent"
+          type="checkbox"
+          checked={smsConsent}
+          onChange={(e) => setSmsConsent(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-brand-teal"
+        />
+        <span>
+          I agree to Terms &amp; Conditions and Privacy Policy linked below provided by Next
+          Level Coatings. By providing my phone number, I agree to receive text messages from
+          Next Level Coatings at the phone number provided above. Data rates may apply, reply
+          STOP to opt out.
+          <span className="mt-1 flex gap-4">
+            <Link to="/privacy-policy" className="underline transition-colors hover:text-brand-teal">
+              Privacy Policy
+            </Link>
+            <Link to="/terms-conditions" className="underline transition-colors hover:text-brand-teal">
+              Terms &amp; Conditions
+            </Link>
+          </span>
+        </span>
+      </label>
 
       <button
         type="submit"
