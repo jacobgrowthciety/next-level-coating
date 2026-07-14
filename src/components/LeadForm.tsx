@@ -220,7 +220,7 @@ export default function LeadForm() {
           Leaving it unchecked still submits the lead; it only withholds SMS consent. */}
       <label
         htmlFor={consentId}
-        className="mt-4 flex items-start gap-2.5 text-xs leading-relaxed text-white/50"
+        className="mt-4 flex items-start gap-2.5 text-[10px] leading-relaxed text-white/50"
       >
         <input
           id={consentId}
@@ -235,7 +235,7 @@ export default function LeadForm() {
           Level Coatings. By providing my phone number, I agree to receive text messages from
           Next Level Coatings at the phone number provided above. Data rates may apply, reply
           STOP to opt out.
-          <span className="mt-1 flex gap-4">
+          <span className="mt-1 flex justify-center gap-4">
             <Link to="/privacy-policy" className="underline transition-colors hover:text-brand-teal">
               Privacy Policy
             </Link>
