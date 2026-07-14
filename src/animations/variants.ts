@@ -57,3 +57,14 @@ export const heroRevealGroup: Variants = {
   hidden: {},
   show: {},
 }
+
+/** Fade + scale-in, same duration/easing as fadeUp — for grid items (e.g. color swatches)
+ * where a slight scale reads better than a vertical slide. */
+export const scaleIn: Variants = {
+  hidden: { opacity: 0, scale: 0.94 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+}

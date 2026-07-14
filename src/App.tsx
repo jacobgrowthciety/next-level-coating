@@ -6,6 +6,7 @@ import LocalBusinessSchema from './components/LocalBusinessSchema'
 import Home from './pages/Home'
 import GarageFlooring from './pages/GarageFlooring'
 import About from './pages/About'
+import FlakeColorChart from './pages/FlakeColorChart'
 import ComingSoon from './pages/ComingSoon'
 
 /** Sitemap routes without a real page yet (reference/BRIEF.md §6B, §8). `label` drives each
@@ -20,7 +21,6 @@ const COMING_SOON_ROUTES = [
   { path: '/grind-seal', label: 'Grind & Seal' },
   { path: '/polished-concrete', label: 'Polished Concrete' },
   { path: '/concrete-coatings', label: 'Concrete Coatings' },
-  { path: '/flake-color-chart', label: 'Flake Color Chart' },
   { path: '/solid-color-chart', label: 'Solid Color Chart' },
   { path: '/blog', label: 'Blog' },
   { path: '/contact', label: 'Contact' },
@@ -42,6 +42,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/garage-flooring" element={<GarageFlooring />} />
         <Route path="/about" element={<About />} />
+        <Route path="/flake-color-chart" element={<FlakeColorChart />} />
         {COMING_SOON_ROUTES.map(({ path, label }) => (
           <Route key={path} path={path} element={<ComingSoon path={path} label={label} />} />
         ))}
