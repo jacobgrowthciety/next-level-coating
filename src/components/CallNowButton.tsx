@@ -1,9 +1,44 @@
-/** Persistent mobile "Call Now" button — always visible on touch/small screens (BRIEF.md §5, §6). */
+import { useEffect, useState } from 'react'
+
+/**
+ * Persistent mobile "Call Now" bar — always visible on touch/small screens (BRIEF.md §5, §6),
+ * but held off-screen until the visitor has scrolled substantially past the hero. Showing it
+ * immediately at the top of the page would sit on top of (or duplicate) the hero's own
+ * full-width phone CTA.
+ *
+ * On pages with a hero (`#hero`, currently just Home), visibility is driven by an
+ * IntersectionObserver on that element — the bar appears once the hero has fully scrolled out of
+ * view, so it can never overlap the hero's quote/phone CTAs. Pages without a hero fall back to a
+ * simple scroll-position heuristic.
+ */
 export default function CallNowButton() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const hero = document.getElementById('hero')
+
+    if (!hero) {
+      function onScroll() {
+        setVisible(window.scrollY > window.innerHeight * 0.6)
+      }
+      onScroll()
+      window.addEventListener('scroll', onScroll, { passive: true })
+      return () => window.removeEventListener('scroll', onScroll)
+    }
+
+    const observer = new IntersectionObserver(([entry]) => setVisible(!entry.isIntersecting))
+    observer.observe(hero)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <a
       href="tel:+16232241097"
-      className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center gap-2 bg-brand-teal px-4 py-3.5 text-center text-base font-semibold text-brand-black shadow-lg md:hidden"
+      aria-hidden={!visible}
+      tabIndex={visible ? 0 : -1}
+      className={`fixed inset-x-0 bottom-0 z-50 flex items-center justify-center gap-2 bg-brand-teal px-4 py-3.5 text-center text-base font-semibold text-brand-black shadow-lg transition-transform duration-300 motion-reduce:transition-none md:hidden ${
+        visible ? 'translate-y-0' : 'translate-y-full'
+      }`}
       style={{ paddingBottom: 'calc(0.875rem + env(safe-area-inset-bottom))' }}
     >
       <svg

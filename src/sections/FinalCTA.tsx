@@ -29,7 +29,7 @@ function PhoneIcon({ className }: { className?: string }) {
  */
 export default function FinalCTA() {
   return (
-    <section className="relative z-[60]" style={{ backgroundColor: SECTION_BG }}>
+    <section id="quote" className="relative z-[60] scroll-mt-20" style={{ backgroundColor: SECTION_BG }}>
       {/* Reviews → Final CTA (light → teal): teal torn shape over the off-white section above
           (revealColor), a self-contained boundary between two in-flow sections. */}
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />

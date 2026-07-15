@@ -59,11 +59,11 @@ export default function Header() {
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         {/* Logo → Home — fills most of the bar height without making it taller. */}
         <Link to="/" className="flex shrink-0 items-center" aria-label="Next Level Coatings — Home">
-          <img src="/logo.png" alt="Next Level Coatings" className="h-14 w-auto sm:h-16" />
+          <img src="/logo.png" alt="Next Level Coatings" className="h-[60px] w-auto sm:h-[68px]" />
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           <Link to="/" className={navLinkClass}>
             Home
           </Link>

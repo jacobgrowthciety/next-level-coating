@@ -6,6 +6,7 @@ import ServicesGrid from '../sections/ServicesGrid'
 import Reviews from '../sections/Reviews'
 import FinalCTA from '../sections/FinalCTA'
 import Seo from '../components/Seo'
+import CallNowButton from '../components/CallNowButton'
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <ServicesGrid />
       <Reviews />
       <FinalCTA />
+      <CallNowButton />
     </main>
   )
 }

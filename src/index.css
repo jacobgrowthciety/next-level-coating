@@ -17,6 +17,12 @@
   color-scheme: dark;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* Shared vertical rhythm for short-content sections (About Preview, Why Trust Us, etc.) — flex
    centers the content so space above/below stays equal regardless of exact content height,
    instead of fixed asymmetric padding. min-height is a starting point; adjust to taste.
