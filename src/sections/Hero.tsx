@@ -190,7 +190,7 @@ function QuoteCTACard({ className }: { className?: string }) {
       <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-brand-teal/15 text-brand-teal">
         <QuoteIcon className="h-4 w-4" />
       </span>
-      <span className="min-w-0 flex-1 truncate text-sm font-semibold text-white sm:text-base">
+      <span className="min-w-0 flex-1 truncate text-center text-sm font-semibold text-white sm:text-base">
         Get Your Free Quote
       </span>
       <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-brand-teal text-brand-black transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
@@ -210,7 +210,7 @@ function PhoneCTAButton({ className }: { className?: string }) {
       className={`flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-brand-teal px-4 text-sm font-medium text-brand-black transition-colors duration-300 hover:bg-white ${FOCUS_RING} ${className ?? ''}`}
     >
       <PhoneIcon className="h-3.5 w-3.5" />
-      Call (623) 224-1097
+      Call Now
     </a>
   )
 }
