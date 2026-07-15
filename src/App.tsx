@@ -5,6 +5,12 @@ import ScrollToTop from './components/ScrollToTop'
 import LocalBusinessSchema from './components/LocalBusinessSchema'
 import Home from './pages/Home'
 import GarageFlooring from './pages/GarageFlooring'
+import Commercial from './pages/Commercial'
+import Residential from './pages/Residential'
+import Patios from './pages/Patios'
+import PoolDecks from './pages/PoolDecks'
+import PolishedConcrete from './pages/PolishedConcrete'
+import ConcreteCoatings from './pages/ConcreteCoatings'
 import About from './pages/About'
 import FlakeColorChart from './pages/FlakeColorChart'
 import Contact from './pages/Contact'
@@ -14,14 +20,6 @@ import ComingSoon from './pages/ComingSoon'
  * placeholder's per-route <title>/description (Seo audit fix — these used to all share Home's
  * head tags) instead of a generic "Coming Soon" for every one of them. */
 const COMING_SOON_ROUTES = [
-  { path: '/commercial', label: 'Commercial Concrete Coatings' },
-  { path: '/residential', label: 'Residential Concrete Coatings' },
-  { path: '/patios', label: 'Patios, Sidewalks & Driveways' },
-  { path: '/pool-decks', label: 'Pool Deck Coatings' },
-  { path: '/paver-sealing', label: 'Paver Sealing' },
-  { path: '/grind-seal', label: 'Grind & Seal' },
-  { path: '/polished-concrete', label: 'Polished Concrete' },
-  { path: '/concrete-coatings', label: 'Concrete Coatings' },
   { path: '/solid-color-chart', label: 'Solid Color Chart' },
   { path: '/blog', label: 'Blog' },
   { path: '/privacy-policy', label: 'Privacy Policy' },
@@ -41,6 +39,12 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/garage-flooring" element={<GarageFlooring />} />
+        <Route path="/commercial" element={<Commercial />} />
+        <Route path="/residential" element={<Residential />} />
+        <Route path="/patios" element={<Patios />} />
+        <Route path="/pool-decks" element={<PoolDecks />} />
+        <Route path="/polished-concrete" element={<PolishedConcrete />} />
+        <Route path="/concrete-coatings" element={<ConcreteCoatings />} />
         <Route path="/about" element={<About />} />
         <Route path="/flake-color-chart" element={<FlakeColorChart />} />
         <Route path="/contact" element={<Contact />} />

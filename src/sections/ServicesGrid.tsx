@@ -20,10 +20,7 @@ const FLAGSHIP_SLUG = '/garage-flooring'
  * whether it's currently in the detail slot or the compact grid. Slugs use the rebuild's
  * clean internal routes (matching AboutPreview's `/about` convention), i.e. the recommended
  * §8 renames for the two Wix auto-duplicate slugs (polished-concrete, not copy-of-grind-seal).
- *
- * Descriptions are verbatim from §5B. Grind & Seal and Polished Concrete only have
- * placeholder copy there (real copy not yet sourced from the live site — see §11); flagged
- * below for whoever swaps in the real content later.
+ * Grind & Seal and Paver Sealing have been discontinued and removed from the lineup.
  */
 const SERVICES: { num: string; name: string; to: string; description: string }[] = [
   {
@@ -63,27 +60,13 @@ const SERVICES: { num: string; name: string; to: string; description: string }[]
   },
   {
     num: '06',
-    name: 'Paver Sealing',
-    to: '/paver-sealing',
+    name: 'Polished Concrete',
+    to: '/polished-concrete',
     description:
-      'Commercial-grade acrylic urethane sealer, backed by a 4-year warranty even under the Arizona sun.',
+      'Diamond-ground and honed to a smooth, high-shine finish — a sleek, low-maintenance look for any space.',
   },
   {
     num: '07',
-    name: 'Grind & Seal',
-    to: '/grind-seal',
-    // PLACEHOLDER — real copy not yet sourced from the live site (BRIEF.md §5B, §11).
-    description: 'A refined grind-and-seal finish for a clean, low-maintenance concrete surface.',
-  },
-  {
-    num: '08',
-    name: 'Polished Concrete',
-    to: '/polished-concrete',
-    // PLACEHOLDER — real copy not yet sourced from the live site (BRIEF.md §5B, §11).
-    description: 'A polished concrete finish bringing a smooth, high-shine surface to any space.',
-  },
-  {
-    num: '09',
     name: 'Concrete Coatings',
     to: '/concrete-coatings',
     description:

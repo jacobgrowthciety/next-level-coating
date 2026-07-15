@@ -72,7 +72,7 @@ function HeroContent({
           className="mt-6 max-w-lg text-lg text-white/80"
         >
           Specializing in garage floors, commercial, patios, sidewalks,
-          driveways, grind n' seal, pool decks, and pavers.
+          driveways, pool decks, and polished concrete.
         </motion.p>
         <motion.div variants={heroReveal} custom={0.46} className="mt-8 hidden md:block">
           <a

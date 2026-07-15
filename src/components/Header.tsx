@@ -9,9 +9,8 @@ const SERVICES = [
   { label: 'Residential', to: '/residential' },
   { label: 'Patios, Sidewalks & Driveways', to: '/patios' },
   { label: 'Pool Decks', to: '/pool-decks' },
-  { label: 'Paver Sealing', to: '/paver-sealing' },
-  { label: 'Grind & Seal', to: '/grind-seal' },
   { label: 'Polished Concrete', to: '/polished-concrete' },
+  { label: 'Concrete Coatings', to: '/concrete-coatings' },
 ]
 
 const PRIMARY_LINKS = [
