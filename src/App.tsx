@@ -13,6 +13,7 @@ import PolishedConcrete from './pages/PolishedConcrete'
 import ConcreteCoatings from './pages/ConcreteCoatings'
 import About from './pages/About'
 import FlakeColorChart from './pages/FlakeColorChart'
+import SolidColorChart from './pages/SolidColorChart'
 import Contact from './pages/Contact'
 import ComingSoon from './pages/ComingSoon'
 
@@ -20,7 +21,6 @@ import ComingSoon from './pages/ComingSoon'
  * placeholder's per-route <title>/description (Seo audit fix — these used to all share Home's
  * head tags) instead of a generic "Coming Soon" for every one of them. */
 const COMING_SOON_ROUTES = [
-  { path: '/solid-color-chart', label: 'Solid Color Chart' },
   { path: '/blog', label: 'Blog' },
   { path: '/privacy-policy', label: 'Privacy Policy' },
   { path: '/terms-conditions', label: 'Terms & Conditions' },
@@ -47,6 +47,7 @@ export default function App() {
         <Route path="/concrete-coatings" element={<ConcreteCoatings />} />
         <Route path="/about" element={<About />} />
         <Route path="/flake-color-chart" element={<FlakeColorChart />} />
+        <Route path="/solid-color-chart" element={<SolidColorChart />} />
         <Route path="/contact" element={<Contact />} />
         {COMING_SOON_ROUTES.map(({ path, label }) => (
           <Route key={path} path={path} element={<ComingSoon path={path} label={label} />} />
