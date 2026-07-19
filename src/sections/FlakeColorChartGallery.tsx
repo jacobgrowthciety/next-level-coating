@@ -10,26 +10,49 @@ import RoughDivider from '../components/RoughDivider'
 const SECTION_BG = '#141414'
 const PREV_SECTION_BG = '#000000' // FlakeColorChartIntro's section background
 
-const TOTAL_COLORS = 28
-// flake-11 and flake-21 were sourced as .png, the rest .jpg (public/images/flake-colors/).
-const PNG_INDEXES = new Set([11, 21])
+// Explicit file list (was previously generated from a flake-01..28 numeric range). The range
+// no longer holds: some swatches have been replaced by newly shot images with their own
+// descriptive filenames, and one was retired outright — so the files are listed directly.
+// Order here is the on-page grid order.
+//
+// Each image has the color name printed directly on it, so no separate on-screen text label is
+// rendered per swatch — alt text stays descriptive-but-generic since we don't have the
+// per-color names as structured data.
+const FLAKE_FILES = [
+  'domino-flake.png', // replaced flake-01.jpg
+  'flake-02.jpg',
+  'flake-04.jpg',
+  'flake-05.jpg',
+  'outback-flake.png', // replaced flake-06.jpg
+  'cabin-fever-flake.png', // replaced flake-07.jpg
+  'flake-08.jpg',
+  'nightfall-flake.png', // replaced flake-09.jpg
+  'flake-10.jpg',
+  'flake-11.png',
+  'flake-12.jpg',
+  'flake-13.jpg',
+  'flake-14.jpg',
+  'flake-15.jpg',
+  'flake-16.jpg',
+  'flake-17.jpg',
+  'flake-18.jpg',
+  'shoreline-flake.png', // replaced flake-19.jpg
+  'flake-20.jpg',
+  'flake-21.png',
+  'flake-22.jpg',
+  'flake-23.jpg',
+  'flake-24.jpg',
+  'flake-25.jpg',
+  'flake-26.jpg',
+  'flake-27.jpg',
+  'flake-28.jpg',
+]
 
-// Each image has the color name printed directly on it (task brief), so no separate on-screen
-// text label is rendered per swatch — alt text stays descriptive-but-generic since we don't
-// have the per-color names as structured data.
-const FLAKE_COLORS: { id: string; src: string; alt: string }[] = Array.from(
-  { length: TOTAL_COLORS },
-  (_, i) => {
-    const n = i + 1
-    const padded = String(n).padStart(2, '0')
-    const ext = PNG_INDEXES.has(n) ? 'png' : 'jpg'
-    return {
-      id: `flake-${padded}`,
-      src: `/images/flake-colors/flake-${padded}.${ext}`,
-      alt: `Next Level Coatings flake color chip sample ${n} of ${TOTAL_COLORS}`,
-    }
-  },
-)
+const FLAKE_COLORS: { id: string; src: string; alt: string }[] = FLAKE_FILES.map((file, i) => ({
+  id: file,
+  src: `/images/flake-colors/${file}`,
+  alt: `Next Level Coatings flake color chip sample ${i + 1} of ${FLAKE_FILES.length}`,
+}))
 
 function ArrowIcon({ className, direction }: { className?: string; direction: 'left' | 'right' }) {
   return (
