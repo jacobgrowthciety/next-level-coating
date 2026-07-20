@@ -1,4 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/team-3", "destination": "/about", "permanent": true },
+    { "source": "/copy-of-paver-sealing", "destination": "/solid-color-chart", "permanent": true },
+    { "source": "/copy-of-grind-seal", "destination": "/polished-concrete", "permanent": true },
+    { "source": "/grind-seal", "destination": "/", "permanent": true },
+    { "source": "/paver-sealing", "destination": "/", "permanent": true },
+    { "source": "/chip-color-chart", "destination": "/flake-color-chart", "permanent": true }
+  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

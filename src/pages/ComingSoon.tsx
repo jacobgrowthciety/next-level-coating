@@ -29,7 +29,7 @@ export default function ComingSoon({
         className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pb-20 pt-28 text-center"
         style={{ backgroundColor: '#000000' }}
       >
-        <p className="font-script text-4xl text-brand-teal sm:text-5xl">Coming Soon</p>
+        <h1 className="font-script text-4xl text-brand-teal sm:text-5xl">Coming Soon</h1>
         <p className="mt-4 max-w-md text-base leading-relaxed text-white/70 sm:text-lg">
           This page is under construction. Check back soon, or reach out and we'll help you
           right away.
