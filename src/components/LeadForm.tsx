@@ -28,12 +28,14 @@ const fieldClass =
   'w-full rounded-md border border-white/15 bg-black/40 px-3 py-2.5 text-sm text-white placeholder:text-white/40 outline-none transition focus:border-brand-teal focus:ring-1 focus:ring-brand-teal'
 
 const GOHIGHLEVEL_WEBHOOK_URL =
-  'https://services.leadconnectorhq.com/hooks/YWEIkN47BTWMMU9mVr8B/webhook-trigger/6964db57-b3f2-4969-a608-35dcc99347d6'
+  'https://services.leadconnectorhq.com/hooks/tKHtSQwC4t275M0g1LQf/webhook-trigger/e67f7f0c-1cf5-4477-99b6-7d0c1408f0b9'
 
 export default function LeadForm() {
   const [values, setValues] = useState(initialState)
   const [smsConsent, setSmsConsent] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState(false)
   const idPrefix = useId()
   const firstNameId = `${idPrefix}firstName`
   const lastNameId = `${idPrefix}lastName`
@@ -47,32 +49,37 @@ export default function LeadForm() {
     setValues((prev) => ({ ...prev, [field]: value }))
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // Always show the confirmation state — a failed background submission shouldn't block it.
-    setSubmitted(true)
+    setSubmitting(true)
+    setError(false)
 
-    fetch(GOHIGHLEVEL_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        phone: values.phone,
-        zipCode: values.zip,
-        projectDescription: values.project,
-        smsConsent,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          console.error('GoHighLevel webhook returned an error status:', response.status)
-        }
+    try {
+      const response = await fetch(GOHIGHLEVEL_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          phone: values.phone,
+          zipCode: values.zip,
+          projectDescription: values.project,
+          smsConsent,
+        }),
       })
-      .catch((error) => {
-        console.error('GoHighLevel webhook submission failed:', error)
-      })
+
+      if (!response.ok) {
+        throw new Error(`GoHighLevel webhook returned status ${response.status}`)
+      }
+
+      setSubmitted(true)
+    } catch (err) {
+      console.error('GoHighLevel webhook submission failed:', err)
+      setError(true)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (submitted) {
@@ -246,11 +253,23 @@ export default function LeadForm() {
         </span>
       </label>
 
+      {error && (
+        <p role="alert" className="mt-4 text-sm text-red-400">
+          Something went wrong sending your request. Please try again or call us at
+          {' '}
+          <a href="tel:+16232241097" className="underline hover:text-red-300">
+            (623) 224-1097
+          </a>
+          .
+        </p>
+      )}
+
       <button
         type="submit"
-        className="mt-4 w-full rounded-md bg-brand-teal px-4 py-3 text-sm font-semibold text-brand-black transition-colors hover:bg-brand-teal/80"
+        disabled={submitting}
+        className="mt-4 w-full rounded-md bg-brand-teal px-4 py-3 text-sm font-semibold text-brand-black transition-colors hover:bg-brand-teal/80 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Request My Free Quote
+        {submitting ? 'Sending…' : 'Request My Free Quote'}
       </button>
     </form>
   )
