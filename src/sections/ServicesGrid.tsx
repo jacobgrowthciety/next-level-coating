@@ -142,6 +142,71 @@ export default function ServicesGrid() {
     setSelected(to)
   }
 
+  const renderCard = (service: (typeof SERVICES)[number]) => {
+    const isDetail = service.to === selected
+    const isFlagship = service.to === FLAGSHIP_SLUG
+
+    return (
+      <motion.div
+        key={service.to}
+        layout
+        layoutId={`service-card-${service.to}`}
+        variants={fadeUp}
+        transition={{ layout: { type: 'spring', stiffness: 260, damping: 28 } }}
+        className={isDetail ? 'sm:col-span-2 lg:row-span-2' : ''}
+      >
+        <Link
+          to={service.to}
+          aria-current={isDetail ? 'true' : undefined}
+          onClick={isDetail ? undefined : (e) => selectService(e, service.to)}
+          className={`group relative flex h-full rounded-sm border-l-[3px] transition-colors duration-300 ${FOCUS_RING} ${
+            isDetail
+              ? 'flex-col justify-between border-brand-teal bg-white/[0.05] p-8 hover:bg-brand-teal/[0.08] lg:min-h-[20rem]'
+              : 'items-center gap-5 border-brand-teal/50 bg-white/[0.03] py-6 pl-6 pr-5 hover:-translate-y-1 hover:border-brand-teal hover:bg-brand-teal/[0.07]'
+          }`}
+        >
+          {isDetail ? (
+            <>
+              <div className="flex items-start justify-between">
+                <span className="font-display text-6xl tabular-nums text-brand-teal transition-colors duration-300 lg:text-7xl">
+                  {service.num}
+                </span>
+                {isFlagship && (
+                  <span className="mt-2 font-display text-[0.65rem] uppercase tracking-[0.3em] text-brand-teal/70">
+                    Flagship service
+                  </span>
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-display text-3xl uppercase leading-none tracking-tight text-white sm:text-4xl">
+                  {service.name}
+                </h3>
+                <p className="mt-3 max-w-md text-sm leading-relaxed text-white/60">
+                  {service.description}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/80 transition-colors duration-300 group-hover:text-brand-teal">
+                  Explore
+                  <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+              </div>
+            </>
+          ) : (
+            <>
+              <span className="font-display text-3xl tabular-nums text-brand-teal/60 transition-colors duration-300 group-hover:text-brand-teal">
+                {service.num}
+              </span>
+              <span className="min-w-0 flex-1 font-display text-lg uppercase leading-tight tracking-tight text-white transition-colors duration-300 group-hover:text-brand-teal">
+                {service.name}
+              </span>
+              <Arrow className="h-5 w-5 flex-none text-white/30 transition-all duration-300 group-hover:translate-x-1 group-hover:text-brand-teal" />
+            </>
+          )}
+        </Link>
+      </motion.div>
+    )
+  }
+
   return (
     <section className="relative z-40" style={{ backgroundColor: SECTION_BG }}>
       {/* About → Services (light → dark): near-black torn shape over the off-white About
@@ -186,72 +251,20 @@ export default function ServicesGrid() {
           {/* Desktop/tablet: the detail slot is always the first item in `ordered`, so it always
               lands in the grid's first (top-left) cell regardless of which service currently
               occupies it, with the rest auto-flowing around it in their fixed order. Mobile:
-              `ordered` is just `SERVICES` unchanged, so the selected card expands in place. */}
+              `ordered` is just `SERVICES` unchanged, so the selected card expands in place.
+
+              The 7 cards split into two independent grids rather than one 3-column grid: the
+              detail card (2x2) plus the next 2 compacts fill a 3-col/2-row block exactly (the
+              02/03 pair stacked beside the flagship), and the remaining 4 compacts sit in their
+              own 4-col grid below, so that row is always fully populated — a single 3-col grid
+              left a lone 7th card orphaned on its own row (04-07 doesn't divide evenly by 3, but
+              always divides evenly by 4). This holds for any selection, since it's driven by
+              fixed counts (1 detail + 2 + 4), not by which specific service occupies each slot. */}
           <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {ordered.map((service) => {
-              const isDetail = service.to === selected
-              const isFlagship = service.to === FLAGSHIP_SLUG
-
-              return (
-                <motion.div
-                  key={service.to}
-                  layout
-                  layoutId={`service-card-${service.to}`}
-                  variants={fadeUp}
-                  transition={{ layout: { type: 'spring', stiffness: 260, damping: 28 } }}
-                  className={isDetail ? 'sm:col-span-2 lg:row-span-2' : ''}
-                >
-                  <Link
-                    to={service.to}
-                    aria-current={isDetail ? 'true' : undefined}
-                    onClick={isDetail ? undefined : (e) => selectService(e, service.to)}
-                    className={`group relative flex h-full rounded-sm border-l-[3px] transition-colors duration-300 ${FOCUS_RING} ${
-                      isDetail
-                        ? 'flex-col justify-between border-brand-teal bg-white/[0.05] p-8 hover:bg-brand-teal/[0.08] lg:min-h-[20rem]'
-                        : 'items-center gap-5 border-brand-teal/50 bg-white/[0.03] py-6 pl-6 pr-5 hover:-translate-y-1 hover:border-brand-teal hover:bg-brand-teal/[0.07]'
-                    }`}
-                  >
-                    {isDetail ? (
-                      <>
-                        <div className="flex items-start justify-between">
-                          <span className="font-display text-6xl tabular-nums text-brand-teal transition-colors duration-300 lg:text-7xl">
-                            {service.num}
-                          </span>
-                          {isFlagship && (
-                            <span className="mt-2 font-display text-[0.65rem] uppercase tracking-[0.3em] text-brand-teal/70">
-                              Flagship service
-                            </span>
-                          )}
-                        </div>
-
-                        <div>
-                          <h3 className="font-display text-3xl uppercase leading-none tracking-tight text-white sm:text-4xl">
-                            {service.name}
-                          </h3>
-                          <p className="mt-3 max-w-md text-sm leading-relaxed text-white/60">
-                            {service.description}
-                          </p>
-                          <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/80 transition-colors duration-300 group-hover:text-brand-teal">
-                            Explore
-                            <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <span className="font-display text-3xl tabular-nums text-brand-teal/60 transition-colors duration-300 group-hover:text-brand-teal">
-                          {service.num}
-                        </span>
-                        <span className="min-w-0 flex-1 font-display text-lg uppercase leading-tight tracking-tight text-white transition-colors duration-300 group-hover:text-brand-teal">
-                          {service.name}
-                        </span>
-                        <Arrow className="h-5 w-5 flex-none text-white/30 transition-all duration-300 group-hover:translate-x-1 group-hover:text-brand-teal" />
-                      </>
-                    )}
-                  </Link>
-                </motion.div>
-              )
-            })}
+            {ordered.slice(0, 3).map((service) => renderCard(service))}
+          </div>
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {ordered.slice(3).map((service) => renderCard(service))}
           </div>
         </motion.div>
       </div>

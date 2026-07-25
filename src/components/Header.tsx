@@ -75,7 +75,7 @@ export default function Header() {
 
           {/* Services dropdown — controlled (not pure CSS :hover) so it can be force-closed on navigation. */}
           <div
-            className="relative"
+            className="relative flex items-center"
             onMouseEnter={() => setServicesOpen(true)}
             onMouseLeave={() => setServicesOpen(false)}
           >
