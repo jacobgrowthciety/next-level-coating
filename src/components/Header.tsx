@@ -45,8 +45,13 @@ export default function Header() {
     setMobileServicesOpen(false)
   }, [location.pathname])
 
+  // font-display (Microgramma D Extended) per the brand hierarchy — nav sits with the headings,
+  // not with body copy. font-medium resolves to the 500 (Medium Extended) cut; the 700 Bold cut
+  // is reserved for H1/H2. Microgramma is an *extended* face and runs much wider than the body
+  // font at the same size, so the size/tracking here is tuned down from text-sm to keep the
+  // seven top-level items on one line at the lg breakpoint.
   const navLinkClass =
-    'text-sm font-medium text-white/85 transition-colors hover:text-brand-teal'
+    'font-display text-xs font-medium uppercase tracking-tight text-white/85 transition-colors hover:text-brand-teal'
 
   return (
     <header className="fixed inset-x-0 top-0 z-40">

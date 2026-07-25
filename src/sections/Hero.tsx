@@ -112,7 +112,7 @@ function HeroHeadline({
   return (
     <motion.h1
       variants={headlineContainer}
-      className={`font-display uppercase leading-[0.95] tracking-tight text-white ${sizeClassName}`}
+      className={`font-display font-bold uppercase leading-[0.95] tracking-tight text-white ${sizeClassName}`}
     >
       {lineGroups.map((line, li) => (
         <span key={li} className="block">

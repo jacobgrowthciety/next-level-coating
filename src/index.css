@@ -1,14 +1,57 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Self-hosted brand fonts (files in public/fonts/, served from the site origin).
+   These are the REAL brand faces — they supersede the Anton / Permanent Marker
+   Google Fonts stand-ins that BRIEF.md §2 called for while the originals were
+   unavailable. Both Microgramma cuts share one font-family name so they act as
+   one family with two weights, selectable via font-weight.
+
+   No italic file exists for either family — deliberately no font-style: italic
+   declaration here, so the browser is never asked to synthesise an oblique. */
+@font-face {
+  font-family: "Microgramma D Extended";
+  src: url("/fonts/MicrogrammaD-ExtendedBold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Microgramma D Extended";
+  src: url("/fonts/MicrogrammaD-ExtendedMedium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Third Rail";
+  src: url("/fonts/ThirdRail-Demo.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Brand tokens — extracted from brand assets (see reference/BRIEF.md §2). Do not deviate. */
 @theme {
   --color-brand-teal: #41cad2;
   --color-brand-black: #000000;
   --color-brand-gray: #808080;
 
-  /* Brand fonts — closest free Google Fonts to the original two brand faces (§2). */
-  --font-display: "Anton", system-ui, sans-serif; /* bold condensed — "NEXT LEVEL" / major headers */
-  --font-script: "Permanent Marker", cursive; /* brush/marker — "COATINGS" / section headlines */
+  /* Brand fonts. --font-display / --font-script are the semantic tokens the ~129
+     existing call sites already use (font-display on headings/nav, font-script on
+     section headlines and accents), so repointing them here swaps the whole site
+     onto the real faces without touching every component. --font-microgramma and
+     --font-third-rail are literal-name aliases for the same two families, for
+     call sites that want to name the face rather than its role. */
+  /* Microgramma ships two cuts and NO 400, so weight is not optional on this face: an element
+     that sets no weight resolves to 400 and lands on the Medium cut. Convention in use —
+     `font-bold` (700) on H1/H2 display headings, and the default (500 Medium) on the smaller
+     eyebrow labels, stat numbers and nav items. Anton had a single weight, so pre-existing
+     call sites never needed a weight class; new display headings do. */
+  --font-display: "Microgramma D Extended", sans-serif; /* bold extended — "NEXT LEVEL" / major headers / nav */
+  --font-script: "Third Rail", sans-serif; /* brush/marker — "COATINGS" / section headlines / CTA accents */
+  --font-microgramma: "Microgramma D Extended", sans-serif;
+  --font-third-rail: "Third Rail", sans-serif;
   /* Site-wide body/paragraph font (§2) — replaces the plain system-ui stack everywhere. */
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }

@@ -26,7 +26,7 @@ export default function CommercialIntro() {
           </motion.p>
           <motion.h1
             variants={fadeUp}
-            className="mt-2 font-display text-4xl uppercase leading-[0.95] tracking-tight text-white sm:text-5xl"
+            className="mt-2 font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight text-white sm:text-5xl"
           >
             Commercial Coatings
           </motion.h1>
