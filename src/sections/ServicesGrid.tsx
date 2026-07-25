@@ -142,9 +142,22 @@ export default function ServicesGrid() {
     setSelected(to)
   }
 
-  const renderCard = (service: (typeof SERVICES)[number]) => {
+  const renderCard = (service: (typeof SERVICES)[number], index: number) => {
     const isDetail = service.to === selected
     const isFlagship = service.to === FLAGSHIP_SLUG
+
+    // Single 12-col grid (see the grid container comment below) so every card stays in the
+    // same `ordered.map()` regardless of selection — splitting cards across two separate grid
+    // containers/`.map()` calls made a card that moved between them remount (new parent, new
+    // list position), which reset its framer-motion `fadeUp` variant back to `hidden` and left
+    // it stuck at opacity: 0 forever, since the section's `whileInView` trigger only fires once.
+    // Position 0 (detail) takes 8/12 cols x 2 rows; positions 1-2 (the pair beside it) take
+    // 4/12 each; positions 3-6 take 3/12 each, filling one clean row of 4 with no remainder.
+    const spanClass = isDetail
+      ? 'sm:col-span-2 lg:col-span-8 lg:row-span-2'
+      : index <= 2
+        ? 'lg:col-span-4'
+        : 'lg:col-span-3'
 
     return (
       <motion.div
@@ -153,7 +166,7 @@ export default function ServicesGrid() {
         layoutId={`service-card-${service.to}`}
         variants={fadeUp}
         transition={{ layout: { type: 'spring', stiffness: 260, damping: 28 } }}
-        className={isDetail ? 'sm:col-span-2 lg:row-span-2' : ''}
+        className={spanClass}
       >
         <Link
           to={service.to}
@@ -253,18 +266,15 @@ export default function ServicesGrid() {
               occupies it, with the rest auto-flowing around it in their fixed order. Mobile:
               `ordered` is just `SERVICES` unchanged, so the selected card expands in place.
 
-              The 7 cards split into two independent grids rather than one 3-column grid: the
-              detail card (2x2) plus the next 2 compacts fill a 3-col/2-row block exactly (the
-              02/03 pair stacked beside the flagship), and the remaining 4 compacts sit in their
-              own 4-col grid below, so that row is always fully populated — a single 3-col grid
-              left a lone 7th card orphaned on its own row (04-07 doesn't divide evenly by 3, but
-              always divides evenly by 4). This holds for any selection, since it's driven by
-              fixed counts (1 detail + 2 + 4), not by which specific service occupies each slot. */}
-          <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {ordered.slice(0, 3).map((service) => renderCard(service))}
-          </div>
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {ordered.slice(3).map((service) => renderCard(service))}
+              One 12-col grid (not a 3-col one) so the detail card (8/12 cols x 2 rows) plus the
+              next 2 compacts (4/12 each) fill the top block exactly — the 02/03 pair stacked
+              beside the flagship — and the remaining 4 compacts (3/12 each) fill one full row of
+              4 with no remainder, avoiding the orphaned single card a 3-col grid left on its own
+              row (6 remaining compacts don't divide evenly by 3, but the last 4 divide evenly by
+              4). Must stay a single `ordered.map()` over one grid container — see renderCard's
+              comment for why splitting this into two separate grids breaks selection. */}
+          <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
+            {ordered.map((service, index) => renderCard(service, index))}
           </div>
         </motion.div>
       </div>
