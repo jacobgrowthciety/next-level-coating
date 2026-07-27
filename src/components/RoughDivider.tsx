@@ -43,11 +43,18 @@ export default function RoughDivider({
   className?: string
 }) {
   return (
-    <div
-      aria-hidden="true"
-      className={`relative ${className}`}
-      style={revealColor ? { backgroundColor: revealColor } : undefined}
-    >
+    <div aria-hidden="true" className={`relative ${className}`}>
+      {/* The reveal backing, as a layer rather than the wrapper's background so it can run 1px
+          ABOVE the divider. The divider sits flush with the section's top edge, and that edge is
+          usually on a fractional pixel — without the overhang the section's own (opposite-toned)
+          background antialiases through on that row as a hairline. The 1px lands on the previous
+          section, which is this exact colour, so nothing changes visually. */}
+      {revealColor && (
+        <div
+          className="absolute inset-x-0 -top-px bottom-0"
+          style={{ backgroundColor: revealColor }}
+        />
+      )}
       {/* Teal outline (behind, nudged up) — only the sliver above the fill's edge shows. */}
       <div
         className="absolute inset-0"
@@ -59,6 +66,11 @@ export default function RoughDivider({
       />
       {/* Section-colored shape (top layer) — its solid lower portion joins the body below. */}
       <div className="absolute inset-0" style={{ ...maskStyle, backgroundColor: fillColor }} />
+      {/* Seam guard. The fray is all at the TOP of the shape — the bottom is solid fill — so an
+          opaque strip down here is invisible, but running it 1px past the divider box covers the
+          sub-pixel seam where the divider meets the section body (see index.css). Painted last so
+          it also hides the antialiased bottom edge of the revealColor backing. */}
+      <div className="absolute inset-x-0 -bottom-px h-2" style={{ backgroundColor: fillColor }} />
     </div>
   )
 }

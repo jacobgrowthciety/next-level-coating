@@ -78,6 +78,49 @@
   min-height: 240px;
 }
 
+/* ---------------------------------------------------------------------------
+   Sub-pixel seam guard.
+
+   Section heights are routinely fractional — `svh` units in the hero, computed
+   line-heights everywhere else — so a section's bottom edge lands part-way
+   through a device pixel. On that one row the browser antialiases the section's
+   own paint, then blends the next section's paint over it; neither reaches full
+   coverage, so ~25% of whatever sits *behind* both survives. Behind everything
+   is body's black, which is why faint black hairlines appeared across section
+   boundaries at some viewport widths — and always inside a scaled iframe, where
+   nothing lands on the pixel grid.
+
+   The guard paints a 1px strip of the element's OWN background just below its
+   bottom edge, so the seam row is already fully covered before the next section
+   blends over it. The strip sits entirely outside the box, so it can never
+   cover content, and sections' ascending z-index means the next section always
+   paints on top of it.
+
+   Skipped on a page's last section: there the strip would land on the footer
+   instead, and that boundary needs no guard anyway — the colour leaking through
+   is body's black, which is already the footer's colour. */
+main > section::after,
+.seam-guard::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background-color: inherit;
+  pointer-events: none;
+}
+
+main > section:last-of-type::after {
+  content: none;
+}
+
+/* Opt-in form of the same guard, for a block that ends a section whose own
+   <section> must stay transparent (Why Trust Us reveals the hero through it). */
+.seam-guard {
+  position: relative;
+}
+
 html,
 body,
 #root {

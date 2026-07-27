@@ -43,8 +43,11 @@ export default function WhyTrustUs() {
           divider; the inline minHeight (below section-compact's shared 240px floor) lets this
           desktop-heavy section sit slightly shorter without touching that shared utility, which
           other short-content sections (About Preview, etc.) still rely on at 240px. */}
+      {/* seam-guard rather than a background on the <section>: this section must stay transparent
+          so the divider's torn gaps keep revealing the stickied hero, which leaves this body div
+          as the only thing painting the section's bottom edge. */}
       <div
-        className="section-compact px-6 py-4"
+        className="section-compact seam-guard px-6 py-4"
         style={{ backgroundColor: SECTION_BG, minHeight: '200px' }}
       >
         <motion.div
