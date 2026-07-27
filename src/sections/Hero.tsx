@@ -9,7 +9,23 @@ import {
 } from '../animations/variants'
 
 const HERO_VIDEO = '/hero-video-hq.mp4' // served from public/; correct logo throughout
-const HERO_POSTER = '/hero-poster.jpg' // video's last frame — poster + reduced-motion still
+const HERO_POSTER = '/hero-poster.jpg' // video's last frame — reduced-motion still, OG and schema image
+
+/**
+ * What `<video poster>` shows while the clip decodes — frame 0 of HERO_VIDEO, not
+ * HERO_POSTER.
+ *
+ * The two are different pictures and the poster is only ever on screen for the ~150ms
+ * before the first video frame paints, so pointing it at the *last* frame showed every
+ * visitor the end of the clip and then cut back to its beginning. Ordering it correctly
+ * costs nothing: the poster now matches the frame that replaces it, so the swap is
+ * invisible. The last frame stays where it earns its keep — the reduced-motion still,
+ * where it is the resting state the video would have ended on, and the share card.
+ *
+ * Re-extract with `currentTime = 0` on the video if the clip is ever recut, or this goes
+ * back to being a mismatch.
+ */
+const HERO_VIDEO_FIRST_FRAME = '/hero-video-first-frame.jpg'
 
 // Split for the word-by-word headline reveal. Desktop lets this wrap naturally within its
 // column (produces "ARIZONA'S TOP CONCRETE" / "COATINGS SPECIALISTS" at the current width).
@@ -322,7 +338,7 @@ function HeroMedia({
       ref={videoRef}
       className={className}
       src={HERO_VIDEO}
-      poster={HERO_POSTER}
+      poster={HERO_VIDEO_FIRST_FRAME}
       autoPlay
       muted
       playsInline
