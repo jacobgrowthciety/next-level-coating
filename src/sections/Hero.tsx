@@ -8,7 +8,7 @@ import {
   headlineWord,
 } from '../animations/variants'
 
-const HERO_VIDEO = '/hero_video_trimmed_sharp.mp4' // served from public/; correct logo throughout
+const HERO_VIDEO = '/hero-video-hq.mp4' // served from public/; correct logo throughout
 const HERO_POSTER = '/hero-poster.jpg' // video's last frame — poster + reduced-motion still
 
 // Split for the word-by-word headline reveal. Desktop lets this wrap naturally within its
@@ -33,27 +33,28 @@ const FOCUS_RING =
 const MOBILE_COMPACT_HEIGHT = 'h-[52svh]'
 
 /**
- * Why both layouts pin the media's top edge, and why each does it differently.
+ * Why both layouts start their media below the header rather than zooming to clear it.
  *
- * In the video's final frame Chase's head starts ~10.4% down the source frame, so the headroom
- * above it on screen is ~10.4% of however tall the video *renders* — not a fixed pixel value.
- * A viewport-sized media box therefore rendered small enough on ordinary windows that 10.4% came
- * out under the 80px fixed header, which is what put the header over his head. Cropping from the
- * top makes it worse, not better: it moves his head *up*. Hence `0%` object-positions throughout.
+ * The clip is one continuous push-in, so Chase's head climbs the frame the whole way through and
+ * ends ~4.4% down the source frame. The headroom above it on screen is therefore ~4.4% of however
+ * tall the video *renders* — not a fixed pixel value — which on any ordinary window lands well
+ * under the 80px fixed header. Cropping from the top makes it worse, not better: it moves his head
+ * *up*. Hence `0%` object-positions throughout.
  *
- * Desktop is full-bleed behind the copy, so it buys the clearance with a minimum render height
- * (plain `max()`, so tall viewports still just fill): 0.104 × 960 × 1.10 ≈ 110px, always.
+ * Buying the clearance by rendering bigger doesn't work at 4.4%: the media would have to render
+ * ~2270px tall for the head to clear, i.e. ~4000px wide against a ~1500px viewport, cropping away
+ * roughly two thirds of the frame's width and leaving a chest-up close-up in place of the wide
+ * shot. So both layouts instead start the media *below* the header, which makes the clearance
+ * structural and costs no crop at all — the video renders at its box's own size and keeps its full
+ * height. Desktop's top strip is the section's own black backing, which reads as the nav bar's
+ * (already heavily scrimmed) background; mobile's is the band's. Either way the media's top edge
+ * and the header bar's bottom edge land on the same 80px, so the two line up.
  *
- * Mobile can't use that trick — the video sits in its own band rather than behind anything, and
- * a render height big enough to clear the header means cropping away most of the frame's width,
- * which threw away the wide, desktop-like shot the band is there to show. Instead the band's
- * media simply starts *below* the header (MOBILE_MEDIA_TOP_INSET), so the clearance is structural
- * and needs no zoom at all: the video renders at the band's own size and keeps its full height,
- * with the strip above it reading as the solid backing of the nav bar (whose bar ends at exactly
- * the same 80px, so the two edges line up).
+ * DESKTOP_MEDIA_MIN_HEIGHT stays on as a floor because the horizontal origin/object-position
+ * values below are tuned against that box height, not because clearance still depends on it.
  */
 const DESKTOP_MEDIA_MIN_HEIGHT = 'h-[max(100%,60rem)]'
-const MOBILE_MEDIA_TOP_INSET = 'top-20' // = h-20, the header bar's own height
+const MEDIA_TOP_INSET = 'top-20' // = h-20, the header bar's own height
 
 function PhoneIcon({ className }: { className?: string }) {
   return (
@@ -248,7 +249,7 @@ function DesktopHeroContent({
       className="max-w-[620px]"
     >
       <HeroKicker delay={0} />
-      <HeroHeadline sizeClassName="mt-5 text-6xl" />
+      <HeroHeadline sizeClassName="mt-5 text-[3.375rem]" />
       <HeroParagraph delay={0.32} />
       <motion.div
         variants={heroFormReveal}
@@ -360,7 +361,8 @@ function DesktopHero({ reducedMotion }: { reducedMotion: boolean }) {
 
   return (
     <section id="hero" className="sticky top-0 z-0 flex min-h-[100svh] items-center overflow-hidden">
-      <div className="absolute inset-0 -z-10">
+      {/* The black backing is what shows through in the header strip above the media. */}
+      <div className="absolute inset-0 -z-10 bg-brand-black">
         {/* Scale + matching transform-origin (not just object-position) so there's always crop
             headroom to bias Chase rightward — object-position alone does nothing once a
             viewport's aspect ratio happens to match the video's 16:9 exactly (e.g. 1920x1080),
@@ -372,11 +374,12 @@ function DesktopHero({ reducedMotion }: { reducedMotion: boolean }) {
             over.) The three values are retuned for the taller media box below, which crops more
             horizontally than a viewport-height box did; they now land his head at a steady
             ~46% of the viewport width from ~1024px all the way up to ultrawide.
-            Vertically this is pinned to the top and floored at DESKTOP_MEDIA_MIN_HEIGHT (see the
-            note there) so his head always lands below the header; the extra height overflows past
-            the bottom of the section, which `overflow-hidden` clips. */}
+            Vertically this starts below the header (MEDIA_TOP_INSET) so his head always clears it
+            — see the note there — and is floored at DESKTOP_MEDIA_MIN_HEIGHT; between the inset,
+            the floor and the scale, the media covers the section at every viewport height, and
+            the extra overflows past the bottom, which `overflow-hidden` clips. */}
         <div
-          className={`absolute inset-x-0 top-0 origin-[55%_0%] scale-110 xl:origin-[60%_0%] 2xl:origin-[72%_0%] ${DESKTOP_MEDIA_MIN_HEIGHT}`}
+          className={`absolute inset-x-0 origin-[55%_0%] scale-110 xl:origin-[60%_0%] 2xl:origin-[72%_0%] ${MEDIA_TOP_INSET} ${DESKTOP_MEDIA_MIN_HEIGHT}`}
         >
           <HeroMedia
             reducedMotion={reducedMotion}
@@ -426,7 +429,7 @@ function MobileHero({ reducedMotion }: { reducedMotion: boolean }) {
             wide desktop-like shot rather than a tight crop of his head.
             49% horizontally centres him on screen in the final frame, and holds within ~5px of
             centre from small phones up to 1023px because the band's aspect barely moves. */}
-        <div className={`absolute inset-x-0 bottom-0 ${MOBILE_MEDIA_TOP_INSET}`}>
+        <div className={`absolute inset-x-0 bottom-0 ${MEDIA_TOP_INSET}`}>
           <HeroMedia
             reducedMotion={reducedMotion}
             videoRef={videoRef}
