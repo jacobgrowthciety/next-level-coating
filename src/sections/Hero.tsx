@@ -22,38 +22,38 @@ const MOBILE_HEADLINE_LINES = [["Arizona's", 'Top'], ['Concrete', 'Coatings'], [
 const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-black'
 
-// Compact mobile video zone height, and the zoom that frames Chase's head/shoulders there (the
-// zone is portrait + the source landscape, so object-position alone can't crop vertically — a
-// top-anchored scale does the actual reframing). Tuned by screenshot. Applied from the start
-// (no longer animated in from a full-bleed intro) so the header/headline/subhead/CTAs below are
-// visible immediately instead of waiting for the video to finish playing.
+// Compact mobile video zone height. Applied from the start (no longer animated in from a
+// full-bleed intro) so the header/headline/subhead/CTAs below are visible immediately instead of
+// waiting for the video to finish playing.
 // `svh` (not `dvh`) deliberately, matching DesktopHero below — `dvh` tracks the *current*
 // mobile browser toolbar state, so it jumps (and reflows everything below it) the moment
 // Safari's address bar collapses on first scroll, which is what caused the "zoom"/flicker and
 // stray seams at lower section boundaries. `svh` assumes the toolbar is always shown, so the
 // layout never has to reflow when it actually collapses.
 const MOBILE_COMPACT_HEIGHT = 'h-[52svh]'
-const MOBILE_COMPACT_SCALE = 1.15
-// Nudge the zoomed frame down in the compact state so Chase's head clears the fixed header
-// (the sliver this opens at the very top is hidden under the header's dark scrim). Tuned by screenshot.
-const MOBILE_COMPACT_SHIFT = 22
 
 /**
- * Framing floor shared by both layouts, and the reason it exists.
+ * Why both layouts pin the media's top edge, and why each does it differently.
  *
- * In the video's final frame Chase's head starts ~10.4% down the source frame, so the amount of
- * headroom above it on screen is ~10.4% of however tall the video *renders* — not a fixed pixel
- * value. Sizing the media box to the viewport therefore let short/typical windows render it small
- * enough that 10.4% came out under the fixed 80px header, which is what put the header over his
- * head. Pinning a minimum render height (with a plain `max()`, so tall viewports still just fill)
- * makes that headroom a guaranteed pixel amount instead of a viewport-dependent one:
- *   desktop ≥ 60rem → 0.104 × 960 × 1.10 ≈ 110px of clearance (header is 80px)
- *   mobile  ≥ 39rem → (0.104 × 624 + 22) × 1.15 ≈ 100px
- * Both are top-anchored (`0%` origin + `0%` object-position) so nothing ever crops off the top —
- * a top crop moves his head *up*, straight back under the header.
+ * In the video's final frame Chase's head starts ~10.4% down the source frame, so the headroom
+ * above it on screen is ~10.4% of however tall the video *renders* — not a fixed pixel value.
+ * A viewport-sized media box therefore rendered small enough on ordinary windows that 10.4% came
+ * out under the 80px fixed header, which is what put the header over his head. Cropping from the
+ * top makes it worse, not better: it moves his head *up*. Hence `0%` object-positions throughout.
+ *
+ * Desktop is full-bleed behind the copy, so it buys the clearance with a minimum render height
+ * (plain `max()`, so tall viewports still just fill): 0.104 × 960 × 1.10 ≈ 110px, always.
+ *
+ * Mobile can't use that trick — the video sits in its own band rather than behind anything, and
+ * a render height big enough to clear the header means cropping away most of the frame's width,
+ * which threw away the wide, desktop-like shot the band is there to show. Instead the band's
+ * media simply starts *below* the header (MOBILE_MEDIA_TOP_INSET), so the clearance is structural
+ * and needs no zoom at all: the video renders at the band's own size and keeps its full height,
+ * with the strip above it reading as the solid backing of the nav bar (whose bar ends at exactly
+ * the same 80px, so the two edges line up).
  */
 const DESKTOP_MEDIA_MIN_HEIGHT = 'h-[max(100%,60rem)]'
-const MOBILE_MEDIA_MIN_HEIGHT = 'h-[max(100%,39rem)]'
+const MOBILE_MEDIA_TOP_INSET = 'top-20' // = h-20, the header bar's own height
 
 function PhoneIcon({ className }: { className?: string }) {
   return (
@@ -417,18 +417,16 @@ function MobileHero({ reducedMotion }: { reducedMotion: boolean }) {
 
   return (
     <section id="hero" className="relative z-0 flex min-h-[100svh] flex-col overflow-hidden">
-      {/* Compact video zone, sized and cropped from the start (no shrink animation to wait on). */}
-      <div className={`relative w-full shrink-0 overflow-hidden ${MOBILE_COMPACT_HEIGHT}`}>
-        {/* Top-anchored zoom frames Chase's head/shoulders in the compact zone, floored at
-            MOBILE_MEDIA_MIN_HEIGHT (see the note there) so his head clears the header at every
-            phone/tablet size rather than only the ones where 52svh happened to be tall enough.
-            49% horizontally centres him on screen in the final frame: the box's own width is the
-            viewport's but it renders 16:9 off that pinned height, so the crop is ~1111px wide and
-            the 49% lands his head within a few px of centre from small phones up to 1023px. */}
-        <div
-          className={`absolute inset-x-0 top-0 origin-top ${MOBILE_MEDIA_MIN_HEIGHT}`}
-          style={{ transform: `scale(${MOBILE_COMPACT_SCALE}) translateY(${MOBILE_COMPACT_SHIFT}px)` }}
-        >
+      {/* Compact video zone, sized and cropped from the start (no shrink animation to wait on).
+          Its own black backing is what shows through in the header strip above the media. */}
+      <div className={`relative w-full shrink-0 overflow-hidden bg-brand-black ${MOBILE_COMPACT_HEIGHT}`}>
+        {/* Media starts below the header (see MOBILE_MEDIA_TOP_INSET) rather than being zoomed
+            and nudged down to dodge it — no zoom means the band shows the frame at its own size:
+            the full source height, and as much width as a portrait band can fit, which is the
+            wide desktop-like shot rather than a tight crop of his head.
+            49% horizontally centres him on screen in the final frame, and holds within ~5px of
+            centre from small phones up to 1023px because the band's aspect barely moves. */}
+        <div className={`absolute inset-x-0 bottom-0 ${MOBILE_MEDIA_TOP_INSET}`}>
           <HeroMedia
             reducedMotion={reducedMotion}
             videoRef={videoRef}
