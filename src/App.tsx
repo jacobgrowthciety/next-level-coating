@@ -17,15 +17,9 @@ import SolidColorChart from './pages/SolidColorChart'
 import Contact from './pages/Contact'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsConditions from './pages/TermsConditions'
 import ComingSoon from './pages/ComingSoon'
-
-/** Sitemap routes without a real page yet (reference/BRIEF.md §6B, §8). `label` drives each
- * placeholder's per-route <title>/description (Seo audit fix — these used to all share Home's
- * head tags) instead of a generic "Coming Soon" for every one of them. */
-const COMING_SOON_ROUTES = [
-  { path: '/privacy-policy', label: 'Privacy Policy' },
-  { path: '/terms-conditions', label: 'Terms & Conditions' },
-]
 
 export default function App() {
   return (
@@ -52,9 +46,8 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
-        {COMING_SOON_ROUTES.map(({ path, label }) => (
-          <Route key={path} path={path} element={<ComingSoon path={path} label={label} />} />
-        ))}
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-conditions" element={<TermsConditions />} />
         {/* Any other unlisted route falls back to Coming Soon instead of a 404 (§6B) */}
         <Route path="*" element={<ComingSoon path="/" label="Page" noindex />} />
       </Routes>
