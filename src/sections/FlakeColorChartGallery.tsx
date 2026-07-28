@@ -10,49 +10,56 @@ import RoughDivider from '../components/RoughDivider'
 const SECTION_BG = '#141414'
 const PREV_SECTION_BG = '#000000' // FlakeColorChartIntro's section background
 
-// Explicit file list (was previously generated from a flake-01..28 numeric range). The range
+// Explicit slug list (was previously generated from a flake-01..28 numeric range). The range
 // no longer holds: some swatches have been replaced by newly shot images with their own
 // descriptive filenames, and one was retired outright — so the files are listed directly.
 // Order here is the on-page grid order.
 //
+// The source photos (up to 4480px, ~3.9MB each) were far larger than anything either view
+// renders, so each slug ships as two WebP derivatives (quality 80): `-600` for the grid card
+// and `-1600` for the lightbox. Extensions are omitted here since every entry is now `.webp`.
+//
 // Each image has the color name printed directly on it, so no separate on-screen text label is
 // rendered per swatch — alt text stays descriptive-but-generic since we don't have the
 // per-color names as structured data.
-const FLAKE_FILES = [
-  'domino-flake.png', // replaced flake-01.jpg
-  'flake-02.jpg',
-  'flake-04.jpg',
-  'flake-05.jpg',
-  'outback-flake.png', // replaced flake-06.jpg
-  'cabin-fever-flake.png', // replaced flake-07.jpg
-  'flake-08.jpg',
-  'nightfall-flake.png', // replaced flake-09.jpg
-  'flake-10.jpg',
-  'flake-11.png',
-  'flake-12.jpg',
-  'flake-13.jpg',
-  'flake-14.jpg',
-  'flake-15.jpg',
-  'flake-16.jpg',
-  'flake-17.jpg',
-  'flake-18.jpg',
-  'shoreline-flake.png', // replaced flake-19.jpg
-  'flake-20.jpg',
-  'flake-21.png',
-  'flake-22.jpg',
-  'flake-23.jpg',
-  'flake-24.jpg',
-  'flake-25.jpg',
-  'flake-26.jpg',
-  'flake-27.jpg',
-  'flake-28.jpg',
+const FLAKE_SLUGS = [
+  'domino-flake', // replaced flake-01
+  'flake-02',
+  'flake-04',
+  'flake-05',
+  'outback-flake', // replaced flake-06
+  'cabin-fever-flake', // replaced flake-07
+  'flake-08',
+  'nightfall-flake', // replaced flake-09
+  'flake-10',
+  'flake-11',
+  'flake-12',
+  'flake-13',
+  'flake-14',
+  'flake-15',
+  'flake-16',
+  'flake-17',
+  'flake-18',
+  'shoreline-flake', // replaced flake-19
+  'flake-20',
+  'flake-21',
+  'flake-22',
+  'flake-23',
+  'flake-24',
+  'flake-25',
+  'flake-26',
+  'flake-27',
+  'flake-28',
 ]
 
-const FLAKE_COLORS: { id: string; src: string; alt: string }[] = FLAKE_FILES.map((file, i) => ({
-  id: file,
-  src: `/images/flake-colors/${file}`,
-  alt: `Next Level Coatings flake color chip sample ${i + 1} of ${FLAKE_FILES.length}`,
-}))
+const FLAKE_COLORS: { id: string; thumb: string; full: string; alt: string }[] = FLAKE_SLUGS.map(
+  (slug, i) => ({
+    id: slug,
+    thumb: `/images/flake-colors/${slug}-600.webp`,
+    full: `/images/flake-colors/${slug}-1600.webp`,
+    alt: `Next Level Coatings flake color chip sample ${i + 1} of ${FLAKE_SLUGS.length}`,
+  }),
+)
 
 function ArrowIcon({ className, direction }: { className?: string; direction: 'left' | 'right' }) {
   return (
@@ -108,7 +115,7 @@ export default function FlakeColorChartGallery() {
                 className="group relative aspect-square overflow-hidden rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-[#141414]"
               >
                 <img
-                  src={color.src}
+                  src={color.thumb}
                   alt={color.alt}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -167,7 +174,7 @@ export default function FlakeColorChartGallery() {
                 className="flex w-full max-w-xl flex-col items-center"
               >
                 <img
-                  src={FLAKE_COLORS[openIndex].src}
+                  src={FLAKE_COLORS[openIndex].full}
                   alt={FLAKE_COLORS[openIndex].alt}
                   className="max-h-[75vh] w-full rounded-sm object-contain"
                 />
