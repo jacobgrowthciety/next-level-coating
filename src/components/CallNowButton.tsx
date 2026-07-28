@@ -36,10 +36,20 @@ export default function CallNowButton() {
       href="tel:+16232241097"
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
-      className={`fixed inset-x-0 bottom-0 z-50 flex items-center justify-center gap-2 bg-brand-teal px-4 py-3.5 text-center text-base font-semibold text-brand-black shadow-lg transition-transform duration-300 motion-reduce:transition-none md:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-50 box-border flex items-center justify-center gap-2 bg-brand-teal px-4 text-center text-base font-semibold text-brand-black shadow-lg transition-transform duration-300 motion-reduce:transition-none md:hidden ${
         visible ? 'translate-y-0' : 'translate-y-full'
       }`}
-      style={{ paddingBottom: 'calc(0.875rem + env(safe-area-inset-bottom))' }}
+      /* The tappable row is a fixed 3.5rem — never derived from viewport units, so browser
+         chrome collapsing on scroll can't restretch it. The safe-area inset is added *outside*
+         that row (height includes it, padding-bottom reserves it) rather than on top of a
+         content-driven height, which is what used to make the bar jump: iOS Safari reports
+         safe-area-inset-bottom as 0 while the bottom toolbar is expanded and ~34px once it
+         collapses. Now that inset only ever backfills teal behind the home indicator; the
+         row holding the icon and number stays exactly 3.5rem in both states. */
+      style={{
+        height: 'calc(3.5rem + env(safe-area-inset-bottom))',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+      }}
     >
       <svg
         aria-hidden="true"
