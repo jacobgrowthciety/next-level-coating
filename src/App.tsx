@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
+import useAnalytics from './hooks/useAnalytics'
 import LocalBusinessSchema from './components/LocalBusinessSchema'
 import Home from './pages/Home'
 import GarageFlooring from './pages/GarageFlooring'
@@ -22,6 +23,10 @@ import TermsConditions from './pages/TermsConditions'
 import ComingSoon from './pages/ComingSoon'
 
 export default function App() {
+  // Called here rather than in a component beside <Routes> so its effect runs *after* the
+  // active page's <Seo> effect has set document.title (child effects flush before parent).
+  useAnalytics()
+
   return (
     <>
       {/* Scrolls to top on every route change (reference/BRIEF.md §6A) */}
