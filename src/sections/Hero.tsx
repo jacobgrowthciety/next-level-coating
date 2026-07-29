@@ -8,7 +8,7 @@ import {
   headlineWord,
 } from '../animations/variants'
 
-const HERO_VIDEO = '/hero-video-hq.mp4' // served from public/; correct logo throughout
+const HERO_VIDEO = '/hero-video-web.mp4' // served from public/; correct logo throughout
 const HERO_POSTER = '/hero-poster.jpg' // video's last frame — reduced-motion still, OG and schema image
 
 /**
