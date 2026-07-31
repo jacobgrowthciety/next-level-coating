@@ -1,6 +1,7 @@
 import { useId, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { trackClickToCall, trackGenerateLead } from '../lib/analytics'
 
 /** Lead capture form — fields per reference/BRIEF.md §6. Reused across pages.
  * The SMS consent checkbox is intentionally optional (not `required`) — leads should still be
@@ -73,6 +74,9 @@ export default function LeadForm() {
         throw new Error(`GoHighLevel webhook returned status ${response.status}`)
       }
 
+      // Fired here rather than in the `finally` block or before the fetch, so a rejected/failed
+      // webhook never counts as a conversion — this line is only reachable on a 2xx response.
+      trackGenerateLead()
       setSubmitted(true)
     } catch (err) {
       console.error('GoHighLevel webhook submission failed:', err)
@@ -257,7 +261,7 @@ export default function LeadForm() {
         <p role="alert" className="mt-4 text-sm text-red-400">
           Something went wrong sending your request. Please try again or call us at
           {' '}
-          <a href="tel:+16232241097" className="underline hover:text-red-300">
+          <a href="tel:+16232241097" onClick={trackClickToCall} className="underline hover:text-red-300">
             (623) 224-1097
           </a>
           .

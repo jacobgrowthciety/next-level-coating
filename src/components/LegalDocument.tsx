@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from './RoughDivider'
+import { trackClickToCall, trackClickToEmail } from '../lib/analytics'
 
 // Compact dark page header + light document body — the About page pattern
 // (reference/BRIEF.md §9A) with the alternating dark → light rhythm (§2A), minus the
@@ -119,13 +120,14 @@ export default function LegalDocument({
                 <p className="font-semibold text-brand-black">Next Level Coatings</p>
                 <p>{BUSINESS.address}</p>
                 <p>
-                  <a href={BUSINESS.phoneHref} className="transition-colors hover:text-brand-teal">
+                  <a href={BUSINESS.phoneHref} onClick={trackClickToCall} className="transition-colors hover:text-brand-teal">
                     {BUSINESS.phone}
                   </a>
                 </p>
                 <p>
                   <a
                     href={`mailto:${BUSINESS.email}`}
+                    onClick={trackClickToEmail}
                     className="break-all transition-colors hover:text-brand-teal"
                   >
                     {BUSINESS.email}

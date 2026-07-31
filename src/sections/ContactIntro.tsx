@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
+import { trackClickToCall, trackClickToEmail } from '../lib/analytics'
 
 // Compact page header (reference/BRIEF.md §9A pattern) — same treatment as Garage Flooring's
 // and Flake Color Chart's intro.
@@ -54,6 +55,7 @@ export default function ContactIntro() {
           <motion.div variants={fadeUp} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
             <a
               href={PHONE_HREF}
+              onClick={trackClickToCall}
               className="inline-flex items-center gap-2 text-base text-white/85 transition-colors hover:text-brand-teal sm:text-lg"
             >
               <PhoneIcon className="h-4 w-4 flex-none text-brand-teal" />
@@ -61,6 +63,7 @@ export default function ContactIntro() {
             </a>
             <a
               href={`mailto:${EMAIL}`}
+              onClick={trackClickToEmail}
               className="inline-flex items-center gap-2 break-all text-base text-white/85 transition-colors hover:text-brand-teal sm:text-lg"
             >
               <MailIcon className="h-4 w-4 flex-none text-brand-teal" />

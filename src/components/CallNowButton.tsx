@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { trackClickToCall } from '../lib/analytics'
 
 /**
  * Persistent mobile "Call Now" bar — always visible on touch/small screens (BRIEF.md §5, §6),
@@ -34,6 +35,7 @@ export default function CallNowButton() {
   return (
     <a
       href="tel:+16232241097"
+      onClick={trackClickToCall}
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       className={`fixed inset-x-0 bottom-0 z-50 box-border flex items-center justify-center gap-2 bg-brand-teal px-4 text-center text-base font-semibold text-brand-black shadow-lg transition-transform duration-300 motion-reduce:transition-none md:hidden ${

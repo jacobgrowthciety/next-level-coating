@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
 import LeadForm from '../components/LeadForm'
+import { trackClickToCall } from '../lib/analytics'
 
 const SECTION_BG = '#41CAD2'
 const PREV_SECTION_BG = '#f4f3ef' // CommercialDetails' light body
@@ -46,12 +47,13 @@ export default function CommercialCTA() {
             <motion.div variants={fadeUp} className="mt-8 flex flex-col items-center gap-5 sm:flex-row sm:justify-center lg:justify-start">
               <a
                 href={PHONE_HREF}
+                onClick={trackClickToCall}
                 className="inline-flex items-center gap-2 rounded-full bg-brand-black px-7 py-3.5 text-sm font-semibold uppercase tracking-wide text-white transition-colors duration-300 hover:bg-white hover:text-brand-black"
               >
                 <PhoneIcon className="h-4 w-4" />
                 Call Now
               </a>
-              <a href={PHONE_HREF} className="font-display text-2xl tracking-tight text-brand-black transition-opacity hover:opacity-70">
+              <a href={PHONE_HREF} onClick={trackClickToCall} className="font-display text-2xl tracking-tight text-brand-black transition-opacity hover:opacity-70">
                 {PHONE_DISPLAY}
               </a>
             </motion.div>

@@ -7,6 +7,7 @@ import {
   headlineContainer,
   headlineWord,
 } from '../animations/variants'
+import { trackClickToCall } from '../lib/analytics'
 
 const HERO_VIDEO = '/hero-video-web.mp4' // served from public/; correct logo throughout
 const HERO_POSTER = '/hero-poster.jpg' // video's last frame — reduced-motion still, OG and schema image
@@ -241,6 +242,7 @@ function PhoneCTAButton({ className }: { className?: string }) {
   return (
     <a
       href="tel:+16232241097"
+      onClick={trackClickToCall}
       className={`flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-brand-teal px-4 text-sm font-medium text-brand-black transition-colors duration-300 hover:bg-white ${FOCUS_RING} ${className ?? ''}`}
     >
       <PhoneIcon className="h-3.5 w-3.5" />

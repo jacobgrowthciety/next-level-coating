@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { trackClickToCall, trackClickToEmail } from '../lib/analytics'
 
 /** Sitemap (reference/BRIEF.md §6A + §8) — same lists as Header, kept local per this codebase's
  * per-component convention (ServicesGrid also keeps its own copy rather than sharing one). */
@@ -87,13 +88,13 @@ export default function Footer() {
             </p>
             <ul className="mt-4 space-y-3 text-sm text-white/70">
               <li>
-                <a href={PHONE_HREF} className="inline-flex items-center gap-2 transition-colors hover:text-brand-teal">
+                <a href={PHONE_HREF} onClick={trackClickToCall} className="inline-flex items-center gap-2 transition-colors hover:text-brand-teal">
                   <PhoneIcon className="h-4 w-4 flex-none" />
                   {PHONE_DISPLAY}
                 </a>
               </li>
               <li>
-                <a href={`mailto:${EMAIL}`} className="inline-flex items-center gap-2 break-all transition-colors hover:text-brand-teal">
+                <a href={`mailto:${EMAIL}`} onClick={trackClickToEmail} className="inline-flex items-center gap-2 break-all transition-colors hover:text-brand-teal">
                   <MailIcon className="h-4 w-4 flex-none" />
                   {EMAIL}
                 </a>

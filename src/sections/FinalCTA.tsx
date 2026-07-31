@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
 import LeadForm from '../components/LeadForm'
+import { trackClickToCall } from '../lib/analytics'
 
 // The one deliberate full-teal section on the page (reference/BRIEF.md §2A "used sparingly,
 // high-impact moment") — closing CTA reinforcing the offer once more before the visitor leaves.
@@ -69,6 +70,7 @@ export default function FinalCTA() {
             >
               <a
                 href={PHONE_HREF}
+                onClick={trackClickToCall}
                 className="inline-flex items-center gap-2 rounded-full bg-brand-black px-7 py-3.5 text-sm font-semibold uppercase tracking-wide text-white transition-colors duration-300 hover:bg-white hover:text-brand-black"
               >
                 <PhoneIcon className="h-4 w-4" />
@@ -76,6 +78,7 @@ export default function FinalCTA() {
               </a>
               <a
                 href={PHONE_HREF}
+                onClick={trackClickToCall}
                 className="font-display text-2xl tracking-tight text-brand-black transition-opacity hover:opacity-70"
               >
                 {PHONE_DISPLAY}

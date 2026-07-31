@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
+import { trackClickToCall } from '../lib/analytics'
 
 /** Sitemap (reference/BRIEF.md §6A + §8). Slugs cleaned up per the brief's rename recommendations. */
 const SERVICES = [
@@ -130,6 +131,7 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <a
             href={PHONE_HREF}
+            onClick={trackClickToCall}
             className="inline-flex items-center gap-2 rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-brand-black transition-colors hover:bg-brand-teal/80"
           >
             <PhoneIcon className="h-4 w-4" />

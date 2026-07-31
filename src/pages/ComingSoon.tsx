@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import CallNowButton from '../components/CallNowButton'
 import Seo from '../components/Seo'
+import { trackClickToCall } from '../lib/analytics'
 
 const PHONE_HREF = 'tel:+16232241097'
 
@@ -43,6 +44,7 @@ export default function ComingSoon({
           </Link>
           <a
             href={PHONE_HREF}
+            onClick={trackClickToCall}
             className="rounded-full bg-brand-teal px-7 py-3.5 text-sm font-semibold uppercase tracking-wide text-brand-black transition-colors hover:bg-brand-teal/80"
           >
             Call Now

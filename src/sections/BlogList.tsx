@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import { getPosts, urlFor, type BlogPostCard } from '../lib/sanity'
+import { trackClickToCall } from '../lib/analytics'
 
 // Slightly lighter-than-black shade so this section reads as a distinct surface from the pure
 // #000000 intro above it (reference/BRIEF.md §2A adjacent-dark-shade rule) without a divider.
@@ -101,7 +102,7 @@ export default function BlogList() {
           {error ? (
             <p className="text-base leading-relaxed text-white/70">
               We couldn't load posts right now. Please try again shortly, or call us at{' '}
-              <a href="tel:+16232241097" className="text-brand-teal hover:underline">
+              <a href="tel:+16232241097" onClick={trackClickToCall} className="text-brand-teal hover:underline">
                 (623) 224-1097
               </a>
               .
