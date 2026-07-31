@@ -45,6 +45,62 @@
          in the DOM instead of the real per-page one. Modern crawlers execute JS before
          indexing, so the brief pre-hydration gap (blank tab title until React mounts) is an
          accepted tradeoff for this client-only SPA. -->
+
+    <!-- Static Open Graph / Twitter card — homepage values.
+         =========================================================================================
+         WHY THESE ARE STATIC WHEN <title> DELIBERATELY IS NOT (see the note above):
+         search crawlers execute JS, so they pick up the per-route tags react-helmet-async writes.
+         Social/link-unfurl scrapers (iMessage, Facebook, WhatsApp, Slack…) do NOT run JS, so they
+         only ever see this file. Without these tags a shared link renders as a bare URL with no
+         card at all — which is exactly what was happening.
+
+         Yes, helmet also emits its own og:* on top of these, so the live DOM ends up with two of
+         each. That is harmless in a way a duplicate <title> was not: browsers don't render og
+         tags, and the scrapers that read them never get as far as running helmet.
+
+         SCOPE: every route is served this same index.html, so these homepage values are what a
+         scraper sees for /garage-flooring, /about and friends too. A branded homepage card beats
+         no card, but it is not per-page accurate. Per-page previews for static routes would need
+         the same server-side treatment /blog/:slug already gets in middleware.ts.
+
+         og:image MUST be an absolute URL on the canonical domain — scrapers cannot resolve a
+         relative path. hero-poster.jpg is 1920x1080 (1.78:1) against the 1200x630 (1.91:1) that
+         Facebook recommends; close enough that it is used as-is rather than re-cropped, and it is
+         comfortably over the 1200px minimum width. It is the same default the Seo component uses,
+         so the static and JS-rendered cards agree. Declaring width/height lets a scraper lay the
+         card out without downloading the file first. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Next Level Coatings" />
+    <meta property="og:url" content="https://www.nextlevelcoatingsaz.com/" />
+    <meta
+      property="og:title"
+      content="Next Level Coatings | Arizona's Top Concrete Coatings Specialists"
+    />
+    <meta
+      property="og:description"
+      content="Arizona's top-rated concrete coating specialists — garage floors, patios, driveways &amp; pool decks. 1-day installs, lifetime warranty. Free quotes."
+    />
+    <meta property="og:image" content="https://www.nextlevelcoatingsaz.com/hero-poster.jpg" />
+    <meta property="og:image:width" content="1920" />
+    <meta property="og:image:height" content="1080" />
+    <meta
+      property="og:image:alt"
+      content="Next Level Coatings installer broadcasting flake across a freshly coated Arizona garage floor"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Next Level Coatings | Arizona's Top Concrete Coatings Specialists"
+    />
+    <meta
+      name="twitter:description"
+      content="Arizona's top-rated concrete coating specialists — garage floors, patios, driveways &amp; pool decks. 1-day installs, lifetime warranty. Free quotes."
+    />
+    <meta name="twitter:image" content="https://www.nextlevelcoatingsaz.com/hero-poster.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="Next Level Coatings installer broadcasting flake across a freshly coated Arizona garage floor"
+    />
   </head>
   <body>
     <div id="root"></div>
