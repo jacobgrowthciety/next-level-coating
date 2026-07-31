@@ -38,25 +38,30 @@ export default function CallNowButton() {
       onClick={trackClickToCall}
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
-      className={`fixed inset-x-0 bottom-0 z-50 box-border flex items-center justify-center gap-2 bg-brand-teal px-4 text-center text-base font-semibold text-brand-black shadow-lg transition-transform duration-300 motion-reduce:transition-none md:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-50 box-border flex items-center justify-center gap-2 bg-brand-teal px-4 text-center text-sm font-semibold text-brand-black shadow-lg transition-transform duration-300 motion-reduce:transition-none md:hidden ${
         visible ? 'translate-y-0' : 'translate-y-full'
       }`}
-      /* The tappable row is a fixed 3.5rem — never derived from viewport units, so browser
+      /* The tappable row is a fixed 3rem — never derived from viewport units, so browser
          chrome collapsing on scroll can't restretch it. The safe-area inset is added *outside*
          that row (height includes it, padding-bottom reserves it) rather than on top of a
          content-driven height, which is what used to make the bar jump: iOS Safari reports
          safe-area-inset-bottom as 0 while the bottom toolbar is expanded and ~34px once it
          collapses. Now that inset only ever backfills teal behind the home indicator; the
-         row holding the icon and number stays exactly 3.5rem in both states. */
+         row holding the icon and number stays exactly 3rem in both states.
+
+         3rem (48px) is the floor for this row, not a value to keep tuning down: it matches the
+         48px minimum touch target and still clears Apple's 44pt guideline, and because the whole
+         bar is the tap area there is no padding to trade away. Slimming further would start
+         costing accuracy on a control whose entire job is being easy to hit one-handed. */
       style={{
-        height: 'calc(3.5rem + env(safe-area-inset-bottom))',
+        height: 'calc(3rem + env(safe-area-inset-bottom))',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
       <svg
         aria-hidden="true"
         viewBox="0 0 24 24"
-        className="h-5 w-5"
+        className="h-4 w-4"
         fill="currentColor"
       >
         <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z" />
