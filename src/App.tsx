@@ -14,6 +14,7 @@ import PolishedConcrete from './pages/PolishedConcrete'
 import ConcreteCoatings from './pages/ConcreteCoatings'
 import About from './pages/About'
 import FlakeColorChart from './pages/FlakeColorChart'
+import FlakeGallery from './pages/FlakeGallery'
 import SolidColorChart from './pages/SolidColorChart'
 import Contact from './pages/Contact'
 import Blog from './pages/Blog'
@@ -47,6 +48,7 @@ export default function App() {
         <Route path="/concrete-coatings" element={<ConcreteCoatings />} />
         <Route path="/about" element={<About />} />
         <Route path="/flake-color-chart" element={<FlakeColorChart />} />
+        <Route path="/flake-color-chart/:slug" element={<FlakeGallery />} />
         <Route path="/solid-color-chart" element={<SolidColorChart />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<Blog />} />

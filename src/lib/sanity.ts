@@ -106,3 +106,40 @@ export function getPostBySlug(slug: string): Promise<BlogPost | null> {
   if (!isSanityConfigured) return Promise.resolve(null)
   return sanityClient.fetch(POST_BY_SLUG_QUERY, { slug })
 }
+
+/* ---------------------------------------------------------------------------------------------
+ * Flake color project galleries (`/flake-color-chart/:slug`)
+ * ------------------------------------------------------------------------------------------- */
+
+/** A project photo in a flake gallery — alt is required in the schema, caption is optional. */
+export interface FlakeGalleryImage extends BlogImage {
+  caption?: string
+}
+
+/** A per-color project gallery. `images` may be absent or empty — callers render an empty state. */
+export interface FlakeGallery {
+  title?: string
+  images?: FlakeGalleryImage[]
+}
+
+/** Single gallery by flake identifier. */
+export const FLAKE_GALLERY_BY_SLUG_QUERY = `*[_type == "flakeGallery" && flakeSlug == $slug][0] {
+  title,
+  images
+}`
+
+/**
+ * Identifiers of every gallery that actually has at least one photo. Used to decide which
+ * per-color pages are real enough to belong in the sitemap — a gallery document with an empty
+ * `images` array renders the "coming soon" state and must stay out of it (thin content).
+ */
+export const FLAKE_GALLERY_POPULATED_SLUGS_QUERY = `*[_type == "flakeGallery" && count(images) > 0].flakeSlug`
+
+/**
+ * Fetch one color's gallery (null if no document exists yet for that color, which is the
+ * normal case for colors the client hasn't sent photos for).
+ */
+export function getFlakeGallery(slug: string): Promise<FlakeGallery | null> {
+  if (!isSanityConfigured) return Promise.resolve(null)
+  return sanityClient.fetch(FLAKE_GALLERY_BY_SLUG_QUERY, { slug })
+}

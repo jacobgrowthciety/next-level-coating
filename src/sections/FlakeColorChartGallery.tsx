@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { scaleIn } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
+import { FLAKE_COLORS } from '../lib/flakeColors'
 
 // Dark section immediately following the compact header (reference/BRIEF.md §9A, §4A), same
 // near-black shade GarageFlooringGallery uses so the two in-flow dark sections (Intro's pure
@@ -10,56 +12,8 @@ import RoughDivider from '../components/RoughDivider'
 const SECTION_BG = '#141414'
 const PREV_SECTION_BG = '#000000' // FlakeColorChartIntro's section background
 
-// Explicit slug list (was previously generated from a flake-01..28 numeric range). The range
-// no longer holds: some swatches have been replaced by newly shot images with their own
-// descriptive filenames, and one was retired outright — so the files are listed directly.
-// Order here is the on-page grid order.
-//
-// The source photos (up to 4480px, ~3.9MB each) were far larger than anything either view
-// renders, so each slug ships as two WebP derivatives (quality 80): `-600` for the grid card
-// and `-1600` for the lightbox. Extensions are omitted here since every entry is now `.webp`.
-//
-// Each image has the color name printed directly on it, so no separate on-screen text label is
-// rendered per swatch — alt text stays descriptive-but-generic since we don't have the
-// per-color names as structured data.
-const FLAKE_SLUGS = [
-  'domino-flake', // replaced flake-01
-  'flake-02',
-  'flake-04',
-  'flake-05',
-  'outback-flake', // replaced flake-06
-  'cabin-fever-flake', // replaced flake-07
-  'flake-08',
-  'nightfall-flake', // replaced flake-09
-  'flake-10',
-  'flake-11',
-  'flake-12',
-  'flake-13',
-  'flake-14',
-  'flake-15',
-  'flake-16',
-  'flake-17',
-  'flake-18',
-  'shoreline-flake', // replaced flake-19
-  'flake-20',
-  'flake-21',
-  'flake-22',
-  'flake-23',
-  'flake-24',
-  'flake-25',
-  'flake-26',
-  'flake-27',
-  'flake-28',
-]
-
-const FLAKE_COLORS: { id: string; thumb: string; full: string; alt: string }[] = FLAKE_SLUGS.map(
-  (slug, i) => ({
-    id: slug,
-    thumb: `/images/flake-colors/${slug}-600.webp`,
-    full: `/images/flake-colors/${slug}-1600.webp`,
-    alt: `Next Level Coatings flake color chip sample ${i + 1} of ${FLAKE_SLUGS.length}`,
-  }),
-)
+// The swatch catalog itself now lives in src/lib/flakeColors.ts — the per-color gallery route
+// reads the same list to validate its :slug param, so it can't drift from this grid.
 
 function ArrowIcon({ className, direction }: { className?: string; direction: 'left' | 'right' }) {
   return (
@@ -103,24 +57,78 @@ export default function FlakeColorChartGallery() {
               varied-size portfolio grid used for real project photos elsewhere. */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
             {FLAKE_COLORS.map((color, index) => (
-              <motion.button
+              // The swatch (enlarge) and "Learn More" (navigate) are two separate controls in
+              // one card rather than a link nested in a button — nesting interactive elements
+              // is invalid markup and leaves keyboard/screen-reader users unable to reach the
+              // inner one. The card itself is a plain div for that reason.
+              <motion.div
                 key={color.id}
-                type="button"
-                onClick={() => setOpenIndex(index)}
                 variants={scaleIn}
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ delay: (index % 4) * 0.06 }}
-                className="group relative aspect-square overflow-hidden rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-[#141414]"
+                className="flex flex-col"
               >
-                <img
-                  src={color.thumb}
-                  alt={color.alt}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              </motion.button>
+                <button
+                  type="button"
+                  onClick={() => setOpenIndex(index)}
+                  aria-label={`Enlarge ${color.name} flake color swatch`}
+                  className="group relative aspect-square overflow-hidden rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-[#141414]"
+                >
+                  <img
+                    src={color.thumb}
+                    alt={color.alt}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {/* Special-order marker. Deliberately understated — a neutral translucent pill
+                      in the corner, not a warning color: these are still fully available, just
+                      not held in stock. `aria-hidden` because the same fact is already announced
+                      in the Learn More link's accessible name below. */}
+                  {color.orderOnly && (
+                    <span
+                      aria-hidden="true"
+                      // Bottom-LEFT on purpose: every swatch photo has the Next Level watermark
+                      // baked into its bottom-right corner and its printed color name across
+                      // the top, leaving this the only consistently clear corner.
+                      className="pointer-events-none absolute bottom-1.5 left-1.5 rounded-full bg-black/70 px-2 py-[3px] font-display text-[0.5rem] uppercase tracking-[0.15em] text-white/75 backdrop-blur-sm sm:text-[0.55rem]"
+                    >
+                      Order Only
+                    </span>
+                  )}
+                </button>
+                <Link
+                  to={`/flake-color-chart/${color.id}`}
+                  className="group/link mt-2 flex flex-col items-center rounded-sm py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-[#141414]"
+                >
+                  {/* The color name is printed inside each swatch image, but it was never
+                      readable as text — so it's rendered here too for search engines, screen
+                      readers, and anyone who can't make out small type on the photo. */}
+                  <span className="text-center font-display text-[0.6rem] uppercase leading-tight tracking-[0.12em] text-white/85 transition-colors group-hover/link:text-brand-teal sm:text-[0.7rem]">
+                    {color.name}
+                  </span>
+                  <span className="mt-0.5 inline-flex items-center gap-1 font-display text-[0.55rem] uppercase tracking-[0.2em] text-white/45 transition-colors group-hover/link:text-brand-teal sm:text-[0.6rem]">
+                    Learn More
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="h-2.5 w-2.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 6l6 6-6 6" />
+                    </svg>
+                  </span>
+                  <span className="sr-only">
+                    about {color.name}
+                    {color.orderOnly ? ' (special order only)' : ''}
+                  </span>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -178,7 +186,15 @@ export default function FlakeColorChartGallery() {
                   alt={FLAKE_COLORS[openIndex].alt}
                   className="max-h-[75vh] w-full rounded-sm object-contain"
                 />
-                <p className="mt-4 text-sm text-white/50">
+                <p className="mt-4 font-display text-sm uppercase tracking-[0.2em] text-white/85">
+                  {FLAKE_COLORS[openIndex].name}
+                  {FLAKE_COLORS[openIndex].orderOnly && (
+                    <span className="ml-2 align-middle font-display text-[0.6rem] tracking-[0.15em] text-white/50">
+                      (Order Only)
+                    </span>
+                  )}
+                </p>
+                <p className="mt-1 text-sm text-white/50">
                   {openIndex + 1} / {FLAKE_COLORS.length}
                 </p>
               </motion.div>

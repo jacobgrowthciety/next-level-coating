@@ -31,13 +31,13 @@ export default function FlakeColorChartIntro() {
           >
             Flake Color Chart
           </motion.h1>
-          {/* BRIEF.md §9 copy adapted: the original promised a click-through to per-color
-              project examples, but no per-color project photo data exists yet to build that —
-              swapped for an accurate description of the enlarge/lightbox interaction actually
-              built below. Revisit if per-color project photos are sourced later. */}
+          {/* BRIEF.md §9's original promise of a click-through to per-color project examples is
+              now live: each swatch links to /flake-color-chart/<id>, backed by a Sanity
+              `flakeGallery` document. Colors without photos yet show a "coming soon" state, so
+              the copy describes both affordances without over-promising real installs. */}
           <motion.p variants={fadeUp} className="mt-4 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
-            Choose from our wide variety of color options for your floor. Tap any color to see
-            it up close.
+            Choose from our wide variety of color options for your floor. Tap any color to see it
+            up close, or hit Learn More for real project photos.
           </motion.p>
         </motion.div>
       </div>
