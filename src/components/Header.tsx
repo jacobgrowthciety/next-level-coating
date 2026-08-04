@@ -129,10 +129,21 @@ export default function Header() {
 
         {/* Call Now (always visible) + mobile hamburger */}
         <div className="flex items-center gap-2">
+          {/* The painted pill stays 32px tall — its original proportions. Below the `sm`
+              breakpoint the label is hidden and it collapses to an icon-only pill measuring
+              48x32, which is under the 44px touch-target baseline on the one control that is a
+              mobile visitor's *only* way to contact the business on the first screen.
+
+              The target is fixed with an `::after` overlay rather than min-h/min-w on the box
+              itself: growing the box to 44 made the icon-only state read as a near-square blob
+              instead of a pill. The pseudo-element is invisible, takes part in hit-testing on
+              the anchor's behalf, and is out of flow, so it buys the 6px above and below
+              without touching layout or the shape. Full width so the target is never narrower
+              than the pill it sits on. */}
           <a
             href={PHONE_HREF}
             onClick={trackClickToCall}
-            className="inline-flex items-center gap-2 rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-brand-black transition-colors hover:bg-brand-teal/80"
+            className="relative inline-flex items-center gap-2 rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-brand-black transition-colors after:absolute after:left-0 after:top-1/2 after:h-11 after:w-full after:-translate-y-1/2 after:content-[''] hover:bg-brand-teal/80"
           >
             <PhoneIcon className="h-4 w-4" />
             <span className="hidden sm:inline">Call Now</span>
@@ -143,7 +154,8 @@ export default function Header() {
             onClick={() => setMobileOpen((v) => !v)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-white lg:hidden"
+            /* h-11/w-11 = 44px, the touch-target baseline; was h-10 (40px). */
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-white lg:hidden"
           >
             <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               {mobileOpen ? (

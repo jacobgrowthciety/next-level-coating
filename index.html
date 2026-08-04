@@ -56,6 +56,27 @@
       href="/fonts/MicrogrammaD-ExtendedBold.otf"
       crossorigin
     />
+    <!-- Hero poster preload — this is the LCP element on both layouts.
+         =========================================================================================
+         The hero's <video> only exists after the ~200KB (gzipped) bundle has downloaded, parsed
+         and mounted React, so without this hint the browser cannot even discover the poster until
+         late in the load — and a video's poster, not its frames, is what counts as the LCP
+         candidate. Declaring it here starts the fetch during HTML parse instead, well ahead of
+         the bundle, which matters disproportionately for the paid traffic this page is built for.
+
+         Scoped with `media` rather than preloaded unconditionally: under prefers-reduced-motion
+         sections/Hero.tsx renders hero-poster.jpg as a still and never mounts the video at all,
+         so an unscoped hint would fetch a file those visitors never use — and earn a "preloaded
+         but not used" console warning for it. Keep this path in sync with HERO_VIDEO_FIRST_FRAME
+         in sections/Hero.tsx. -->
+    <link
+      rel="preload"
+      as="image"
+      href="/hero-video-first-frame.jpg"
+      fetchpriority="high"
+      media="(prefers-reduced-motion: no-preference)"
+    />
+
     <!-- Plus Jakarta Sans (site-wide body font, §2) stays on Google Fonts; weights 400/500/600
          cover font-normal, font-medium, font-semibold usage across the site. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

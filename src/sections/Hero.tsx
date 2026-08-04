@@ -42,12 +42,20 @@ const FOCUS_RING =
 // Compact mobile video zone height. Applied from the start (no longer animated in from a
 // full-bleed intro) so the header/headline/subhead/CTAs below are visible immediately instead of
 // waiting for the video to finish playing.
+//
+// 38svh, down from 52svh: at 52 the media ate so much of the first screen that the primary quote
+// CTA landed ~90px below the fold on an iPhone 15 and ~180px below on an iPhone SE — a cold
+// visitor from a paid ad had to scroll before any call to action existed. 38svh is the point
+// where the CTA pair clears the fold on both, while still giving the clip enough of the frame to
+// read as a hero rather than a banner. Retune against the SE (375x667) if the copy above the
+// CTAs ever grows — that's the viewport with no slack left.
+//
 // `svh` (not `dvh`) deliberately, matching DesktopHero below — `dvh` tracks the *current*
 // mobile browser toolbar state, so it jumps (and reflows everything below it) the moment
 // Safari's address bar collapses on first scroll, which is what caused the "zoom"/flicker and
 // stray seams at lower section boundaries. `svh` assumes the toolbar is always shown, so the
 // layout never has to reflow when it actually collapses.
-const MOBILE_COMPACT_HEIGHT = 'h-[52svh]'
+const MOBILE_COMPACT_HEIGHT = 'h-[38svh]'
 
 /**
  * Why both layouts start their media below the header rather than zooming to clear it.
@@ -252,18 +260,12 @@ function PhoneCTAButton({ className }: { className?: string }) {
 }
 
 /** Desktop content order: kicker → headline → paragraph → quote card → phone → trust row. */
-function DesktopHeroContent({
-  revealed,
-  reducedMotion,
-}: {
-  revealed: boolean
-  reducedMotion: boolean
-}) {
+function DesktopHeroContent({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <motion.div
       variants={heroRevealGroup}
       initial={reducedMotion ? 'show' : 'hidden'}
-      animate={revealed ? 'show' : 'hidden'}
+      animate="show"
       className="max-w-[620px]"
     >
       <HeroKicker delay={0} />
@@ -272,6 +274,9 @@ function DesktopHeroContent({
       <motion.div
         variants={heroFormReveal}
         custom={0.46}
+        // Marks the hero's own CTA pair for components/CallNowButton.tsx — the sticky mobile
+        // bar appears once *these* leave the viewport, not once the whole section does.
+        data-hero-cta
         className="mt-9 flex items-center gap-3"
       >
         <QuoteCTACard className="max-w-xs flex-1" />
@@ -284,39 +289,49 @@ function DesktopHeroContent({
   )
 }
 
-/** Mobile content order: kicker → headline → paragraph → trust row → quote card → phone. */
-function MobileHeroContent({
-  revealed,
-  reducedMotion,
-}: {
-  revealed: boolean
-  reducedMotion: boolean
-}) {
+/**
+ * Mobile content order: kicker → headline → paragraph → quote card → phone → trust row.
+ *
+ * CTAs sit *above* the trust row (matching DesktopHeroContent, which always had this order).
+ * They used to follow it, which pushed the primary quote CTA a further ~74px down — enough to
+ * put it below the fold on every phone we test. The trust row supports the CTA rather than
+ * gating it, so it reads just as well underneath. Margins here are a notch tighter than the
+ * desktop column's for the same reason: on a 667px-tall iPhone SE the hero has to fit a kicker,
+ * a three-line headline, a subhead, two CTAs and the trust row, and every 4px counts.
+ */
+function MobileHeroContent({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <motion.div
       variants={heroRevealGroup}
       initial={reducedMotion ? 'show' : 'hidden'}
-      animate={revealed ? 'show' : 'hidden'}
+      animate="show"
     >
       <HeroKicker delay={0} />
       <HeroHeadline
-        sizeClassName="mt-4 text-4xl sm:text-5xl"
+        sizeClassName="mt-3 text-4xl sm:text-5xl"
         lines={MOBILE_HEADLINE_LINES}
       />
+      {/* text-base on phones, text-lg from `sm` up. At 18px this subhead wraps to four lines in
+          a 327px column (iPhone SE); at 16px it wraps to three, which is worth exactly the 36px
+          that puts the quote CTA below it fully above the fold rather than clipped by it. 16px
+          is a normal mobile body size, and tablets still get the larger cut. */}
       <HeroParagraph
         delay={0.28}
-        className="mt-5 text-lg leading-[1.5] text-white/85"
+        className="mt-4 text-base leading-[1.5] text-white/85 sm:text-lg"
       />
-      <motion.div variants={heroReveal} custom={0.4} className="mt-6">
-        <TrustIndicators />
-      </motion.div>
       <motion.div
         variants={heroFormReveal}
-        custom={0.52}
-        className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center"
+        custom={0.4}
+        // See the matching note in DesktopHeroContent — this is the element the sticky mobile
+        // Call Now bar keys off, and on mobile it's the one that actually renders.
+        data-hero-cta
+        className="mt-5 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center"
       >
         <QuoteCTACard className="flex-1 sm:max-w-xs" />
         <PhoneCTAButton />
+      </motion.div>
+      <motion.div variants={heroReveal} custom={0.52} className="mt-5">
+        <TrustIndicators />
       </motion.div>
     </motion.div>
   )
@@ -344,28 +359,15 @@ function HeroMedia({
       autoPlay
       muted
       playsInline
-      preload="auto"
+      /* `metadata`, not `auto`. `auto` asks the browser to buffer the whole 5.1MB clip as
+         aggressively as it can, which on a phone competes for bandwidth with the poster —
+         the actual LCP element — and with the JS bundle this SPA needs before anything
+         renders at all. Autoplay still fetches and plays the video either way; this only
+         stops it from front-loading the entire file ahead of everything else. The poster is
+         preloaded from index.html so it wins the race outright. */
+      preload="metadata"
     />
   )
-}
-
-/** Shared autoplay-once → reveal-on-`ended` behaviour (with autoplay-blocked fallback). */
-function useHeroReveal(reducedMotion: boolean, videoRef: React.RefObject<HTMLVideoElement | null>) {
-  const [revealed, setRevealed] = useState(reducedMotion)
-  useEffect(() => {
-    if (reducedMotion) return
-    const video = videoRef.current
-    if (!video) return
-    const reveal = () => setRevealed(true)
-    video.addEventListener('ended', reveal)
-    video.play().catch(() => {})
-    const fallback = window.setTimeout(reveal, 11000)
-    return () => {
-      video.removeEventListener('ended', reveal)
-      window.clearTimeout(fallback)
-    }
-  }, [reducedMotion, videoRef])
-  return revealed
 }
 
 /**
@@ -375,7 +377,13 @@ function useHeroReveal(reducedMotion: boolean, videoRef: React.RefObject<HTMLVid
  */
 function DesktopHero({ reducedMotion }: { reducedMotion: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const revealed = useHeroReveal(reducedMotion, videoRef)
+
+  // Kick off playback the same way MobileHero does. The copy is NOT gated on this — see the
+  // note on DesktopHeroContent's render below.
+  useEffect(() => {
+    if (reducedMotion) return
+    videoRef.current?.play().catch(() => {})
+  }, [reducedMotion])
 
   return (
     <section id="hero" className="sticky top-0 z-0 flex min-h-[100svh] items-center overflow-hidden">
@@ -415,8 +423,14 @@ function DesktopHero({ reducedMotion }: { reducedMotion: boolean }) {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_60%,rgba(0,0,0,0.3)_100%)]" />
       </div>
 
+      {/* Content animates in on mount, not on the video's `ended` event. It used to wait for
+          the clip to finish — 8 seconds, with an 11s fallback timer behind it — during which
+          the headline, subhead, both CTAs and the trust row were all at opacity 0. A visitor
+          arriving cold from a paid ad got a silent video and a nav bar, with nothing on screen
+          saying what the business does or offering a way to contact it, for eight seconds. The
+          staggered reveal is preserved; it just starts immediately and plays over the video. */}
       <div className="mx-auto w-full max-w-7xl px-6 py-20">
-        <DesktopHeroContent revealed={revealed} reducedMotion={reducedMotion} />
+        <DesktopHeroContent reducedMotion={reducedMotion} />
       </div>
     </section>
   )
@@ -460,9 +474,12 @@ function MobileHero({ reducedMotion }: { reducedMotion: boolean }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
       </div>
 
-      {/* Bottom panel — visible immediately, no longer gated behind the video's `ended` event. */}
-      <div className="flex-1 bg-brand-black px-6 py-10">
-        <MobileHeroContent revealed reducedMotion={reducedMotion} />
+      {/* Bottom panel — visible immediately, no longer gated behind the video's `ended` event.
+          `pt-8` rather than a symmetric `py-10`: reclaimed above the kicker, where it buys the
+          CTA pair fold clearance on small phones, and kept below so the section still breathes
+          into whatever follows it. */}
+      <div className="flex-1 bg-brand-black px-6 pb-10 pt-8">
+        <MobileHeroContent reducedMotion={reducedMotion} />
       </div>
     </section>
   )

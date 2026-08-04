@@ -7,18 +7,24 @@ import { trackClickToCall } from '../lib/analytics'
  * immediately at the top of the page would sit on top of (or duplicate) the hero's own
  * full-width phone CTA.
  *
- * On pages with a hero (`#hero`, currently just Home), visibility is driven by an
- * IntersectionObserver on that element — the bar appears once the hero has fully scrolled out of
- * view, so it can never overlap the hero's quote/phone CTAs. Pages without a hero fall back to a
- * simple scroll-position heuristic.
+ * On pages with a hero (currently just Home), visibility is driven by an IntersectionObserver.
+ * What it observes is the hero's own CTA pair (`[data-hero-cta]`, set in sections/Hero.tsx), not
+ * the hero section itself: the bar needs to arrive the moment those CTAs scroll away, and the
+ * mobile hero runs ~1000px tall, so keying off the whole section left a long stretch where the
+ * hero's CTAs were gone but the bar hadn't come in yet — the page had no visible call to action
+ * at all through it. Observing the CTAs still guarantees the two can never be on screen together,
+ * which was the original reason for the gate.
+ *
+ * Falls back to `#hero` if the CTA marker is ever missing, then to a scroll-position heuristic on
+ * pages with no hero at all.
  */
 export default function CallNowButton() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const hero = document.getElementById('hero')
+    const anchor = document.querySelector('[data-hero-cta]') ?? document.getElementById('hero')
 
-    if (!hero) {
+    if (!anchor) {
       function onScroll() {
         setVisible(window.scrollY > window.innerHeight * 0.6)
       }
@@ -28,7 +34,7 @@ export default function CallNowButton() {
     }
 
     const observer = new IntersectionObserver(([entry]) => setVisible(!entry.isIntersecting))
-    observer.observe(hero)
+    observer.observe(anchor)
     return () => observer.disconnect()
   }, [])
 
