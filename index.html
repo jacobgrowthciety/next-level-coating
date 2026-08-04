@@ -12,6 +12,34 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Meta (Facebook) Pixel.
+         Deliberately placed *below* <meta charset> rather than stacked with the gtag block above:
+         the charset declaration has to land in the first 1024 bytes of the document, and this
+         snippet is large enough to push it out of that window if it went first.
+
+         The base code below fires exactly one PageView, for the document that actually loaded.
+         React Router navigations never reload the document, so per-route PageViews are sent from
+         hooks/useAnalytics.ts — the same split the GA4 tag uses. Conversion events (Lead, Contact)
+         are fired from lib/analytics.ts alongside their GA4 counterparts.
+
+         The pixel ID is not a secret — it ships in the page source of every site that runs one —
+         so it is hardcoded here exactly like the GA4 measurement ID rather than routed through an
+         env var, which would add a Vercel config step for no privacy gain. -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window,document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1844792782768894');
+      fbq('track', 'PageView');
+    </script>
+    <!-- End Meta Pixel — the <noscript> half of Meta's snippet lives in <body>, see below. -->
+
     <!-- Brand display/script faces are now self-hosted from /fonts (see src/index.css):
          Microgramma D Extended = bold extended display, Third Rail = brush/marker script.
          These replaced the Anton / Permanent Marker Google Fonts stand-ins, which are no
@@ -103,6 +131,22 @@
     />
   </head>
   <body>
+    <!-- Meta Pixel no-JS fallback. Meta ships this as one block with the <script> in <head>, but
+         a <noscript> in <head> may only contain <link>/<style>/<meta> — an <img> there is
+         disallowed content that Vite's HTML parser rejects outright (parse5
+         disallowed-content-in-noscript-in-head), so it belongs here instead.
+
+         Kept mostly for completeness: this site is a client-rendered SPA, so a visitor with JS
+         off sees an empty #root and there is no pageview worth attributing anyway. It costs one
+         hidden <img> and satisfies the agency's pixel-implementation checklist. -->
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        alt=""
+        src="https://www.facebook.com/tr?id=1844792782768894&ev=PageView&noscript=1"
+    /></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

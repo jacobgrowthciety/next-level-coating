@@ -4,19 +4,23 @@ import { useLocation } from 'react-router-dom'
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void
+    fbq?: (...args: unknown[]) => void
   }
 }
 
 /**
- * Sends a GA4 page_view on each client-side route change.
+ * Sends a GA4 page_view and a Meta Pixel PageView on each client-side route change.
  *
  * The gtag.js snippet in index.html fires exactly one page_view, for the document that actually
  * loaded. React Router navigations never reload the document, so without this every in-session
  * navigation was invisible to GA4 — sessions and events landed, but per-route pageview counts
- * only ever credited the entry page.
+ * only ever credited the entry page. The Meta Pixel base code has the identical limitation, so
+ * both tags are advanced from this one hook.
  *
  * Deliberately does not re-`config` gtag; that would re-initialize the tag on every navigation.
- * A plain page_view event carrying the page_* params is what GA4 expects for SPA routing.
+ * A plain page_view event carrying the page_* params is what GA4 expects for SPA routing. The
+ * pixel equivalent is a bare `track('PageView')` — re-running `fbq('init')` per navigation is the
+ * corresponding mistake there.
  */
 export default function useAnalytics() {
   const location = useLocation()
@@ -49,6 +53,11 @@ export default function useAnalytics() {
         page_location: url,
         page_title: document.title,
       })
+
+      // Takes no page params by design — fbq reads the URL and title off the document itself at
+      // fire time. Sending it from inside this same frame is what makes that read correct: the
+      // history entry and <title> for the new route are both committed by now.
+      window.fbq?.('track', 'PageView')
     })
 
     return () => cancelAnimationFrame(frame)
