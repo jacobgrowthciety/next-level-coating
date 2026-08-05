@@ -332,6 +332,13 @@ export default function ReelOrbit({
 
   const onPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
+    // Never start a drag from a control that lives inside the stage. `setPointerCapture` below
+    // captures the pointer on the stage, and once a pointer is captured the browser retargets
+    // the subsequent `click` to the capturing element — so the mute button's onClick never
+    // fired and the button appeared dead. Bailing out here leaves the pointer uncaptured, and
+    // the click reaches the button normally. The arrows and dots were unaffected because they
+    // sit outside the stage, which is why only the mute button broke.
+    if ((event.target as HTMLElement).closest('button')) return
     draggingRef.current = true
     pointerIdRef.current = event.pointerId
     startXRef.current = event.clientX
