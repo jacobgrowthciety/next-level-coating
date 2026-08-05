@@ -24,6 +24,89 @@ const PRIMARY_LINKS = [
 
 const PHONE_HREF = 'tel:+16232241097'
 
+/**
+ * NAVBAR RESPONSIVE SYSTEM — one place, three states.
+ *
+ * 1. Full desktop (>= 1280px): every value below sits at its ceiling, which is the approved
+ *    large-desktop rendering — 12px links, 32px gaps, a 137px logo, a 14px/16px-padded CTA.
+ *    The ceiling starts at 1280 rather than at some larger width because the bar is capped at
+ *    `max-w-7xl` (1280px): above that the container stops growing, so the room available to the
+ *    bar is the same at 1440, 1600 and 1920 as it is at 1280, and so is what fits in it. Scaling
+ *    across that range would only shrink type nothing was competing for — which is exactly what a
+ *    first pass at this did, tightening the links to 19px at 1440 while the space around the group
+ *    ballooned to 150px.
+ * 2. Condensed desktop (1180-1280px): the only band where the container actually narrows, so it is
+ *    the only band that ramps. Each value interpolates linearly between its floor at 1180 and its
+ *    ceiling at 1280, written as `clamp(floor, calc(<slope>vw + <intercept>), ceiling)` — all of
+ *    them solving the same two endpoints, so the bar tightens evenly instead of one part
+ *    collapsing ahead of the others.
+ * 3. Mobile / hamburger (< 1180px): the link group is display:none and the existing hamburger
+ *    takes over, untouched. Everything below the breakpoint keeps its original unprefixed classes,
+ *    so the mobile bar renders exactly as it did.
+ *
+ * WHY THE LABELS WRAPPED: nothing here set `white-space: nowrap`, and a flex item's automatic
+ * minimum size lets a text item shrink to its longest *word*. So once the row ran out of room the
+ * browser resolved it by breaking "Flake Color Chart" and "Solid Color Chart" over two lines and
+ * stacking "Call Now" onto three — the row never overflowed, it just folded. `shrink-0` +
+ * `whitespace-nowrap` on every item removes that escape hatch, `flex-nowrap` keeps the group a
+ * single row, and the breakpoint below is set where the row still has room to spare.
+ *
+ * This scale is deliberately NOT wired to the hero's `--hero-u`: the bar has its own content and
+ * its own crowding point, and tying the two would mean neither could be tuned without disturbing
+ * the other.
+ */
+
+/**
+ * Bar shell. Height is a hard 80px at every width — see the note on the header element.
+ *
+ * The 640px step is written `min-[640px]:` rather than `sm:` on purpose. Tailwind sorts arbitrary
+ * min-width variants into their own bucket AHEAD of the named breakpoints, so a `sm:` utility wins
+ * over a `min-[1180px]:` one setting the same property — silently, and only above 1180px. Keeping
+ * both steps in the same (arbitrary) bucket makes them sort by value, which is what the cascade
+ * here depends on. Same reason on NAV_LOGO below, where the stakes are higher: `sm:h-[68px]`
+ * beating `min-[1180px]:h-auto` would have pinned the height while the width scaled, i.e. squashed
+ * the logo at every width under 1920.
+ */
+const NAV_BAR =
+  'mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 min-[640px]:px-6 min-[1180px]:px-[clamp(44px,calc(2.7vw_+_12px),64px)]'
+
+/**
+ * Logo: 105px -> 137px wide with `height:auto`, so it scales without distorting. Width-driven
+ * (not height-driven) because width is what competes with the links for room. Below the desktop
+ * breakpoint it keeps its original fixed heights untouched.
+ */
+const NAV_LOGO =
+  'h-[60px] w-auto min-[640px]:h-[68px] min-[1180px]:h-auto min-[1180px]:w-[clamp(105px,calc(32vw_-_272.6px),137px)]'
+
+/** Link group: one non-wrapping row, gaps 20px -> 32px. */
+const NAV_LINK_GROUP =
+  'hidden min-w-0 flex-nowrap items-center gap-[clamp(20px,calc(12vw_-_121.6px),32px)] min-[1180px]:flex'
+
+/**
+ * Link: 11px -> 12px. font-display (Microgramma D Extended) per the brand hierarchy — nav sits
+ * with the headings, not with body copy, and font-medium resolves to the 500 (Medium Extended)
+ * cut; the 700 Bold cut is reserved for H1/H2. Microgramma is an *extended* face and runs much
+ * wider than the body font at the same size, which is why the ceiling is 12px and the tracking
+ * is tight. `leading-none` pins the line box to the glyph height so nothing here can ever add to
+ * the bar's height.
+ */
+const NAV_LINK =
+  'shrink-0 whitespace-nowrap font-display text-[length:clamp(11px,calc(1vw_-_0.8px),12px)] font-medium uppercase leading-none tracking-tight text-white/85 transition-colors hover:text-brand-teal'
+
+/** Dropdown chevron, sized in `em` so it tracks the link's own type size and stays aligned to it. */
+const NAV_CHEVRON = 'h-[1.33em] w-[1.33em] flex-none'
+
+/**
+ * Call Now: a single-line pill at every width. Font 13px -> 14px, padding-inline 14px -> 16px,
+ * icon 1.15em (= the 16px it was drawn at when the label is at its 14px ceiling). `min-h-[42px]`
+ * is a desktop-only floor for the click target; below the breakpoint the pill keeps its original
+ * 36px box and its `::after` touch overlay, which is what mobile is tuned around.
+ */
+const NAV_CTA =
+  'relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-brand-black transition-colors after:absolute after:left-0 after:top-1/2 after:h-11 after:w-full after:-translate-y-1/2 after:content-[""] hover:bg-brand-teal/80 min-[1180px]:min-h-[42px] min-[1180px]:gap-[0.45em] min-[1180px]:px-[clamp(14px,calc(2vw_-_9.6px),16px)] min-[1180px]:py-0 min-[1180px]:text-[length:clamp(13px,calc(1vw_+_1.2px),14px)] min-[1180px]:leading-none'
+
+const NAV_CTA_ICON = 'h-4 w-4 flex-none min-[1180px]:h-[1.15em] min-[1180px]:w-[1.15em]'
+
 function PhoneIcon({ className }: { className?: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -46,14 +129,10 @@ export default function Header() {
     setMobileServicesOpen(false)
   }, [location.pathname])
 
-  // font-display (Microgramma D Extended) per the brand hierarchy — nav sits with the headings,
-  // not with body copy. font-medium resolves to the 500 (Medium Extended) cut; the 700 Bold cut
-  // is reserved for H1/H2. Microgramma is an *extended* face and runs much wider than the body
-  // font at the same size, so the size/tracking here is tuned down from text-sm to keep the
-  // seven top-level items on one line at the lg breakpoint.
-  const navLinkClass =
-    'font-display text-xs font-medium uppercase tracking-tight text-white/85 transition-colors hover:text-brand-teal'
-
+  // The bar's 80px height (h-20 on NAV_BAR) is deliberately NOT part of the fluid scale: the
+  // hero's media inset and top padding, and the mobile panel's own offset, are all keyed to
+  // exactly 80px, so a fluid bar height would move the hero. Everything inside the bar is
+  // vertically centered and pinned to `leading-none`, so no amount of text can change it.
   return (
     <header className="fixed inset-x-0 top-0 z-40">
       {/* Dark gradient scrim behind the bar so any overlap with the hero reads as intentional. */}
@@ -62,15 +141,15 @@ export default function Header() {
         className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/85 via-black/40 to-transparent"
       />
       <div className="relative bg-black/25 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className={NAV_BAR}>
         {/* Logo → Home — fills most of the bar height without making it taller. */}
         <Link to="/" className="flex shrink-0 items-center" aria-label="Next Level Coatings — Home">
-          <img src="/logo.png" alt="Next Level Coatings" className="h-[60px] w-auto sm:h-[68px]" />
+          <img src="/logo.png" alt="Next Level Coatings" className={NAV_LOGO} />
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-8 lg:flex">
-          <Link to="/" className={navLinkClass}>
+        <nav className={NAV_LINK_GROUP}>
+          <Link to="/" className={NAV_LINK}>
             Home
           </Link>
 
@@ -82,14 +161,14 @@ export default function Header() {
           >
             <button
               type="button"
-              className={`${navLinkClass} inline-flex items-center gap-1`}
+              className={`${NAV_LINK} inline-flex items-center gap-[0.33em]`}
               aria-haspopup="true"
               aria-expanded={servicesOpen}
               onClick={() => setServicesOpen((v) => !v)}
               onFocus={() => setServicesOpen(true)}
             >
               Services
-              <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor">
+              <svg aria-hidden="true" viewBox="0 0 20 20" className={NAV_CHEVRON} fill="currentColor">
                 <path
                   fillRule="evenodd"
                   d="M5.2 7.5 10 12l4.8-4.5"
@@ -121,7 +200,7 @@ export default function Header() {
           </div>
 
           {PRIMARY_LINKS.map((l) => (
-            <Link key={l.to} to={l.to} className={navLinkClass}>
+            <Link key={l.to} to={l.to} className={NAV_LINK}>
               {l.label}
             </Link>
           ))}
@@ -140,12 +219,8 @@ export default function Header() {
               the anchor's behalf, and is out of flow, so it buys the 6px above and below
               without touching layout or the shape. Full width so the target is never narrower
               than the pill it sits on. */}
-          <a
-            href={PHONE_HREF}
-            onClick={trackClickToCall}
-            className="relative inline-flex items-center gap-2 rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-brand-black transition-colors after:absolute after:left-0 after:top-1/2 after:h-11 after:w-full after:-translate-y-1/2 after:content-[''] hover:bg-brand-teal/80"
-          >
-            <PhoneIcon className="h-4 w-4" />
+          <a href={PHONE_HREF} onClick={trackClickToCall} className={NAV_CTA}>
+            <PhoneIcon className={NAV_CTA_ICON} />
             <span className="hidden sm:inline">Call Now</span>
           </a>
 
@@ -155,7 +230,7 @@ export default function Header() {
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
             /* h-11/w-11 = 44px, the touch-target baseline; was h-10 (40px). */
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-white lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-white min-[1180px]:hidden"
           >
             <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               {mobileOpen ? (
@@ -177,7 +252,7 @@ export default function Header() {
       {mobileOpen &&
         createPortal(
           <div
-            className="fixed inset-x-0 top-20 bottom-0 z-[100] overflow-y-auto overscroll-contain border-t border-white/10 bg-black/95 backdrop-blur-md lg:hidden"
+            className="fixed inset-x-0 top-20 bottom-0 z-[100] overflow-y-auto overscroll-contain border-t border-white/10 bg-black/95 backdrop-blur-md min-[1180px]:hidden"
             style={{ maxHeight: 'calc(100dvh - 5rem)' }}
           >
           <nav className="mx-auto max-w-7xl space-y-1 px-4 py-4">
