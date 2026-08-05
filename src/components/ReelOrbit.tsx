@@ -28,16 +28,22 @@ export interface ReelItem {
 
 export interface ReelOrbitProps {
   items: ReelItem[]
-  /** Card width: the smaller of this % of the stage and `cardMaxWidth`. */
-  cardWidthPercent?: number
-  cardMaxWidth?: number
+  /**
+   * Active card width, as a CSS length. Everything else in the carousel is expressed relative
+   * to it (see CARD_WIDTH), so this single value scales the whole component.
+   */
+  cardWidth?: string
   cornerRadius?: number
   /** Y-rotation applied per step of separation, in degrees. See LAYOUT. */
   spreadAngle?: number
   /** Lateral offset per step, as a % of card width. */
   spreadX?: number
-  /** How far back each step of separation pushes a card, in px. */
-  depth?: number
+  /**
+   * How far back each step of separation pushes a card, as a fraction of card width rather than
+   * a fixed pixel distance — so the 3D recession scales with the card instead of staying put
+   * while the card shrinks around it.
+   */
+  depthRatio?: number
   scaleFalloff?: number
   opacityFalloff?: number
   perspective?: number
@@ -86,6 +92,27 @@ const wrapOffset = (offset: number, count: number) => {
 /** Folds an unbounded ring position back to a real card index in [0, count). */
 const modIndex = (value: number, count: number) => ((value % count) + count) % count
 
+/**
+ * Fluid width of the active card.
+ *
+ * Replaces a `min(78%, 360px)` that was really two fixed sizes: 78% of the viewport below ~460px
+ * and a flat 360px above it. That flat 360px was the problem — it held full desktop size all the
+ * way down to tablet, where the fanned deck spans wider than the screen, and 78% left the card
+ * oversized on phones.
+ *
+ * Two terms, whichever is smaller:
+ *   - `70vw` governs phones, replacing the old 78% (a deliberate ~10% reduction).
+ *   - the clamp governs everything above, ramping 300px → 360px across tablet and narrow desktop.
+ *
+ * The resulting curve is continuous — no step at any breakpoint:
+ *
+ *     360px → 252   390px → 273   430px → 300   600px → 300
+ *     768px → 311   900px → 348  1024px → 360  1440px → 360
+ *
+ * Desktop from ~943px up is 360px, unchanged from before.
+ */
+const CARD_WIDTH = 'min(70vw, clamp(300px, calc(28vw + 96px), 360px))'
+
 /** Fraction of a card's width a pointer must travel to advance one step. */
 const DRAG_STEP_RATIO = 0.55
 /** Distance (in steps) below which the animation is considered settled and the loop parks. */
@@ -97,12 +124,11 @@ const MIN_CARD_OPACITY = 0.16
 
 export default function ReelOrbit({
   items,
-  cardWidthPercent = 78,
-  cardMaxWidth = 360,
+  cardWidth = CARD_WIDTH,
   cornerRadius = 24,
   spreadAngle = 34,
   spreadX = 62,
-  depth = 180,
+  depthRatio = 0.5,
   scaleFalloff = 0.16,
   // 0.42 with a floor, not 0.55: at 0.55 a card two steps out lands at exactly opacity 0, so
   // with three clips the far one was invisible and the deck only ever read as two cards.
@@ -174,7 +200,10 @@ export default function ReelOrbit({
         const scale = clamp(1 - distance * scaleFalloff, 0.5, 1)
         const opacity = clamp(1 - distance * opacityFalloff, MIN_CARD_OPACITY, 1)
 
-        card.style.transform = `translateX(${offset * spreadX}%) translateZ(${-distance * depth}px) rotateY(${-offset * spreadAngle}deg) scale(${scale})`
+        // translateX and translateZ are both relative to card width (a % of the element's own
+        // width, and a multiple of the shared --reel-card-w), so the fan geometry scales with
+        // the card as one piece rather than drifting apart at small sizes.
+        card.style.transform = `translateX(${offset * spreadX}%) translateZ(calc(var(--reel-card-w) * ${(-distance * depthRatio).toFixed(4)})) rotateY(${-offset * spreadAngle}deg) scale(${scale})`
         card.style.opacity = String(opacity)
         card.style.zIndex = String(100 - Math.round(distance * 10))
         // Only the front card should take pointer events, or a faded neighbour swallows taps
@@ -182,7 +211,7 @@ export default function ReelOrbit({
         card.style.pointerEvents = distance < 0.5 ? 'auto' : 'none'
       })
     },
-    [count, depth, opacityFalloff, scaleFalloff, spreadAngle, spreadX],
+    [count, depthRatio, opacityFalloff, scaleFalloff, spreadAngle, spreadX],
   )
 
   /**
@@ -373,103 +402,111 @@ export default function ReelOrbit({
 
   return (
     <div className={className}>
-      {/* Clipping wrapper. Cards fan out to ±124% of card width, which on a phone reaches well
-          past the viewport and would widen the whole page. The symmetric py/-my pair extends
-          the clip box vertically without changing layout height, so the cards' drop shadows
-          survive instead of being sheared off at the card's own edge. */}
-      <div className="-my-16 overflow-hidden py-16">
-        <div
-          ref={stageRef}
-          role="group"
-          aria-roledescription="carousel"
-          aria-label="Recent jobs"
-          tabIndex={0}
-          onKeyDown={onKeyDown}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          className="relative mx-auto flex touch-pan-y select-none items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-4"
-          style={{
-            perspective: `${perspective}px`,
-            WebkitPerspective: `${perspective}px`,
-            width: '100%',
-            cursor: 'grab',
-          }}
-        >
-          {/* Sized box the cards stack inside — its 9:16 ratio is what gives the stage its
-            height, so nothing needs a magic pixel min-height. */}
+      {/* Clipping wrapper. Cards fan out past the card's own width, which on a phone reaches
+          well past the viewport and would widen the whole page. The symmetric py/-my pair
+          extends the clip box vertically without changing layout height, so the cards' drop
+          shadows survive instead of being sheared off at the card's own edge.
+          The horizontal px-6 is the carousel's gutter — it matches the section's own padding and
+          is what stops the fanned neighbours running right up to the screen edge on a phone.
+          It clips well clear of the card at every width, so the active card is never touched. */}
+      {/* The gutter has to live on a PARENT of the clipping element, not on it: `overflow: hidden`
+          clips at the padding box, so padding on the clipper itself is still paintable area and
+          the fanned neighbours ran straight to the screen edge anyway. */}
+      <div className="px-6">
+        <div className="-my-16 overflow-hidden py-16">
           <div
-            className="relative"
+            ref={stageRef}
+            role="group"
+            aria-roledescription="carousel"
+            aria-label="Recent jobs"
+            tabIndex={0}
+            onKeyDown={onKeyDown}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+            className="relative mx-auto flex touch-pan-y select-none items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-4"
             style={{
-              width: `min(${cardWidthPercent}%, ${cardMaxWidth}px)`,
-              aspectRatio: '9 / 16',
-              transformStyle: 'preserve-3d',
+              // Single source of truth for the component's scale — the ring box, the controls
+              // overlay and each card's translateZ all derive from this one value.
+              ['--reel-card-w' as string]: cardWidth,
+              perspective: `${perspective}px`,
+              WebkitPerspective: `${perspective}px`,
+              width: '100%',
+              cursor: 'grab',
             }}
           >
-            {reels.map((reel, index) => (
-              <div
-                key={reel.src}
-                ref={(el) => {
-                  cardRefs.current[index] = el
-                }}
-                onClick={() => {
-                  // Tap a neighbour to bring it forward — but only if the pointer barely moved,
-                  // so the end of a swipe doesn't register as a tap on whatever it landed under.
-                  if (movedRef.current <= TAP_SLOP && index !== currentIndex) goToCard(index)
-                }}
-                className="absolute inset-0 overflow-hidden"
-                style={{
-                  borderRadius: `${cornerRadius}px`,
-                  background: cardBackground,
-                  boxShadow: `0 14px 34px ${shadowColor}`,
-                  transformStyle: 'preserve-3d',
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
-                  willChange: 'transform, opacity',
-                }}
-              >
-                <video
+            {/* Sized box the cards stack inside — its 9:16 ratio is what gives the stage its
+            height, so nothing needs a magic pixel min-height. */}
+            <div
+              className="relative"
+              style={{
+                width: 'var(--reel-card-w)',
+                aspectRatio: '9 / 16',
+                transformStyle: 'preserve-3d',
+              }}
+            >
+              {reels.map((reel, index) => (
+                <div
+                  key={reel.src}
                   ref={(el) => {
-                    videoRefs.current[index] = el
+                    cardRefs.current[index] = el
                   }}
-                  src={reel.src}
-                  poster={reel.poster}
-                  muted={muted}
-                  loop
-                  playsInline
-                  /* Always `none`, never bound to state. play() loads the media on its own, so
+                  onClick={() => {
+                    // Tap a neighbour to bring it forward — but only if the pointer barely moved,
+                    // so the end of a swipe doesn't register as a tap on whatever it landed under.
+                    if (movedRef.current <= TAP_SLOP && index !== currentIndex) goToCard(index)
+                  }}
+                  className="absolute inset-0 overflow-hidden"
+                  style={{
+                    borderRadius: `${cornerRadius}px`,
+                    background: cardBackground,
+                    boxShadow: `0 14px 34px ${shadowColor}`,
+                    transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    willChange: 'transform, opacity',
+                  }}
+                >
+                  <video
+                    ref={(el) => {
+                      videoRefs.current[index] = el
+                    }}
+                    src={reel.src}
+                    poster={reel.poster}
+                    muted={muted}
+                    loop
+                    playsInline
+                    /* Always `none`, never bound to state. play() loads the media on its own, so
                      this alone stops the page fetching three videos up front — and keeping the
                      attribute constant is what makes playback reliable. Flipping it to `auto`
                      on the active card re-ran the media resource selection algorithm in the
                      same commit as the effect's play(), aborting that play and leaving every
                      card paused with no error surfaced (the rejection is swallowed below). */
-                  preload="none"
-                  aria-label={reel.label ?? `Recent job ${index + 1} of ${count}`}
-                  draggable={false}
-                  className="h-full w-full bg-black object-cover"
-                />
-              </div>
-            ))}
-          </div>
+                    preload="none"
+                    aria-label={reel.label ?? `Recent job ${index + 1} of ${count}`}
+                    draggable={false}
+                    className="h-full w-full bg-black object-cover"
+                  />
+                </div>
+              ))}
+            </div>
 
-          {/* Controls track the CARD, not the stage. The stage has to stay wide enough for the
+            {/* Controls track the CARD, not the stage. The stage has to stay wide enough for the
             fanned-out cards to have somewhere to go, so anchoring the arrows and mute button to
             its edges left them stranded hundreds of px away from the video they act on. This
             overlay re-centres a box of exactly card width and hangs the controls off that. */}
-          <div className="pointer-events-none absolute inset-0 flex justify-center">
-            <div
-              className="relative h-full"
-              style={{ width: `min(${cardWidthPercent}%, ${cardMaxWidth}px)` }}
-            >
-              <button
-                type="button"
-                onClick={() => setMuted((m) => !m)}
-                aria-label={muted ? 'Unmute video' : 'Mute video'}
-                className="pointer-events-auto absolute bottom-4 right-4 z-[200] flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-sm transition-colors duration-300 hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
-              >
-                {muted ? <MutedIcon /> : <SoundIcon />}
-              </button>
+            <div className="pointer-events-none absolute inset-0 flex justify-center">
+              <div className="relative h-full" style={{ width: 'var(--reel-card-w)' }}>
+                <button
+                  type="button"
+                  onClick={() => setMuted((m) => !m)}
+                  aria-label={muted ? 'Unmute video' : 'Mute video'}
+                  className="pointer-events-auto absolute bottom-4 right-4 z-[200] flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-sm transition-colors duration-300 hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
+                >
+                  {muted ? <MutedIcon /> : <SoundIcon />}
+                </button>
+              </div>
             </div>
           </div>
         </div>
