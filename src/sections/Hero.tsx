@@ -75,11 +75,92 @@ const MOBILE_COMPACT_HEIGHT = 'h-[38svh]'
  * (already heavily scrimmed) background; mobile's is the band's. Either way the media's top edge
  * and the header bar's bottom edge land on the same 80px, so the two line up.
  *
- * DESKTOP_MEDIA_MIN_HEIGHT stays on as a floor because the horizontal origin/object-position
- * values below are tuned against that box height, not because clearance still depends on it.
+ * The desktop media box therefore runs from this inset to the section's bottom and no further —
+ * see the note at the box itself for why anything larger is crop the viewer pays for and never
+ * sees. It used to carry a `max(100%,60rem)` floor, which meant that on any viewport shorter than
+ * 960px the clip rendered 1056px tall no matter how little of it fit: a 1366x768 Windows laptop,
+ * whose browser viewport is ~657px once Chrome's own chrome is subtracted, showed the top 55% of
+ * that render — a chest-up close-up where a MacBook-height window showed the wide shot.
  */
-const DESKTOP_MEDIA_MIN_HEIGHT = 'h-[max(100%,60rem)]'
 const MEDIA_TOP_INSET = 'top-20' // = h-20, the header bar's own height
+
+/**
+ * Floor for the desktop hero section, in rem rather than a viewport unit.
+ *
+ * `min-h-[100svh]` alone broke on short windows: the column is centered, so once its fixed 651px
+ * exceeded the viewport it overflowed symmetrically and its top slid under the 80px fixed header
+ * (at a 657px viewport — a 1366x768 laptop minus browser chrome — the kicker sat at y=83, flush
+ * against the nav; the screenshot that started this was exactly that).
+ *
+ * The scale below is what actually fixes that, by shrinking the whole column on short windows
+ * instead of letting it overrun them. This floor is only the backstop underneath it — at the
+ * scale's own floor the column measures ~576px, so 32rem (512px) is what keeps a genuinely
+ * abnormal window (a half-height browser, a kiosk) showing a hero rather than a bare strip.
+ */
+const DESKTOP_SECTION_MIN_HEIGHT = 'min-h-[max(100svh,32rem)]'
+
+/**
+ * ONE unit drives the entire desktop hero.
+ *
+ * `--hero-u` is the headline's font size, and every other measurement in the desktop hero — kicker,
+ * subhead, the gaps between them, column width, page padding, and the CTA/trust controls — is a
+ * fixed multiple of it. So the hero doesn't have a set of independently-responsive parts; it has
+ * one design that scales as a whole, which is the only way the proportions in it stay put across
+ * window sizes. Scaling the type alone (what this did before) is what left a 37px headline sitting
+ * next to a 60px button that had not moved: the pieces were individually fine and collectively
+ * wrong.
+ *
+ * The design is drawn at u = 3.375rem (54px), i.e. the 1920x1080 rendering, and every multiplier
+ * below is that design's px value / 54. `min(2.8vw, 5vh)` scales u by whichever axis is actually
+ * the constraint — width alone overflows short-wide windows (1366x657, ultrawide), height alone
+ * shrinks type on tall narrow ones. The 2.875rem (46px) floor is deliberately close to the ceiling:
+ * the hero only needs to give back ~15% to fit a laptop, and holding the band that narrow is what
+ * makes every desktop size look like the same hero rather than a family of them. Controls stay
+ * legible and clickable at the floor (48px CTA, 41px phone button).
+ */
+const DESKTOP_UNIT = '[--hero-u:clamp(2.875rem,min(2.8vw,5vh),3.375rem)]'
+
+/** Type: 54 / 24 / 18px at the design size. */
+const DESKTOP_HEADLINE = 'text-[length:var(--hero-u)]'
+const DESKTOP_KICKER = 'text-[length:calc(var(--hero-u)*0.4444)]'
+const DESKTOP_PARAGRAPH = 'text-[length:calc(var(--hero-u)*0.3333)]'
+
+/** Vertical rhythm: the old mt-5 / mt-7 / mt-9 (20 / 28 / 36px). */
+const DESKTOP_GAP_XS = 'mt-[calc(var(--hero-u)*0.3704)]'
+const DESKTOP_GAP_SM = 'mt-[calc(var(--hero-u)*0.5185)]'
+const DESKTOP_GAP_MD = 'mt-[calc(var(--hero-u)*0.6667)]'
+
+/**
+ * The base the controls' internal `em` sizing resolves against — 16px at the design size, which is
+ * exactly what those components inherit on mobile, so setting it here scales the CTA cards and
+ * trust row on desktop while leaving the mobile layout untouched.
+ */
+const DESKTOP_CONTROL_BASE = 'text-[length:calc(var(--hero-u)*0.2963)]'
+
+/**
+ * Widths in `em`, so they scale with their own font size and the copy keeps its shape.
+ *
+ * A px column is what made a smaller headline change shape rather than just get smaller: at 54px
+ * the copy breaks across four lines, but at 37px that same 620px fits more words per line, so short
+ * windows got a differently-wrapped, lopsided headline. In em the ratio of column width to glyph
+ * width is constant, so the break points are identical at every size. 11.5em x 54px = the 620px
+ * column these were tuned at; 30em x 18px = the 540px subhead.
+ */
+const DESKTOP_COLUMN_WIDTH = 'max-w-[calc(var(--hero-u)*11.4815)]'
+const DESKTOP_HEADLINE_WIDTH = 'max-w-[11.5em]'
+const DESKTOP_PARAGRAPH_WIDTH = 'max-w-[30em]'
+
+/**
+ * Column padding, also in units of u (64px horizontal / 43px vertical at the design size) so the
+ * whitespace around the hero scales with the hero.
+ *
+ * The top adds the 80px the fixed header occupies so that `items-center` centers the column in the
+ * space BELOW the nav rather than in the raw viewport — otherwise every window sits the copy high
+ * by half the header's height. The horizontal value also replaces a flat `px-6`, which left the
+ * copy 24px off the bezel on any window narrower than the 80rem content cap and read as unpadded.
+ */
+const DESKTOP_COLUMN_PADDING =
+  'px-[calc(var(--hero-u)*1.1852)] pb-[calc(var(--hero-u)*0.8)] pt-[calc(5rem_+_var(--hero-u)*0.8)]'
 
 function PhoneIcon({ className }: { className?: string }) {
   return (
@@ -125,13 +206,22 @@ function ArrowIcon({ className }: { className?: string }) {
   )
 }
 
-/** Small kicker line — first content in reveal order on both layouts. */
-function HeroKicker({ delay = 0 }: { delay?: number }) {
+/**
+ * Small kicker line — first content in reveal order on both layouts. `sizeClassName` lets desktop
+ * swap in its fluid scale; the default is mobile's fixed pair, which is already right there.
+ */
+function HeroKicker({
+  delay = 0,
+  sizeClassName = 'text-xl sm:text-2xl',
+}: {
+  delay?: number
+  sizeClassName?: string
+}) {
   return (
     <motion.p
       variants={heroReveal}
       custom={delay}
-      className="font-script text-xl text-brand-teal sm:text-2xl"
+      className={`font-script text-brand-teal ${sizeClassName}`}
     >
       Family Owned &amp; Operated
     </motion.p>
@@ -198,21 +288,30 @@ const TRUST_ITEMS = [
   },
 ]
 
-/** Compact trust row — small teal icons + white labels, one row when space allows. */
+/**
+ * Compact trust row — small teal icons + white labels, one row when space allows.
+ *
+ * Sizing is in `em` against this element's own font size (see DESKTOP_CONTROL_BASE): 2em/0.625em
+ * gaps, 1.125em icons and 0.875em labels are the 32/10/18/14px this was drawn at, and stay so
+ * wherever the font size is the inherited 16px — i.e. everywhere on mobile. Desktop overrides that
+ * one font size with a fraction of `--hero-u` and the whole row scales with the rest of the hero.
+ */
 function TrustIndicators({ className }: { className?: string }) {
   return (
-    <ul className={`flex flex-wrap items-center gap-x-8 gap-y-2.5 ${className ?? ''}`}>
+    <ul className={`flex flex-wrap items-center gap-x-[2em] gap-y-[0.625em] ${className ?? ''}`}>
       {TRUST_ITEMS.map((item) => (
-        <li key={item.label} className="flex items-center gap-2">
+        <li key={item.label} className="flex items-center gap-[0.5em]">
           <svg
             aria-hidden="true"
             viewBox="0 0 24 24"
-            className="h-[18px] w-[18px] flex-none text-brand-teal"
+            className="h-[1.125em] w-[1.125em] flex-none text-brand-teal"
             fill="currentColor"
           >
             <path d={item.path} />
           </svg>
-          <span className="text-sm font-semibold text-white drop-shadow-sm">{item.label}</span>
+          <span className="text-[0.875em] font-semibold text-white drop-shadow-sm">
+            {item.label}
+          </span>
         </li>
       ))}
     </ul>
@@ -223,21 +322,25 @@ function TrustIndicators({ className }: { className?: string }) {
  * Compact quote CTA card — replaces the full lead form in the hero (primary conversion action).
  * Links to the page's existing quote form section (`#quote`, per FinalCTA below) rather than
  * duplicating its fields here.
+ *
+ * Every dimension is `em` against the card's own font size — 3.75em/1em/0.75em/2em/1.75em are the
+ * 60/16/12/32/28px this was drawn at, unchanged wherever that font size is the inherited 16px. See
+ * TrustIndicators above for why.
  */
 function QuoteCTACard({ className }: { className?: string }) {
   return (
     <a
       href="#quote"
-      className={`group flex min-h-[60px] items-center gap-3 rounded-lg border border-white/15 bg-black/50 px-4 py-3 backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-brand-teal/70 hover:bg-black/65 hover:shadow-lg hover:shadow-black/40 motion-reduce:transition-colors motion-reduce:hover:translate-y-0 ${FOCUS_RING} ${className ?? ''}`}
+      className={`group flex min-h-[3.75em] items-center gap-[0.75em] rounded-lg border border-white/15 bg-black/50 px-[1em] py-[0.75em] backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-brand-teal/70 hover:bg-black/65 hover:shadow-lg hover:shadow-black/40 motion-reduce:transition-colors motion-reduce:hover:translate-y-0 ${FOCUS_RING} ${className ?? ''}`}
     >
-      <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-brand-teal/15 text-brand-teal">
-        <QuoteIcon className="h-4 w-4" />
+      <span className="flex h-[2em] w-[2em] flex-none items-center justify-center rounded-full bg-brand-teal/15 text-brand-teal">
+        <QuoteIcon className="h-[1em] w-[1em]" />
       </span>
-      <span className="min-w-0 flex-1 truncate text-center text-sm font-semibold text-white sm:text-base">
+      <span className="min-w-0 flex-1 truncate text-center text-[0.875em] font-semibold text-white sm:text-[1em]">
         Get Your Free Quote
       </span>
-      <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-brand-teal text-brand-black transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
-        <ArrowIcon className="h-3.5 w-3.5" />
+      <span className="flex h-[1.75em] w-[1.75em] flex-none items-center justify-center rounded-full bg-brand-teal text-brand-black transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
+        <ArrowIcon className="h-[0.875em] w-[0.875em]" />
       </span>
     </a>
   )
@@ -251,10 +354,12 @@ function PhoneCTAButton({ className }: { className?: string }) {
     <a
       href="tel:+16232241097"
       onClick={trackClickToCall}
-      className={`flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-brand-teal px-4 text-sm font-medium text-brand-black transition-colors duration-300 hover:bg-white ${FOCUS_RING} ${className ?? ''}`}
+      className={`flex min-h-[3em] items-center justify-center gap-[0.5em] whitespace-nowrap rounded-lg bg-brand-teal px-[1em] font-medium text-brand-black transition-colors duration-300 hover:bg-white ${FOCUS_RING} ${className ?? ''}`}
     >
-      <PhoneIcon className="h-3.5 w-3.5" />
-      Call Now
+      <PhoneIcon className="h-[0.875em] w-[0.875em]" />
+      {/* The label carries the type size rather than the <a>, so the button's own em-based box
+          (3em = the 48px it was drawn at) stays measured against the 16px base, not the 14px label. */}
+      <span className="text-[0.875em]">Call Now</span>
     </a>
   )
 }
@@ -266,24 +371,30 @@ function DesktopHeroContent({ reducedMotion }: { reducedMotion: boolean }) {
       variants={heroRevealGroup}
       initial={reducedMotion ? 'show' : 'hidden'}
       animate="show"
-      className="max-w-[620px]"
+      className={DESKTOP_COLUMN_WIDTH}
     >
-      <HeroKicker delay={0} />
-      <HeroHeadline sizeClassName="mt-5 text-[3.375rem]" />
-      <HeroParagraph delay={0.32} />
+      <HeroKicker delay={0} sizeClassName={DESKTOP_KICKER} />
+      <HeroHeadline
+        sizeClassName={`${DESKTOP_GAP_XS} ${DESKTOP_HEADLINE} ${DESKTOP_HEADLINE_WIDTH}`}
+      />
+      <HeroParagraph
+        delay={0.32}
+        className={`${DESKTOP_GAP_SM} ${DESKTOP_PARAGRAPH} ${DESKTOP_PARAGRAPH_WIDTH} leading-[1.5] text-white/85`}
+      />
       <motion.div
         variants={heroFormReveal}
         custom={0.46}
         // Marks the hero's own CTA pair for components/CallNowButton.tsx — the sticky mobile
         // bar appears once *these* leave the viewport, not once the whole section does.
         data-hero-cta
-        className="mt-9 flex items-center gap-3"
+        className={`flex items-center gap-[calc(var(--hero-u)*0.2222)] ${DESKTOP_GAP_MD}`}
       >
-        <QuoteCTACard className="max-w-xs flex-1" />
-        <PhoneCTAButton />
+        {/* 20em x the control base = the 320px `max-w-xs` this was drawn at, now scaling with it. */}
+        <QuoteCTACard className={`max-w-[20em] flex-1 ${DESKTOP_CONTROL_BASE}`} />
+        <PhoneCTAButton className={DESKTOP_CONTROL_BASE} />
       </motion.div>
-      <motion.div variants={heroReveal} custom={0.6} className="mt-9">
-        <TrustIndicators />
+      <motion.div variants={heroReveal} custom={0.6} className={DESKTOP_GAP_MD}>
+        <TrustIndicators className={DESKTOP_CONTROL_BASE} />
       </motion.div>
     </motion.div>
   )
@@ -386,27 +497,30 @@ function DesktopHero({ reducedMotion }: { reducedMotion: boolean }) {
   }, [reducedMotion])
 
   return (
-    <section id="hero" className="sticky top-0 z-0 flex min-h-[100svh] items-center overflow-hidden">
+    <section
+      id="hero"
+      className={`sticky top-0 z-0 flex items-center overflow-hidden ${DESKTOP_UNIT} ${DESKTOP_SECTION_MIN_HEIGHT}`}
+    >
       {/* The black backing is what shows through in the header strip above the media. */}
       <div className="absolute inset-0 -z-10 bg-brand-black">
-        {/* Scale + matching transform-origin (not just object-position) so there's always crop
-            headroom to bias Chase rightward — object-position alone does nothing once a
-            viewport's aspect ratio happens to match the video's 16:9 exactly (e.g. 1920x1080),
-            which otherwise left him dead-center, under the headline. The position itself shifts
-            per breakpoint (rather than one fixed value) — narrower desktop windows crop more
-            horizontally so need a stronger rightward bias to clear the headline; wide monitors
-            have room to relax back toward his natural framing. (Lower percentages read as further
-            *right* on screen here — they show more of the source's left side, which pushes him
-            over.) The three values are retuned for the taller media box below, which crops more
-            horizontally than a viewport-height box did; they now land his head at a steady
-            ~46% of the viewport width from ~1024px all the way up to ultrawide.
-            Vertically this starts below the header (MEDIA_TOP_INSET) so his head always clears it
-            — see the note there — and is floored at DESKTOP_MEDIA_MIN_HEIGHT; between the inset,
-            the floor and the scale, the media covers the section at every viewport height, and
-            the extra overflows past the bottom, which `overflow-hidden` clips. */}
-        <div
-          className={`absolute inset-x-0 origin-[55%_0%] scale-110 xl:origin-[60%_0%] 2xl:origin-[72%_0%] ${MEDIA_TOP_INSET} ${DESKTOP_MEDIA_MIN_HEIGHT}`}
-        >
+        {/* The media box is EXACTLY the area the viewer can see — full width, from the header's
+            bottom edge (MEDIA_TOP_INSET, so his head always clears the nav — see the note there)
+            to the section's bottom. That is the least-cropped a full-bleed 16:9 background can be:
+            `object-cover` only ever discards the difference between the source's aspect ratio and
+            its box's, so any box bigger than what's on screen throws away frame for nothing.
+
+            It used to be bigger in two ways, and both were pure crop. `scale-110` zoomed 10% past
+            the viewport to buy overflow the transform-origin could slide around, and the box ran a
+            further 80px below the section (`h-full` from an inset top), which is picture that only
+            ever existed under the fold. Together they left ~62% of the frame visible on a 1366x657
+            laptop; on the same window the box now shows 100% of the clip's width and 75% of its
+            height — the most a 2.37:1 opening can show of a 1.78:1 source, the rest being the
+            arithmetic of cover fill rather than anything left to tune.
+
+            The object-position stays: it does nothing on windows wider than 16:9 (there is no
+            horizontal overflow left to position) but still biases Chase rightward, clear of the
+            headline, on the taller windows where cover crops width instead of height. */}
+        <div className={`absolute inset-x-0 bottom-0 ${MEDIA_TOP_INSET}`}>
           <HeroMedia
             reducedMotion={reducedMotion}
             videoRef={videoRef}
@@ -429,7 +543,7 @@ function DesktopHero({ reducedMotion }: { reducedMotion: boolean }) {
           arriving cold from a paid ad got a silent video and a nav bar, with nothing on screen
           saying what the business does or offering a way to contact it, for eight seconds. The
           staggered reveal is preserved; it just starts immediately and plays over the video. */}
-      <div className="mx-auto w-full max-w-7xl px-6 py-20">
+      <div className={`mx-auto w-full max-w-7xl ${DESKTOP_COLUMN_PADDING}`}>
         <DesktopHeroContent reducedMotion={reducedMotion} />
       </div>
     </section>
