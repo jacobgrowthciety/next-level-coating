@@ -9,8 +9,8 @@ import RoughDivider from '../components/RoughDivider'
 // dark sections on the page don't read as one identical flat surface (§2A shade variance).
 const SECTION_BG = '#0a0a0a'
 // Off-white body of About preview above — shown through the torn gaps of this section's top
-// edge for the light → dark transition (must match AboutPreview SECTION_BG).
-const PREV_SECTION_BG = '#faf9f5'
+// edge for the dark → dark transition (must match FeaturedProjects SECTION_BG).
+const PREV_SECTION_BG = '#121212'
 
 const FLAGSHIP_SLUG = '/garage-flooring'
 
@@ -18,7 +18,7 @@ const FLAGSHIP_SLUG = '/garage-flooring'
  * One card per real service page (reference/BRIEF.md §5B, §8). `num` is a fixed identity
  * label (not a grid-position index) — each service keeps its own number regardless of
  * whether it's currently in the detail slot or the compact grid. Slugs use the rebuild's
- * clean internal routes (matching AboutPreview's `/about` convention), i.e. the recommended
+ * clean internal routes (matching the site's `/about` convention), i.e. the recommended
  * §8 renames for the two Wix auto-duplicate slugs (polished-concrete, not copy-of-grind-seal).
  * Grind & Seal and Paver Sealing have been discontinued and removed from the lineup.
  */
@@ -221,12 +221,13 @@ export default function ServicesGrid() {
   }
 
   return (
-    <section className="relative z-40" style={{ backgroundColor: SECTION_BG }}>
-      {/* About → Services (light → dark): near-black torn shape over the off-white About
-          section above (revealColor), a self-contained boundary between two in-flow sections. */}
+    <section className="relative z-20" style={{ backgroundColor: SECTION_BG }}>
+      {/* Featured Projects → Services (charcoal → near-black): the torn shape now separates two
+          shades of the same dark family rather than flipping off-white to near-black, so the
+          opening run of the page reads as one continuous surface. */}
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
 
-      <div className="px-6 pb-28 pt-4">
+      <div className="px-6 pb-24 pt-4">
         <motion.div
           variants={staggerContainer}
           initial="hidden"

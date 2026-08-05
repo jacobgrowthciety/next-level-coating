@@ -8,8 +8,8 @@ import RoughDivider from '../components/RoughDivider'
 // don't read as one flat wash.
 const SECTION_BG = '#f6f5f0'
 // Services Grid's dark body above — shown through the torn gaps of this section's top edge
-// for the dark → light transition (must match ServicesGrid SECTION_BG).
-const PREV_SECTION_BG = '#0a0a0a'
+// for the dark → light transition (must match Process SECTION_BG).
+const PREV_SECTION_BG = '#000000'
 
 // Reviews are credibility, not showmanship (§5C) — cards stay static (no click/expand), but
 // keep the same dark-card + teal-stripe DNA established in Services Grid's compact cards so

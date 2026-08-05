@@ -7,14 +7,14 @@ import {
   useReducedMotion,
 } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
-import RoughDivider from '../components/RoughDivider'
+import RoughDivider, { COMPACT_DIVIDER_HEIGHT } from '../components/RoughDivider'
 
 // Dark section in the alternating color rhythm (reference/BRIEF.md §2A). Charcoal rather than
 // pure black so it doesn't read identically flat against the other dark surfaces on the page.
-const SECTION_BG = '#121212'
+const SECTION_BG = '#000000'
 // Off-white body of Why Trust Us above — shown through the torn gaps of this section's top
-// edge for the light → dark transition (must match WhyTrustUs SECTION_BG).
-const PREV_SECTION_BG = '#f4f3ef'
+// edge for the teal → black transition (must match MidPageCTA SECTION_BG).
+const PREV_SECTION_BG = '#41CAD2'
 
 /** "The Next Level Process" — six steps, verbatim copy (reference/BRIEF.md §9). */
 const STEPS = [
@@ -246,11 +246,22 @@ export default function Process() {
   const reducedMotion = useReducedMotion() ?? false
 
   return (
-    <section className="relative z-20" style={{ backgroundColor: SECTION_BG }}>
+    <section className="relative z-40" style={{ backgroundColor: SECTION_BG }}>
       {/* Why Trust Us → Process (light → dark): dark torn shape over the off-white section
           above (revealColor), so the boundary reads without a stickied reveal behind it. */}
-      <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
-      <div className="pb-28 pt-4">
+      {/* Compact, matching the divider on the far side of the teal CTA above.
+          This divider's reveal layer paints the CTA's teal across its full height and then eats
+          into it with the black torn shape — so its height is really the bottom edge of the teal
+          band, not just a Process detail. At the default 208px against the CTA's 96px top
+          divider, the teal ran far longer below the button than above the eyebrow, and no amount
+          of section padding could balance it. Equal divider heights put the two edges in
+          proportion. */}
+      <RoughDivider
+        fillColor={SECTION_BG}
+        revealColor={PREV_SECTION_BG}
+        className={COMPACT_DIVIDER_HEIGHT}
+      />
+      <div className="pb-24 pt-4">
         {/* Desktop pinned interaction; mobile stacked cards. Rendered via responsive
             visibility so each path only mounts its own scroll behaviour. */}
         <div className="hidden lg:block">

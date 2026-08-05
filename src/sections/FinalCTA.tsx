@@ -35,7 +35,7 @@ export default function FinalCTA() {
           (revealColor), a self-contained boundary between two in-flow sections. */}
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
 
-      <div className="px-6 pb-20 pt-4">
+      <div className="px-6 pb-24 pt-4">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -43,7 +43,7 @@ export default function FinalCTA() {
           viewport={{ once: true, amount: 0.3 }}
           className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16"
         >
-          <div className="max-w-xl text-center lg:text-left">
+          <div className="mx-auto max-w-xl text-center lg:mx-0 lg:text-left">
             <motion.p
               variants={fadeUp}
               className="font-display text-xs uppercase tracking-[0.35em] text-brand-black/60"
@@ -54,7 +54,7 @@ export default function FinalCTA() {
               variants={fadeUp}
               className="mt-3 font-script text-4xl text-brand-black sm:text-5xl lg:text-6xl"
             >
-              Let's Get You To The Next Level
+              Let's Get You To The Next Level!
             </motion.h2>
             <motion.p
               variants={fadeUp}
