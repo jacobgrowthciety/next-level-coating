@@ -521,9 +521,15 @@ export default function ReelOrbit({
 
       {/* Arrows live in this row rather than flanking the stage. Because the deck fans to one
           side, a right-hand arrow pinned beside the card always landed on top of the cards
-          behind it; down here nothing overlaps and the three controls read as one group. */}
+          behind it; down here nothing overlaps and the three controls read as one group.
+
+          `data-sticky-cta-avoid` marks this row for the mobile Call Now pill
+          (components/CallNowButton.tsx), which is fixed to the bottom of the viewport and lands
+          right on top of these controls. The pill steps aside while the row is in the lower part
+          of the screen — see the note there for why padding can't solve this and why the zone is
+          deliberately much taller than the actual overlap. */}
       {count > 1 && (
-        <div className="mt-6 flex items-center justify-center gap-4">
+        <div className="mt-6 flex items-center justify-center gap-4" data-sticky-cta-avoid>
           {showArrows && <ArrowButton side="left" onClick={goPrev} />}
 
           <div className="flex items-center gap-2">
