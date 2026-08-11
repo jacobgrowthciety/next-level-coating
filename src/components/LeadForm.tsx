@@ -8,6 +8,19 @@ import { trackClickToCall, trackGenerateLead } from '../lib/analytics'
  * captured whether or not it's checked. Its state is sent to GoHighLevel as `smsConsent` so a
  * workflow can branch on it (only opted-in leads get enrolled in automated SMS). */
 
+/** The exact consent language displayed at the point of opt-in, kept as a constant so the string
+ * submitted as proof-of-consent is literally the one the user saw — not a copy that can drift.
+ *
+ * This wording is load-bearing for A2P 10DLC: it must keep naming the legal entity, the use case,
+ * frequency, rates, and both HELP/STOP keywords, and it must stay in sync with the Customer Care
+ * campaign description registered in GoHighLevel. Carriers compare the two. Note the campaign is
+ * registered as NON-marketing — promotional content must never be sent to these opt-ins. */
+const SMS_CONSENT_TEXT =
+  'I consent to receive non-marketing text messages from Next Level Coatings LLC about my quote ' +
+  'request, appointment scheduling, and project updates. Message frequency may vary, message & ' +
+  'data rates may apply. Text HELP for assistance, reply STOP to opt out. Consent is not a ' +
+  'condition of purchase.'
+
 const PROJECT_OPTIONS = [
   '2 Car',
   '3 Car',
@@ -67,6 +80,12 @@ export default function LeadForm() {
           zipCode: values.zip,
           projectDescription: values.project,
           smsConsent,
+          // Proof of opt-in, stored on the GoHighLevel contact. If a carrier or Twilio audits the
+          // campaign they ask when consent was given, on what page, and to exactly what wording —
+          // the boolean alone can't answer that.
+          consentTimestamp: new Date().toISOString(),
+          consentPageUrl: window.location.href,
+          consentText: SMS_CONSENT_TEXT,
         }),
       })
 
@@ -227,11 +246,19 @@ export default function LeadForm() {
         </div>
       </div>
 
-      {/* Optional (not `required`) — unchecked by default so consent is opt-in, per TCPA.
-          Leaving it unchecked still submits the lead; it only withholds SMS consent. */}
+      {/* Optional (not `required`) and unchecked by default — consent must be an affirmative act,
+          and the lead still submits without it; ticking the box only adds SMS consent.
+
+          Policy acceptance is deliberately NOT bundled into this label. Carriers require the SMS
+          consent to be its own unambiguous opt-in, so agreeing to the Privacy Policy / Terms is a
+          separate statement below rather than a second clause inside the same checkbox.
+
+          Sized at text-xs rather than the old text-[10px]/50% opacity: the disclosure has to be
+          legible and non-obscured to pass A2P review, and 10px at half opacity reads as hidden
+          fine print in a reviewer's screenshot. */}
       <label
         htmlFor={consentId}
-        className="mt-4 flex items-start gap-2.5 text-[10px] leading-relaxed text-white/50"
+        className="mt-4 flex items-start gap-2.5 text-xs leading-relaxed text-white/70"
       >
         <input
           id={consentId}
@@ -241,21 +268,29 @@ export default function LeadForm() {
           onChange={(e) => setSmsConsent(e.target.checked)}
           className="mt-0.5 h-4 w-4 shrink-0 accent-brand-teal"
         />
-        <span>
-          I agree to Terms &amp; Conditions and Privacy Policy linked below provided by Next
-          Level Coatings. By providing my phone number, I agree to receive text messages from
-          Next Level Coatings at the phone number provided above. Data rates may apply, reply
-          STOP to opt out.
-          <span className="mt-1 flex justify-center gap-4">
-            <Link to="/privacy-policy" className="underline transition-colors hover:text-brand-teal">
-              Privacy Policy
-            </Link>
-            <Link to="/terms-conditions" className="underline transition-colors hover:text-brand-teal">
-              Terms &amp; Conditions
-            </Link>
-          </span>
-        </span>
+        <span>{SMS_CONSENT_TEXT}</span>
       </label>
+
+      {/* New tab, so reading the policies never discards a half-filled form. */}
+      <p className="mt-3 text-xs leading-relaxed text-white/70">
+        By submitting this form you agree to our{' '}
+        <Link
+          to="/privacy-policy"
+          target="_blank"
+          className="underline transition-colors hover:text-brand-teal"
+        >
+          Privacy Policy
+        </Link>{' '}
+        and{' '}
+        <Link
+          to="/terms-conditions"
+          target="_blank"
+          className="underline transition-colors hover:text-brand-teal"
+        >
+          Terms &amp; Conditions
+        </Link>
+        .
+      </p>
 
       {error && (
         <p role="alert" className="mt-4 text-sm text-red-400">

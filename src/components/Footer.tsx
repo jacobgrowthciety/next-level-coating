@@ -54,14 +54,6 @@ function InstagramIcon({ className }: { className?: string }) {
   )
 }
 
-function FacebookIcon({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className={className} fill="currentColor">
-      <path d="M13.5 21v-7.6h2.6l.4-3h-3v-1.9c0-.9.25-1.5 1.55-1.5H16.6V4.2C16.3 4.16 15.28 4 14.1 4c-2.46 0-4.15 1.5-4.15 4.26v2.14H7.3v3h2.65V21h3.55Z" />
-    </svg>
-  )
-}
-
 /** Site footer (reference/BRIEF.md §7, §8) — persistent across every page, like Header. */
 export default function Footer() {
   return (
@@ -100,6 +92,10 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
+            {/* Instagram only. A Facebook icon used to sit here pointing at href="#" — a dead
+                placeholder, since no page URL was ever confirmed. Removed rather than left
+                broken: A2P/brand review treats non-functional links as a legitimacy signal.
+                Restore it (with the real URL) if the owners provide a page. */}
             <div className="mt-5 flex items-center gap-4">
               <a
                 href={`https://instagram.com/${INSTAGRAM_HANDLE}`}
@@ -109,15 +105,6 @@ export default function Footer() {
                 className="text-white/60 transition-colors hover:text-brand-teal"
               >
                 <InstagramIcon className="h-5 w-5" />
-              </a>
-              {/* No confirmed Facebook page URL yet (BRIEF.md §7/§11 style gap) — placeholder
-                  link until the owner provides the real page. */}
-              <a
-                href="#"
-                aria-label="Next Level Coatings on Facebook"
-                className="text-white/60 transition-colors hover:text-brand-teal"
-              >
-                <FacebookIcon className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -157,7 +144,7 @@ export default function Footer() {
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
           <p className="text-xs text-white/40">
-            © {new Date().getFullYear()} Next Level Coatings. All rights reserved.
+            © {new Date().getFullYear()} Next Level Coatings LLC. All rights reserved.
           </p>
           <div className="flex gap-6">
             <Link to="/privacy-policy" className="text-xs text-white/40 transition-colors hover:text-brand-teal">

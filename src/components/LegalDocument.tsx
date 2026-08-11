@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from './RoughDivider'
 import { trackClickToCall, trackClickToEmail } from '../lib/analytics'
+import { BUSINESS, type LegalBlock, type LegalBullet } from '../content/legal'
 
 // Compact dark page header + light document body — the About page pattern
 // (reference/BRIEF.md §9A) with the alternating dark → light rhythm (§2A), minus the
@@ -10,18 +11,32 @@ import { trackClickToCall, trackClickToEmail } from '../lib/analytics'
 const HEADER_BG = '#000000'
 const BODY_BG = '#f4f3ef'
 
-/** Business NAP (reference/BRIEF.md §7) — same values as the footer and LocalBusinessSchema. */
-export const BUSINESS = {
-  phoneHref: 'tel:+16232241097',
-  phone: '(623) 224-1097',
-  email: 'nextlevelcoatingsaz@gmail.com',
-  address: '25689 N 140th Ln, Surprise, AZ 85387',
-}
+// Copy, NAP and types now live in content/legal.ts so the build-time prerenderer can read the same
+// source (see the note at the top of that file). Re-exported here because this module was the
+// original home and the legal pages already import BUSINESS from it.
+export { BUSINESS } from '../content/legal'
+export type { LegalBlock, LegalBullet, LegalDoc } from '../content/legal'
 
-export type LegalBlock = {
-  heading: string
-  paragraphs?: string[]
-  bullets?: string[]
+/** Renders a bullet's inline runs — plain strings pass through, objects become internal links. */
+function Bullet({ bullet }: { bullet: LegalBullet }) {
+  if (typeof bullet === 'string') return <>{bullet}</>
+  return (
+    <>
+      {bullet.map((run, i) =>
+        typeof run === 'string' ? (
+          <span key={i}>{run}</span>
+        ) : (
+          <Link
+            key={i}
+            to={run.to}
+            className="underline transition-colors hover:text-brand-teal"
+          >
+            {run.text}
+          </Link>
+        ),
+      )}
+    </>
+  )
 }
 
 /**
@@ -94,13 +109,17 @@ export default function LegalDocument({
                 ))}
                 {block.bullets && (
                   <ul className="mt-4 space-y-2.5">
-                    {block.bullets.map((bullet) => (
+                    {/* Index keys: these lists are static per page and never reorder, and a
+                        segmented bullet can't be used as a key the way the old strings were. */}
+                    {block.bullets.map((bullet, i) => (
                       <li
-                        key={bullet}
+                        key={i}
                         className="flex gap-3 text-base leading-relaxed text-brand-black/80 sm:text-lg"
                       >
                         <span aria-hidden="true" className="mt-[0.55em] h-1.5 w-1.5 flex-none rounded-full bg-brand-teal" />
-                        <span>{bullet}</span>
+                        <span>
+                          <Bullet bullet={bullet} />
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -117,7 +136,7 @@ export default function LegalDocument({
                 If you have questions about this page, contact us at:
               </p>
               <address className="mt-4 space-y-1.5 text-base not-italic leading-relaxed text-brand-black/80 sm:text-lg">
-                <p className="font-semibold text-brand-black">Next Level Coatings</p>
+                <p className="font-semibold text-brand-black">{BUSINESS.legalName}</p>
                 <p>{BUSINESS.address}</p>
                 <p>
                   <a href={BUSINESS.phoneHref} onClick={trackClickToCall} className="transition-colors hover:text-brand-teal">

@@ -9,5 +9,9 @@
     { "source": "/paver-sealing", "destination": "/", "permanent": true },
     { "source": "/chip-color-chart", "destination": "/flake-color-chart", "permanent": true }
   ],
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
+    { "source": "/terms-conditions", "destination": "/terms-conditions.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
