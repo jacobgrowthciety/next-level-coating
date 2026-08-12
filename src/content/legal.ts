@@ -158,6 +158,10 @@ export const TERMS_CONDITIONS: LegalDoc = {
         `Text messages are sent from a ${BUSINESS.legalName} messaging number, which may differ from our main business line; our main line remains ${BUSINESS.phone} for calls.`,
       ],
       bullets: [
+        // Required by the A2P compliance review: the Terms must state an 18+ age restriction for
+        // the SMS program. Unrelated to the "age gated content" campaign flag, which covers
+        // alcohol/tobacco/cannabis/gambling and stays off.
+        'You must be 18 years or older to use this SMS service. By providing your phone number and opting in, you confirm that you are at least 18 years of age.',
         'You will receive up to 10 messages per month in total across both message types. Message frequency may vary based on your interactions with us. As always, message and data rates may apply for any messages sent to you from us and to us from you. If you have any questions about your text plan or data plan, it is best to contact your wireless provider.',
         `You can cancel the SMS service at any time by replying STOP to any message you receive from us. Replying STOP unsubscribes you from all text messages from us, both non-marketing and marketing. After you send STOP, we will send you one message confirming that you have been unsubscribed, and you will receive no further messages. If you want to join again, just submit a new quote request through our website and we will start sending messages to you again. If you are experiencing issues with the messaging program, reply HELP for assistance, or contact us directly at ${BUSINESS.phone} or ${BUSINESS.email}.`,
         'Carriers are not liable for delayed or undelivered messages.',
