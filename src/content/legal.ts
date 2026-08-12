@@ -100,21 +100,46 @@ export const PRIVACY_POLICY: LegalDoc = {
       ],
     },
     {
+      // Data security practices. The A2P compliance review checks for concrete safeguards, not a
+      // general promise — this section previously described data *sharing* under a security-
+      // sounding heading and was flagged. Every measure listed here must remain factually true of
+      // how the business actually operates; do not add controls that are not in place.
       heading: 'How We Protect Your Information',
       paragraphs: [
-        'We do not sell, rent, or trade your personal information to third parties. We may share information with trusted service providers (such as our customer relationship management platform) solely to help us operate our business and provide services to you, and only as necessary for that purpose.',
+        'We take reasonable administrative, technical, and physical measures to protect the personal information you share with us against loss, misuse, and unauthorized access, disclosure, or alteration.',
+      ],
+      bullets: [
+        'All information submitted through this website is transmitted over an encrypted HTTPS/TLS connection.',
+        'Quote requests and customer records are stored in our customer relationship management platform, which is password-protected and accessible only through individual user accounts.',
+        'Access to personal information is limited to the owners and staff who need it to respond to your request or carry out the work you have asked us to perform.',
+        'We use established third-party providers for website hosting, analytics, and customer relationship management, and we do not authorize them to use your information for their own purposes.',
+        'We keep personal information only as long as needed to provide our services and to meet legal, tax, and accounting obligations, after which it is deleted or anonymized.',
+        'No method of transmission or electronic storage is completely secure, so we cannot guarantee absolute security. If we become aware of a breach affecting your personal information, we will notify affected individuals as required by applicable law.',
       ],
     },
     {
-      heading: 'Cookies and Analytics',
+      heading: 'Information Sharing',
       paragraphs: [
-        'Our website uses Google Analytics to understand how visitors use our site. This helps us improve our website and services. You can control cookie preferences through your browser settings.',
+        'We do not sell, rent, or trade your personal information to third parties. We may share information with trusted service providers (such as our customer relationship management platform) solely to help us operate our business and provide services to you, and only as necessary for that purpose. We may also disclose information where required by law or to protect our legal rights.',
+      ],
+    },
+    {
+      heading: 'Cookies and Tracking Technologies',
+      paragraphs: [
+        'Our website uses cookies and similar tracking technologies. We use Google Analytics to understand how visitors use our site, and the Meta (Facebook) Pixel to measure the performance of our advertising. These tools may collect information such as the pages you visit, how long you spend on the site, your device and browser type, and your general geographic location.',
+        "You can control or block cookies through your browser settings, and you can opt out of Google Analytics using Google's browser opt-out add-on. Blocking cookies will not prevent you from requesting a quote or using our website.",
       ],
     },
     {
       heading: 'Your Rights',
       paragraphs: [
-        `You may request access to, correction of, or deletion of your personal information by contacting us at ${BUSINESS.email} or ${BUSINESS.phone}.`,
+        `You may request access to, correction of, or deletion of your personal information at any time by contacting us at ${BUSINESS.email} or ${BUSINESS.phone}. We will respond to your request within a reasonable period.`,
+      ],
+      bullets: [
+        'You can stop receiving text messages at any time by replying STOP to any message you receive from us.',
+        'You can ask us to update or correct any information you have given us.',
+        'You can ask us to delete your information, except where we are required to keep it to meet legal, tax, or accounting obligations.',
+        'You can ask us what personal information we hold about you.',
       ],
     },
     {
@@ -163,7 +188,7 @@ export const TERMS_CONDITIONS: LegalDoc = {
         // alcohol/tobacco/cannabis/gambling and stays off.
         'You must be 18 years or older to use this SMS service. By providing your phone number and opting in, you confirm that you are at least 18 years of age.',
         'You will receive up to 10 messages per month in total across both message types. Message frequency may vary based on your interactions with us. As always, message and data rates may apply for any messages sent to you from us and to us from you. If you have any questions about your text plan or data plan, it is best to contact your wireless provider.',
-        `You can cancel the SMS service at any time by replying STOP to any message you receive from us. Replying STOP unsubscribes you from all text messages from us, both non-marketing and marketing. After you send STOP, we will send you one message confirming that you have been unsubscribed, and you will receive no further messages. If you want to join again, just submit a new quote request through our website and we will start sending messages to you again. If you are experiencing issues with the messaging program, reply HELP for assistance, or contact us directly at ${BUSINESS.phone} or ${BUSINESS.email}.`,
+        `You can cancel the SMS service at any time. Just text STOP, or reply STOP to any message you receive from us. Replying STOP unsubscribes you from all text messages from us, both non-marketing and marketing. After you send STOP, we will send you one message confirming that you have been unsubscribed, and you will receive no further messages. If you want to join again, just submit a new quote request through our website and we will start sending messages to you again. If you are experiencing issues with the messaging program, reply HELP for assistance, or contact us directly at ${BUSINESS.phone} or ${BUSINESS.email}.`,
         'Carriers are not liable for delayed or undelivered messages.',
         'Your consent to receive text messages is not a condition of purchasing any goods or services.',
         [
