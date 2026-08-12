@@ -4,22 +4,33 @@ import { Link } from 'react-router-dom'
 import { trackClickToCall, trackGenerateLead } from '../lib/analytics'
 
 /** Lead capture form — fields per reference/BRIEF.md §6. Reused across pages.
- * The SMS consent checkbox is intentionally optional (not `required`) — leads should still be
- * captured whether or not it's checked. Its state is sent to GoHighLevel as `smsConsent` so a
- * workflow can branch on it (only opted-in leads get enrolled in automated SMS). */
+ * Both SMS consent checkboxes are intentionally optional (not `required`) — leads should still be
+ * captured whether or not either is checked. Their state is sent to GoHighLevel as `smsConsent` and
+ * `smsMarketingConsent` so a workflow can branch on them (only opted-in leads get enrolled in the
+ * matching automated SMS). */
 
-/** The exact consent language displayed at the point of opt-in, kept as a constant so the string
- * submitted as proof-of-consent is literally the one the user saw — not a copy that can drift.
+/* The exact consent language displayed at the point of opt-in, kept as constants so the strings
+ * submitted as proof-of-consent are literally what the user saw — not copies that can drift.
  *
- * This wording is load-bearing for A2P 10DLC: it must keep naming the legal entity, the use case,
- * frequency, rates, and both HELP/STOP keywords, and it must stay in sync with the Customer Care
- * campaign description registered in GoHighLevel. Carriers compare the two. Note the campaign is
- * registered as NON-marketing — promotional content must never be sent to these opt-ins. */
+ * This wording is load-bearing for A2P 10DLC. The campaign is registered as Low Volume MIXED, which
+ * means both transactional and promotional content are declared — and carriers require the two to
+ * be consented to SEPARATELY. Hence two boxes, each independently optional: a lead can accept
+ * appointment texts while refusing offers, and marketing is never implied by transactional consent.
+ *
+ * Each string must keep naming the legal entity, its own use case, frequency, rates, and both
+ * HELP/STOP keywords, and must stay in sync with the campaign description and sample messages
+ * registered in GoHighLevel. Reviewers compare the two directly. */
 const SMS_CONSENT_TEXT =
   'I consent to receive non-marketing text messages from Next Level Coatings LLC about my quote ' +
   'request, appointment scheduling, and project updates. Message frequency may vary, message & ' +
   'data rates may apply. Text HELP for assistance, reply STOP to opt out. Consent is not a ' +
   'condition of purchase.'
+
+const SMS_MARKETING_CONSENT_TEXT =
+  'I consent to receive marketing text messages, about special offers, discounts, and service ' +
+  'updates, from Next Level Coatings LLC at the phone number provided. Message frequency may ' +
+  'vary. Message & data rates may apply. Text HELP for assistance, reply STOP to opt out. ' +
+  'Consent is not a condition of purchase.'
 
 const PROJECT_OPTIONS = [
   '2 Car',
@@ -47,6 +58,7 @@ const GOHIGHLEVEL_WEBHOOK_URL =
 export default function LeadForm() {
   const [values, setValues] = useState(initialState)
   const [smsConsent, setSmsConsent] = useState(false)
+  const [smsMarketingConsent, setSmsMarketingConsent] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(false)
@@ -58,6 +70,7 @@ export default function LeadForm() {
   const zipId = `${idPrefix}zip`
   const projectId = `${idPrefix}project`
   const consentId = `${idPrefix}consent`
+  const marketingConsentId = `${idPrefix}marketingConsent`
 
   function update(field: keyof typeof initialState, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }))
@@ -79,13 +92,18 @@ export default function LeadForm() {
           phone: values.phone,
           zipCode: values.zip,
           projectDescription: values.project,
+          // `smsConsent` keeps its original name (transactional opt-in) so the existing
+          // GoHighLevel workflow mapping keeps working; marketing is a new, separate field.
           smsConsent,
+          smsMarketingConsent,
           // Proof of opt-in, stored on the GoHighLevel contact. If a carrier or Twilio audits the
           // campaign they ask when consent was given, on what page, and to exactly what wording —
-          // the boolean alone can't answer that.
+          // the booleans alone can't answer that. Both texts are sent regardless of which boxes
+          // were ticked, since what matters is the wording that was presented.
           consentTimestamp: new Date().toISOString(),
           consentPageUrl: window.location.href,
           consentText: SMS_CONSENT_TEXT,
+          marketingConsentText: SMS_MARKETING_CONSENT_TEXT,
         }),
       })
 
@@ -246,14 +264,18 @@ export default function LeadForm() {
         </div>
       </div>
 
-      {/* Optional (not `required`) and unchecked by default — consent must be an affirmative act,
-          and the lead still submits without it; ticking the box only adds SMS consent.
+      {/* Two independent opt-ins, both optional (not `required`) and unchecked by default.
 
-          Policy acceptance is deliberately NOT bundled into this label. Carriers require the SMS
-          consent to be its own unambiguous opt-in, so agreeing to the Privacy Policy / Terms is a
-          separate statement below rather than a second clause inside the same checkbox.
+          Consent must be an affirmative act, and the lead still submits with neither ticked. They
+          are kept separate because the campaign is registered as Mixed: carriers require
+          transactional and promotional consent to be granted individually, so someone can accept
+          appointment texts without accepting offers. Never collapse these into one box, and never
+          make either a condition of submitting.
 
-          Sized at text-xs rather than the old text-[10px]/50% opacity: the disclosure has to be
+          Policy acceptance is deliberately NOT bundled into either label — agreeing to the Privacy
+          Policy / Terms is the separate statement below, so each checkbox means exactly one thing.
+
+          Sized at text-xs rather than the old text-[10px]/50% opacity: the disclosures have to be
           legible and non-obscured to pass A2P review, and 10px at half opacity reads as hidden
           fine print in a reviewer's screenshot. */}
       <label
@@ -269,6 +291,21 @@ export default function LeadForm() {
           className="mt-0.5 h-4 w-4 shrink-0 accent-brand-teal"
         />
         <span>{SMS_CONSENT_TEXT}</span>
+      </label>
+
+      <label
+        htmlFor={marketingConsentId}
+        className="mt-3 flex items-start gap-2.5 text-xs leading-relaxed text-white/70"
+      >
+        <input
+          id={marketingConsentId}
+          name="smsMarketingConsent"
+          type="checkbox"
+          checked={smsMarketingConsent}
+          onChange={(e) => setSmsMarketingConsent(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-brand-teal"
+        />
+        <span>{SMS_MARKETING_CONSENT_TEXT}</span>
       </label>
 
       {/* New tab, so reading the policies never discards a half-filled form. */}

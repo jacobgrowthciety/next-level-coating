@@ -58,7 +58,7 @@ export const PRIVACY_POLICY: LegalDoc = {
   seoTitle: 'Privacy Policy | Next Level Coatings',
   seoDescription:
     'How Next Level Coatings collects, uses, and protects the personal information you share with us, including our SMS/text messaging and analytics practices.',
-  lastUpdated: 'August 10, 2026',
+  lastUpdated: 'August 12, 2026',
   intro: `${BUSINESS.legalName} ("we," "us," or "our") respects your privacy and is committed to protecting the personal information you share with us. This Privacy Policy explains what information we collect, how we use it, and your rights regarding that information.`,
   blocks: [
     {
@@ -79,12 +79,13 @@ export const PRIVACY_POLICY: LegalDoc = {
     {
       heading: 'SMS/Text Messaging Communications',
       paragraphs: [
-        'If you provide your phone number and check the SMS consent box on our quote request form, we may send you non-marketing text messages about your quote request, appointment scheduling, and project updates. We do not send marketing or promotional text messages.',
+        'Our quote request form offers two separate SMS consent checkboxes, and you may accept either, both, or neither. Neither is required to submit the form or to purchase any goods or services.',
+        'If you consent to non-marketing messages, we may text you about your quote request, appointment scheduling, and project updates. If you separately consent to marketing messages, we may text you about special offers, discounts, and service updates. Consenting to one does not opt you in to the other.',
       ],
       bullets: [
         'Message frequency may vary based on your interactions with us.',
         'Message and data rates may apply.',
-        'You can opt out at any time by replying STOP to any message you receive from us.',
+        'You can opt out at any time by replying STOP to any message you receive from us. Replying STOP ends all text messages from us, both non-marketing and marketing.',
         `For help, reply HELP or contact us at ${BUSINESS.phone} or ${BUSINESS.email}.`,
         'Consent to receive text messages is not a condition of purchasing any goods or services.',
         `Text messages are sent from a ${BUSINESS.legalName} messaging number, which may differ from the main business line listed on this website.`,
@@ -131,7 +132,7 @@ export const TERMS_CONDITIONS: LegalDoc = {
   seoTitle: 'Terms & Conditions | Next Level Coatings',
   seoDescription:
     'The terms governing your use of the Next Level Coatings website, including quote estimates, SMS messaging terms, liability, and governing law.',
-  lastUpdated: 'August 10, 2026',
+  lastUpdated: 'August 12, 2026',
   intro: `Welcome to ${BUSINESS.legalName}. By accessing or using our website, you agree to be bound by the following terms and conditions.`,
   blocks: [
     {
@@ -147,18 +148,18 @@ export const TERMS_CONDITIONS: LegalDoc = {
       ],
     },
     {
-      // A2P 10DLC (Customer Care campaign) required disclosures. Each bullet maps to a clause the
-      // carriers check for: frequency, rates, the full STOP/HELP opt-out protocol, carrier
+      // A2P 10DLC (Low Volume Mixed campaign) required disclosures. Each bullet maps to a clause
+      // the carriers check for: frequency, rates, the full STOP/HELP opt-out protocol, carrier
       // liability, the not-a-condition-of-purchase statement, and the Privacy Policy cross-link.
       // Changing the stated frequency here means updating the registered campaign too.
       heading: 'SMS Terms of Service',
       paragraphs: [
-        `By submitting your phone number through our website and checking the SMS consent box, you consent to receive non-marketing SMS communications from ${BUSINESS.legalName} related to your quote request, appointment scheduling, and project updates. We do not send marketing or promotional text messages.`,
+        `By submitting your phone number through our website and checking one or both SMS consent boxes, you consent to receive the corresponding SMS communications from ${BUSINESS.legalName}. The non-marketing opt-in covers messages related to your quote request, appointment scheduling, and project updates. The separate marketing opt-in covers special offers, discounts, and service updates. The two consents are independent, and neither is required to submit the form or to purchase any goods or services.`,
         `Text messages are sent from a ${BUSINESS.legalName} messaging number, which may differ from our main business line; our main line remains ${BUSINESS.phone} for calls.`,
       ],
       bullets: [
-        'You will receive up to 10 messages per month. Message frequency may vary based on your interactions with us. As always, message and data rates may apply for any messages sent to you from us and to us from you. If you have any questions about your text plan or data plan, it is best to contact your wireless provider.',
-        `You can cancel the SMS service at any time by replying STOP to any message you receive from us. After you send STOP, we will send you one message confirming that you have been unsubscribed, and you will receive no further messages. If you want to join again, just submit a new quote request through our website and we will start sending messages to you again. If you are experiencing issues with the messaging program, reply HELP for assistance, or contact us directly at ${BUSINESS.phone} or ${BUSINESS.email}.`,
+        'You will receive up to 10 messages per month in total across both message types. Message frequency may vary based on your interactions with us. As always, message and data rates may apply for any messages sent to you from us and to us from you. If you have any questions about your text plan or data plan, it is best to contact your wireless provider.',
+        `You can cancel the SMS service at any time by replying STOP to any message you receive from us. Replying STOP unsubscribes you from all text messages from us, both non-marketing and marketing. After you send STOP, we will send you one message confirming that you have been unsubscribed, and you will receive no further messages. If you want to join again, just submit a new quote request through our website and we will start sending messages to you again. If you are experiencing issues with the messaging program, reply HELP for assistance, or contact us directly at ${BUSINESS.phone} or ${BUSINESS.email}.`,
         'Carriers are not liable for delayed or undelivered messages.',
         'Your consent to receive text messages is not a condition of purchasing any goods or services.',
         [
