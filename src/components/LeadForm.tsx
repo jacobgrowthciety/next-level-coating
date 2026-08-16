@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { trackClickToCall, trackGenerateLead } from '../lib/analytics'
@@ -55,8 +55,39 @@ const fieldClass =
 const GOHIGHLEVEL_WEBHOOK_URL =
   'https://services.leadconnectorhq.com/hooks/tKHtSQwC4t275M0g1LQf/webhook-trigger/e67f7f0c-1cf5-4477-99b6-7d0c1408f0b9'
 
+/* Bot filtering. Junk leads were reaching the CRM and firing real SMS/email alerts to the client,
+ * so two cheap client-side checks run before the webhook is ever called.
+ *
+ * Both failures are SILENT: no error state, no console output, nothing that tells a scripted
+ * submitter which check it tripped or that a check exists at all. A real user cannot reach either
+ * one — the decoy field is unreachable by pointer, keyboard, autofill, and assistive tech, and
+ * nobody reads and completes six fields in three seconds. */
+
+/** Minimum time between the form rendering and it being submitted. */
+const MIN_FILL_MS = 3000
+
+/* The decoy field is positioned off-screen rather than `display:none`/`visibility:hidden`, because
+ * bots routinely skip fields hidden those two ways. It stays a real, laid-out, fillable input —
+ * just parked outside the viewport. `website` is a name generic enough that a form-filler wants
+ * it; `honeypot` would give the game away. */
+const honeypotStyle = {
+  position: 'absolute',
+  left: '-9999px',
+  top: 'auto',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+} as const
+
 export default function LeadForm() {
   const [values, setValues] = useState(initialState)
+  /* Deliberately uncontrolled: the check reads the DOM node's value at submit time. A controlled
+   * input would only see what React state saw, and a bot that assigns `input.value` without
+   * dispatching an input event would sail straight through. Reading the node catches that too. */
+  const honeypotRef = useRef<HTMLInputElement>(null)
+  /* Set on first render, not in an effect — an effect fires after paint, so a submission racing
+   * hydration could otherwise measure from a later, more forgiving start point. */
+  const renderedAt = useRef(Date.now())
   const [smsConsent, setSmsConsent] = useState(false)
   const [smsMarketingConsent, setSmsMarketingConsent] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -71,6 +102,7 @@ export default function LeadForm() {
   const projectId = `${idPrefix}project`
   const consentId = `${idPrefix}consent`
   const marketingConsentId = `${idPrefix}marketingConsent`
+  const honeypotId = `${idPrefix}website`
 
   function update(field: keyof typeof initialState, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }))
@@ -78,6 +110,15 @@ export default function LeadForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    /* Bot checks run first, before any state is touched, so a rejected submission leaves the form
+     * exactly as it was: no spinner, no error, no success screen, no console noise — and above all
+     * no webhook call, so nothing reaches the CRM and no notification is sent to the client. */
+    const decoyValue = honeypotRef.current?.value ?? ''
+    if (decoyValue.trim() !== '' || Date.now() - renderedAt.current < MIN_FILL_MS) {
+      return
+    }
+
     setSubmitting(true)
     setError(false)
 
@@ -262,6 +303,26 @@ export default function LeadForm() {
             ))}
           </select>
         </div>
+      </div>
+
+      {/* Decoy field — see the honeypot notes above. Never `required`, and its value is never sent
+          anywhere; the only thing that reads it is the bot check in handleSubmit.
+
+          `aria-hidden` plus `tabIndex={-1}` keep it away from real people: it is off-screen so it
+          can't be clicked, skipped by tab order so it can't be typed into, ignored by screen
+          readers so it is never announced, and `autoComplete="off"` stops the browser offering to
+          fill it. Anything that ends up in here got there by a script walking the DOM. */}
+      <div style={honeypotStyle} aria-hidden="true">
+        <label htmlFor={honeypotId}>Website</label>
+        <input
+          id={honeypotId}
+          ref={honeypotRef}
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          defaultValue=""
+        />
       </div>
 
       {/* Two independent opt-ins, both optional (not `required`) and unchecked by default.
