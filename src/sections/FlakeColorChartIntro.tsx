@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
+import SanityProse from '../components/SanityProse'
+import type { PageIntroProps } from '../lib/pageContent'
 
 // Compact page header (reference/BRIEF.md §9A pattern) — same treatment as Garage Flooring's
 // intro. "Flake Color Chart" is a top-level primary nav link (not a Services dropdown item,
@@ -9,7 +11,7 @@ import { fadeUp, staggerContainer } from '../animations/variants'
 const INTRO_BG = '#000000'
 
 /** Flake Color Chart page header (reference/BRIEF.md §8 `/chip-color-chart`, §9A pattern). */
-export default function FlakeColorChartIntro() {
+export default function FlakeColorChartIntro({ h1, body }: PageIntroProps) {
   return (
     <section className="relative z-10" style={{ backgroundColor: INTRO_BG }}>
       <div className="mx-auto max-w-6xl px-6 pb-10 pt-28 sm:pb-12 sm:pt-32">
@@ -29,16 +31,15 @@ export default function FlakeColorChartIntro() {
             variants={fadeUp}
             className="mt-2 font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight text-white sm:text-5xl"
           >
-            Flake Color Chart
+            {h1}
           </motion.h1>
-          {/* BRIEF.md §9's original promise of a click-through to per-color project examples is
-              now live: each swatch links to /flake-color-chart/<id>, backed by a Sanity
-              `flakeGallery` document. Colors without photos yet show a "coming soon" state, so
-              the copy describes both affordances without over-promising real installs. */}
-          <motion.p variants={fadeUp} className="mt-4 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
-            Choose from our wide variety of color options for your floor. Tap any color to see it
-            up close, or hit Learn More for real project photos.
-          </motion.p>
+          {/* This copy promises a click-through to per-color project examples: each swatch links
+              to /flake-color-chart/<id>, backed by a `flakeGallery` document, and colors without
+              photos yet show a "coming soon" state. An editor rewriting it in Studio should keep
+              that affordance described without over-promising real installs. */}
+          <motion.div variants={fadeUp} className="mt-4">
+            <SanityProse blocks={body} />
+          </motion.div>
         </motion.div>
       </div>
     </section>

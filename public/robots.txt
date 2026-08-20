@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# Sanity Studio, embedded at /admin. A staff tool, not site content — it renders nothing useful
+# without a login and should never appear in search results.
+Disallow: /admin
+
 Sitemap: https://www.nextlevelcoatingsaz.com/sitemap.xml

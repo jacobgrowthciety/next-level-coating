@@ -3,6 +3,7 @@ import SolidColorChartGrid from '../sections/SolidColorChartGrid'
 import SolidColorChartCTA from '../sections/SolidColorChartCTA'
 import CallNowButton from '../components/CallNowButton'
 import Seo from '../components/Seo'
+import { usePageContent } from '../lib/pageContent'
 
 /** Solid Color Chart page (reference/BRIEF.md §8 `/solid-color-chart`, §9A).
  *
@@ -11,14 +12,17 @@ import Seo from '../components/Seo'
  * (§11 flagged it as needing real copy). This page is written fresh and fully in-brand: no
  * vendor logos, branding, or third-party color chart links. */
 export default function SolidColorChart() {
+  const { metaTitle, metaDescription, h1, bodyContent, ogImage } = usePageContent('/solid-color-chart')
+
   return (
     <main>
       <Seo
-        title="Solid Color Chart | Next Level Coatings"
-        description="Browse our solid polyaspartic garage floor color options — 16 single-color base coat shades, from concrete grays to safety colors. Get a free quote from Arizona's top concrete coating specialists."
+        title={metaTitle}
+        description={metaDescription}
+        image={ogImage}
         path="/solid-color-chart"
       />
-      <SolidColorChartIntro />
+      <SolidColorChartIntro h1={h1} body={bodyContent} />
       <SolidColorChartGrid />
       <SolidColorChartCTA />
       <CallNowButton />

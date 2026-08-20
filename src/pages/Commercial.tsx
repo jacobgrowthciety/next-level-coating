@@ -4,20 +4,23 @@ import CommercialDetails from '../sections/CommercialDetails'
 import CommercialCTA from '../sections/CommercialCTA'
 import CallNowButton from '../components/CallNowButton'
 import Seo from '../components/Seo'
+import { usePageContent } from '../lib/pageContent'
 
 /** Commercial service page (reference/BRIEF.md §8 `/commercial`, §9). */
 export default function Commercial() {
+  const { metaTitle, metaDescription, h1, bodyContent, bodySections, ogImage } = usePageContent('/commercial')
+
   return (
     <main>
       <Seo
-        title="Commercial Floor Coatings | Next Level Coatings"
-        description="High-performance commercial polyaspartic coatings for warehouses, showrooms, and commercial kitchens. Slip-resistant, durable, and installed fast. Free quotes."
+        title={metaTitle}
+        description={metaDescription}
         path="/commercial"
-        image="https://www.nextlevelcoatingsaz.com/services/commercial/commercial-01.webp"
+        image={ogImage}
       />
-      <CommercialIntro />
+      <CommercialIntro h1={h1} body={bodyContent} />
       <CommercialGallery />
-      <CommercialDetails />
+      <CommercialDetails sections={bodySections} />
       <CommercialCTA />
       <CallNowButton />
     </main>

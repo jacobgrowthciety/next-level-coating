@@ -2,6 +2,8 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import { trackClickToCall, trackClickToEmail } from '../lib/analytics'
+import SanityProse from '../components/SanityProse'
+import type { PageIntroProps } from '../lib/pageContent'
 
 // Compact page header (reference/BRIEF.md §9A pattern) — same treatment as Garage Flooring's
 // and Flake Color Chart's intro.
@@ -29,7 +31,7 @@ function MailIcon({ className }: { className?: string }) {
 }
 
 /** Contact page header (reference/BRIEF.md §8 `/contact`, §9A pattern). */
-export default function ContactIntro() {
+export default function ContactIntro({ h1, body }: PageIntroProps) {
   return (
     <section className="relative z-10" style={{ backgroundColor: INTRO_BG }}>
       <div className="mx-auto max-w-6xl px-6 pb-10 pt-28 sm:pb-12 sm:pt-32">
@@ -49,8 +51,16 @@ export default function ContactIntro() {
             variants={fadeUp}
             className="mt-2 font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight text-white sm:text-5xl"
           >
-            Contact Us
+            {h1}
           </motion.h1>
+
+          {/* This page ships with no copy under its heading — the phone number and email below
+              are the content. SanityProse renders nothing for an empty body, so this is a no-op
+              today; it exists so an editor who adds a paragraph in Studio gets it placed here,
+              above the contact details, rather than having nowhere for it to land. */}
+          <motion.div variants={fadeUp} className="mt-4">
+            <SanityProse blocks={body} />
+          </motion.div>
 
           <motion.div variants={fadeUp} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
             <a

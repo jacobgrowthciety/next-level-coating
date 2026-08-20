@@ -36,6 +36,12 @@ export default function useAnalytics() {
     if (pathname === lastPath.current) return
     lastPath.current = pathname
 
+    // Sanity Studio at /admin is a staff tool, not a page of the site. Reporting its routes would
+    // put internal pageviews into the same GA4 property the marketing performance is read from,
+    // inflating it with traffic no visitor generated. Recorded as the last path above before
+    // bailing, so the next navigation back out to a real page still reports normally.
+    if (pathname === '/admin' || pathname.startsWith('/admin/')) return
+
     // Built from the router's own location rather than re-read from window.location at send
     // time, so page_location can never disagree with page_path — reading the two from
     // different sources at different moments is how they drift apart mid-navigation.

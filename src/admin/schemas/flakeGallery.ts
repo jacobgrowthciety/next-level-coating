@@ -19,9 +19,10 @@ import type { ValidationContext } from 'sanity'
 /**
  * The flake color identifiers, mirroring src/lib/flakeColors.ts on the site side.
  *
- * Kept as a literal copy rather than imported because Studio and the site are separate builds
- * with separate dependency trees — there is no shared package between them. If a swatch is
- * added, removed or renamed in src/lib/flakeColors.ts, update this list to match.
+ * Kept as a literal copy rather than imported from src/lib/flakeColors.ts. Since this schema
+ * moved under src/ that import would now resolve, but it would pull the site's swatch catalog
+ * (and whatever it in turn imports) into the Studio chunk to read twenty-eight identifiers. If a
+ * swatch is added, removed or renamed in src/lib/flakeColors.ts, update this list to match.
  *
  * Titles are the real color names so editors pick a recognizable color rather than decoding a
  * positional id; the mismatch between the two (e.g. "Raven" → `flake-02`) is expected, because

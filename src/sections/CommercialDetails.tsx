@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
+import { PageSectionBody, PageSectionHeading } from '../components/PageSectionBody'
+import type { PageDetailsProps } from '../lib/pageContent'
 
 const SECTION_BG = '#f4f3ef'
 const PREV_SECTION_BG = '#141414' // CommercialGallery's section background
@@ -24,8 +26,13 @@ const ENVIRONMENTS: { name: string; description: string; iconPath: string }[] = 
   },
 ]
 
-/** Commercial main content (reference: old site /commercial page copy, cleaned for React). */
-export default function CommercialDetails() {
+/**
+ * Commercial main content (reference: old site /commercial page copy).
+ *
+ * Two prose slots, editable in Sanity: slot 0 is the lead copy, slot 1's heading introduces the
+ * ENVIRONMENTS cards and its copy follows them. The cards stay in code.
+ */
+export default function CommercialDetails({ sections }: PageDetailsProps) {
   return (
     <section className="relative z-30" style={{ backgroundColor: SECTION_BG }}>
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
@@ -38,25 +45,9 @@ export default function CommercialDetails() {
           viewport={{ once: true, amount: 0.2 }}
           className="mx-auto max-w-4xl"
         >
-          <motion.p variants={fadeUp} className="text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Next Level Coating takes pride in delivering commercial floor coatings that perfectly
-            balance durability and aesthetics. Our high-performance commercial polyaspartic
-            coating meets the needs of any business space, whether it's a bustling warehouse, a
-            sleek showroom, or a busy commercial kitchen. Designed to withstand heavy foot
-            traffic, machinery, and daily operations, these coatings provide a safe,
-            slip-resistant surface that lasts for years.
-          </motion.p>
+          <PageSectionBody blocks={sections[0]?.body ?? []} />
 
-          <motion.p variants={fadeUp} className="mt-6 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            From warehouses and showrooms to commercial kitchens and golf courses, concrete
-            coatings are the best way to enhance and protect any commercial area. Using premium
-            products alongside state-of-the-art equipment, and supported by certified installers,
-            we get you the best results that last a lifetime. There is no job too big for us.
-          </motion.p>
-
-          <motion.h2 variants={fadeUp} className="mt-12 font-script text-3xl text-brand-teal sm:text-4xl">
-            Built For Business
-          </motion.h2>
+          <PageSectionHeading>{sections[1]?.heading}</PageSectionHeading>
           <motion.div variants={fadeUp} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {ENVIRONMENTS.map((env) => (
               <div
@@ -77,14 +68,7 @@ export default function CommercialDetails() {
             ))}
           </motion.div>
 
-          <motion.p variants={fadeUp} className="mt-12 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Beyond their strength, our commercial polyaspartic coatings are customizable and come
-            in a range of colors and finishes to enhance the style of your space. Our meticulous
-            application ensures a flawless finish, transforming ordinary concrete into a
-            polished, professional foundation. With fast installation that minimizes downtime, we
-            help you get back to business quickly while upgrading your flooring to something
-            extraordinary.
-          </motion.p>
+          <PageSectionBody blocks={sections[1]?.body ?? []} className="mt-12" />
         </motion.div>
       </div>
     </section>

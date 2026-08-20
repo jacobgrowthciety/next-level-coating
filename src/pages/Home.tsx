@@ -7,6 +7,7 @@ import Reviews from '../sections/Reviews'
 import FinalCTA from '../sections/FinalCTA'
 import Seo from '../components/Seo'
 import CallNowButton from '../components/CallNowButton'
+import { usePageContent } from '../lib/pageContent'
 
 /**
  * Homepage narrative order: introduce the company, prove it with real work, say what's offered,
@@ -23,11 +24,14 @@ import CallNowButton from '../components/CallNowButton'
  * <section> both have to move with it.
  */
 export default function Home() {
+  const { metaTitle, metaDescription, ogImage } = usePageContent('/')
+
   return (
     <main>
       <Seo
-        title="Polyaspartic Floor Coating in Arizona | Next Level Coatings"
-        description="Arizona's top-rated concrete coating specialists — garage floors, patios, driveways & pool decks. 1-day installs, lifetime warranty. Free quotes."
+        title={metaTitle}
+        description={metaDescription}
+        image={ogImage}
         path="/"
       />
       <Hero />

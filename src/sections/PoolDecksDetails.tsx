@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
+import { PageSectionBody, PageSectionHeading } from '../components/PageSectionBody'
+import type { PageDetailsProps } from '../lib/pageContent'
 
 const SECTION_BG = '#f4f3ef'
 const PREV_SECTION_BG = '#141414' // PoolDecksGallery's section background
@@ -24,8 +26,13 @@ const BENEFITS: { title: string; description: string; iconPath: string }[] = [
   },
 ]
 
-/** Pool Decks main content (reference: old site /pool-decks page copy, cleaned for React). */
-export default function PoolDecksDetails() {
+/**
+ * Pool Decks main content (reference: old site /pool-decks page copy).
+ *
+ * Two prose slots, editable in Sanity: slot 0 is the lead copy, slot 1's heading introduces the
+ * BENEFITS cards and its copy follows them. The cards stay in code.
+ */
+export default function PoolDecksDetails({ sections }: PageDetailsProps) {
   return (
     <section className="relative z-30" style={{ backgroundColor: SECTION_BG }}>
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
@@ -38,17 +45,9 @@ export default function PoolDecksDetails() {
           viewport={{ once: true, amount: 0.2 }}
           className="mx-auto max-w-4xl"
         >
-          <motion.p variants={fadeUp} className="text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Next Level Coating specializes in revitalizing pool decks with our top-tier
-            polyaspartic pool deck coating. Our process turns aging, cracked surfaces into
-            smooth, modern spaces that are stunning and durable. We completely remove and double
-            diamond grind your old pool decking and replace it with our non-slip polyaspartic
-            flake system.
-          </motion.p>
+          <PageSectionBody blocks={sections[0]?.body ?? []} />
 
-          <motion.h2 variants={fadeUp} className="mt-12 font-script text-3xl text-brand-teal sm:text-4xl">
-            Built For Poolside
-          </motion.h2>
+          <PageSectionHeading>{sections[1]?.heading}</PageSectionHeading>
           <motion.div variants={fadeUp} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {BENEFITS.map((b) => (
               <div
@@ -69,13 +68,7 @@ export default function PoolDecksDetails() {
             ))}
           </motion.div>
 
-          <motion.p variants={fadeUp} className="mt-12 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Our team handles every detail with precision, from double diamond grinding to
-            full-flake coverage and sealing. These enhancements blend form and function, creating
-            a pool deck that doesn't just look amazing but stands strong against wear and tear
-            for years. Transform your pool area into a sleek, safe retreat with the lasting
-            performance of our polyaspartic pool deck coating today.
-          </motion.p>
+          <PageSectionBody blocks={sections[1]?.body ?? []} className="mt-12" />
         </motion.div>
       </div>
     </section>

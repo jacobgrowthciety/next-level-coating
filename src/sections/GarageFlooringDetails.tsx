@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
+import { PageSectionBody, PageSectionHeading } from '../components/PageSectionBody'
+import type { PageDetailsProps } from '../lib/pageContent'
 
 // Light section continuing the alternating rhythm (reference/BRIEF.md §2A) — the header +
 // gallery + reviews cluster above is dark, so the body copy/comparison cards return to
@@ -38,8 +40,15 @@ const OPTIONS: {
   },
 ]
 
-/** Garage Flooring main content (reference/BRIEF.md §8 `/garage-flooring`, §9, verbatim copy). */
-export default function GarageFlooringDetails() {
+/**
+ * Garage Flooring main content (reference/BRIEF.md §8 `/garage-flooring`, §9).
+ *
+ * Two prose slots, editable in Sanity: slot 0 is the lead copy, slot 1's heading introduces the
+ * OPTIONS cards and its copy follows them. The cards stay in code — and note their h3s sit under
+ * slot 1's h2, so blanking that heading would leave them orphaned under the page h1. That is why
+ * a cleared heading falls back to the shipped one rather than disappearing (see lib/pageContent).
+ */
+export default function GarageFlooringDetails({ sections }: PageDetailsProps) {
   return (
     <section className="relative z-30" style={{ backgroundColor: SECTION_BG }}>
       {/* Gallery/Reviews → Details (dark → light): light torn shape over the dark cluster
@@ -54,34 +63,13 @@ export default function GarageFlooringDetails() {
           viewport={{ once: true, amount: 0.2 }}
           className="mx-auto max-w-4xl"
         >
-          <motion.p
-            variants={fadeUp}
-            className="text-lg leading-relaxed text-brand-black/80 sm:text-xl"
-          >
-            Without a proper coating, your concrete floor may quickly develop cracks, stains,
-            and other forms of damage. With our polyaspartic garage floor coating you have the
-            option of a solid single-color floor, or a full broadcast flake floor. Whatever
-            your goals are, our expertise is sure to offer the perfect solution.
-          </motion.p>
-
-          <motion.p
-            variants={fadeUp}
-            className="mt-6 text-lg leading-relaxed text-brand-black/80 sm:text-xl"
-          >
-            Here at Next Level, garage floors are our specialty! When you hire one of our
-            professionals, they'll handle the entire process from start to finish.
-          </motion.p>
+          <PageSectionBody blocks={sections[0]?.body ?? []} />
 
           {/* Visual callout for the two upsell differentiators (task brief: pull these out of
-              paragraph text rather than leaving them buried). Heading added so the two option
-              h3s below sit under their own h2 instead of skipping straight from the page's h1
-              (SEO audit fix — this section previously had no heading of its own). */}
-          <motion.h2
-            variants={fadeUp}
-            className="mt-12 font-script text-3xl text-brand-teal sm:text-4xl"
-          >
-            Two Ways To Level Up
-          </motion.h2>
+              paragraph text rather than leaving them buried). The heading exists so the two
+              option h3s below sit under their own h2 instead of skipping straight from the
+              page's h1 (SEO audit fix — this section previously had no heading of its own). */}
+          <PageSectionHeading>{sections[1]?.heading}</PageSectionHeading>
           <motion.div
             variants={fadeUp}
             className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
@@ -121,15 +109,7 @@ export default function GarageFlooringDetails() {
             ))}
           </motion.div>
 
-          <motion.p
-            variants={fadeUp}
-            className="mt-12 text-lg leading-relaxed text-brand-black/80 sm:text-xl"
-          >
-            Upgrading your garage floor with a durable, aesthetically pleasing coating is a
-            worthwhile investment, but taking a DIY approach often leads to unnecessary stress
-            and subpar results. At Next Level Coatings, we bring precision, efficiency, and
-            peace of mind to the table.
-          </motion.p>
+          <PageSectionBody blocks={sections[1]?.body ?? []} className="mt-12" />
         </motion.div>
       </div>
     </section>

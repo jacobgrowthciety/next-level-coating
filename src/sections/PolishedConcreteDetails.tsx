@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
+import { PageSectionBody, PageSectionHeading } from '../components/PageSectionBody'
+import type { PageDetailsProps } from '../lib/pageContent'
 
 const SECTION_BG = '#f4f3ef'
 const PREV_SECTION_BG = '#141414' // PolishedConcreteGallery's section background
@@ -24,8 +26,15 @@ const BENEFITS: { title: string; description: string; iconPath: string }[] = [
   },
 ]
 
-/** Polished Concrete main content. New copy (not sourced from the old site — see PolishedConcrete.tsx). */
-export default function PolishedConcreteDetails() {
+/**
+ * Polished Concrete main content. The shipped copy was written for this page rather than sourced
+ * from the old site (see PolishedConcrete.tsx), so it is the one page where an editor rewriting
+ * it is replacing our words rather than the client's.
+ *
+ * Two prose slots, editable in Sanity: slot 0 is the lead copy, slot 1's heading introduces the
+ * BENEFITS cards and its copy follows them. The cards stay in code.
+ */
+export default function PolishedConcreteDetails({ sections }: PageDetailsProps) {
   return (
     <section className="relative z-30" style={{ backgroundColor: SECTION_BG }}>
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
@@ -38,23 +47,9 @@ export default function PolishedConcreteDetails() {
           viewport={{ once: true, amount: 0.2 }}
           className="mx-auto max-w-4xl"
         >
-          <motion.p variants={fadeUp} className="text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Polished concrete is your existing slab, ground down in progressive steps and honed
-            to a smooth, reflective finish. There is no epoxy, no polyaspartic, no topical layer
-            applied on top. The shine comes from the concrete itself, which is what gives it a
-            clean, modern look that holds up without the upkeep a coated floor needs.
-          </motion.p>
+          <PageSectionBody blocks={sections[0]?.body ?? []} />
 
-          <motion.p variants={fadeUp} className="mt-6 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            It's a strong choice for a garage, showroom, or any space where you want a sleek
-            surface without the maintenance schedule of a coating. Since the finish is the
-            concrete itself, there is nothing to chip, peel, or recoat down the road, just a
-            surface that gets swept and mopped like any other floor.
-          </motion.p>
-
-          <motion.h2 variants={fadeUp} className="mt-12 font-script text-3xl text-brand-teal sm:text-4xl">
-            Why Choose Polished Concrete
-          </motion.h2>
+          <PageSectionHeading>{sections[1]?.heading}</PageSectionHeading>
           <motion.div variants={fadeUp} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {BENEFITS.map((b) => (
               <div
@@ -75,17 +70,7 @@ export default function PolishedConcreteDetails() {
             ))}
           </motion.div>
 
-          <motion.p variants={fadeUp} className="mt-12 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Our process starts the same way every polyaspartic project does: heavy-duty diamond
-            grinding to prep the slab and repair any cracks or imperfections along the way. From
-            there, we work through progressively finer diamond grits, honing the surface step by
-            step until it reaches the level of shine you're after, from a soft satin look to a
-            high-gloss finish.
-          </motion.p>
-          <motion.p variants={fadeUp} className="mt-6 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            The result is a durable, low-maintenance floor that's ready to use as soon as we
-            finish, with none of the cure time a coated system needs.
-          </motion.p>
+          <PageSectionBody blocks={sections[1]?.body ?? []} className="mt-12" />
         </motion.div>
       </div>
     </section>

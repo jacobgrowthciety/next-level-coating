@@ -8,6 +8,8 @@ import {
   headlineWord,
 } from '../animations/variants'
 import { trackClickToCall } from '../lib/analytics'
+import { usePageContent } from '../lib/pageContent'
+import SanityProse from '../components/SanityProse'
 
 const HERO_VIDEO = '/hero-video-web.mp4' // served from public/; correct logo throughout
 const HERO_POSTER = '/hero-poster.jpg' // video's last frame — reduced-motion still, OG and schema image
@@ -28,12 +30,14 @@ const HERO_POSTER = '/hero-poster.jpg' // video's last frame — reduced-motion 
  */
 const HERO_VIDEO_FIRST_FRAME = '/hero-video-first-frame.jpg'
 
-// Split for the word-by-word headline reveal. Desktop lets this wrap naturally within its
-// column (produces "ARIZONA'S TOP CONCRETE" / "COATINGS SPECIALISTS" at the current width).
-const HEADLINE_WORDS = "Arizona's Top Concrete Coatings Specialists".split(' ')
-
 // Mobile forces explicit line breaks instead of relying on natural wrap — narrow phone widths
 // wrapped this to 2 uneven lines, which read too dense; this grouping keeps it a clean 3 lines.
+//
+// These words are a hardcoded copy of the shipped headline, so they only apply while the
+// headline still *is* the shipped one. The heading is editable in Sanity now, and rendering
+// this grouping against a rewritten headline would print the old words on mobile — so
+// HeroHeadline checks that the two still match before using it (see there). Desktop has no
+// such list; it wraps naturally within its column and adapts to any headline on its own.
 const MOBILE_HEADLINE_LINES = [["Arizona's", 'Top'], ['Concrete', 'Coatings'], ['Specialists']]
 
 const FOCUS_RING =
@@ -233,6 +237,11 @@ function HeroKicker({
  * `lines`, when given, forces explicit line breaks (each sub-array is one line) instead of
  * letting the words wrap naturally — used on mobile so the break points stay predictable
  * across widths rather than depending on how much room the words happen to have.
+ *
+ * Reads the homepage heading straight from usePageContent rather than taking it as a prop:
+ * Hero is homepage-only, and the alternative is threading two values through DesktopHero and
+ * MobileHero purely to reach this leaf. The hook caches per route, so this and HeroParagraph
+ * below share one fetch.
  */
 function HeroHeadline({
   sizeClassName,
@@ -241,7 +250,14 @@ function HeroHeadline({
   sizeClassName: string
   lines?: string[][]
 }) {
-  const lineGroups = lines ?? [HEADLINE_WORDS]
+  const { h1 } = usePageContent('/')
+  const words = h1.split(/\s+/).filter(Boolean)
+  // `lines` is a hardcoded grouping of the shipped headline's words. Use it only while it still
+  // spells that headline — otherwise an editor's rewrite would render the *old* words on mobile
+  // while desktop showed the new ones. Comparing the two is self-validating: it stays correct if
+  // either the grouping or the copy changes, with nothing to remember to update.
+  const groupingMatchesHeadline = lines?.flat().join(' ') === words.join(' ')
+  const lineGroups = lines && groupingMatchesHeadline ? lines : [words]
   return (
     <motion.h1
       variants={headlineContainer}
@@ -260,16 +276,26 @@ function HeroHeadline({
   )
 }
 
+/**
+ * The subhead under the headline, now editable in Sanity (see HeroHeadline on why this reads
+ * the hook directly).
+ *
+ * A <div> wrapping paragraphs rather than a <p>, because an editor can write more than one.
+ * The caller's className stays on the wrapper and the type styles in it — size, leading, colour
+ * — inherit down to the paragraphs, so a single paragraph renders byte-identically to the <p>
+ * this replaced. SanityProse is passed an empty className so it adds only inter-paragraph
+ * spacing and does not fight those inherited styles.
+ */
 function HeroParagraph({ delay = 0.32, className }: { delay?: number; className?: string }) {
+  const { bodyContent } = usePageContent('/')
   return (
-    <motion.p
+    <motion.div
       variants={heroReveal}
       custom={delay}
       className={className ?? 'mt-7 max-w-[540px] text-lg leading-[1.5] text-white/85'}
     >
-      Specializing in garage floors, commercial, patios, sidewalks, driveways, pool decks, and
-      polished concrete.
-    </motion.p>
+      <SanityProse blocks={bodyContent} className="" />
+    </motion.div>
   )
 }
 

@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
+import { PageSectionBody, PageSectionHeading } from '../components/PageSectionBody'
+import type { PageDetailsProps } from '../lib/pageContent'
 
 const SECTION_BG = '#f4f3ef'
 const PREV_SECTION_BG = '#141414' // ResidentialGallery's section background
@@ -52,8 +54,15 @@ const STEPS: { n: string; name: string; body: string }[] = [
   },
 ]
 
-/** Residential main content (reference: old site /residential page copy, cleaned for React). */
-export default function ResidentialDetails() {
+/**
+ * Residential main content (reference: old site /residential page copy).
+ *
+ * The only page with THREE prose slots, because its layout interleaves two structural pieces
+ * rather than one: slot 0 leads, slot 1's heading introduces the WHY_CARDS and its copy follows
+ * them, then the six-step STEPS list, then slot 2 closes the page. Both structural pieces stay
+ * in code.
+ */
+export default function ResidentialDetails({ sections }: PageDetailsProps) {
   return (
     <section className="relative z-30" style={{ backgroundColor: SECTION_BG }}>
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
@@ -66,16 +75,9 @@ export default function ResidentialDetails() {
           viewport={{ once: true, amount: 0.2 }}
           className="mx-auto max-w-4xl"
         >
-          <motion.p variants={fadeUp} className="text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            When it comes to upgrading your home, every detail matters. Your floors, especially
-            in high-traffic areas like garages, patios, and pool decks, deserve as much attention
-            as the rest of your living space. Our residential polyaspartic floor coating services
-            give homeowners in Arizona a practical and stunning solution for concrete surfaces.
-          </motion.p>
+          <PageSectionBody blocks={sections[0]?.body ?? []} />
 
-          <motion.h2 variants={fadeUp} className="mt-12 font-script text-3xl text-brand-teal sm:text-4xl">
-            Why Choose Residential Polyaspartic
-          </motion.h2>
+          <PageSectionHeading>{sections[1]?.heading}</PageSectionHeading>
           <motion.div variants={fadeUp} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {WHY_CARDS.map((card) => (
               <div
@@ -96,12 +98,7 @@ export default function ResidentialDetails() {
             ))}
           </motion.div>
 
-          <motion.p variants={fadeUp} className="mt-12 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            At Next Level Coating, we're proud of the meticulous process we've developed to
-            ensure every project exceeds expectations. Our six-step method guarantees the
-            perfect balance of precision and efficiency, offering same-day completion without
-            cutting corners.
-          </motion.p>
+          <PageSectionBody blocks={sections[1]?.body ?? []} className="mt-12" />
 
           <motion.ol variants={fadeUp} className="mt-8 space-y-4">
             {STEPS.map((step) => (
@@ -120,17 +117,7 @@ export default function ResidentialDetails() {
             ))}
           </motion.ol>
 
-          <motion.p variants={fadeUp} className="mt-12 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            We're licensed, bonded, and insured (ROC #352138), and we back every residential
-            polyaspartic floor coating with a lifetime warranty. Our family-owned business treats
-            your home like our own, ensuring attention to detail, respect for your space, and
-            high-quality results.
-          </motion.p>
-          <motion.p variants={fadeUp} className="mt-6 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Is your home in need of a refresh? Whether it's your garage, patio, pool deck, or
-            walkway, our residential polyaspartic floor coating can give your space the
-            durability, functionality, and beauty it deserves.
-          </motion.p>
+          <PageSectionBody blocks={sections[2]?.body ?? []} className="mt-12" />
         </motion.div>
       </div>
     </section>

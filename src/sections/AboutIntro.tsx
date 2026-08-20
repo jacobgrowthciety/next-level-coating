@@ -1,13 +1,15 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
+import SanityProse from '../components/SanityProse'
+import type { PageIntroProps } from '../lib/pageContent'
 
 // Compact page header (reference/BRIEF.md §9A pattern, reused for a non-service page) — no
 // video hero, matching Garage Flooring's GarageFlooringIntro treatment.
 const INTRO_BG = '#000000'
 
 /** About page header (reference/BRIEF.md §8 `/team-3`, §9A pattern). */
-export default function AboutIntro() {
+export default function AboutIntro({ h1, body }: PageIntroProps) {
   return (
     <section className="relative z-10" style={{ backgroundColor: INTRO_BG }}>
       <div className="mx-auto max-w-6xl px-6 pb-10 pt-28 sm:pb-12 sm:pt-32">
@@ -28,12 +30,11 @@ export default function AboutIntro() {
             variants={fadeUp}
             className="mt-2 font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight text-white sm:text-5xl"
           >
-            About Us
+            {h1}
           </motion.h1>
-          <motion.p variants={fadeUp} className="mt-4 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
-            A family owned business providing top-tier concrete coating services to all of
-            Arizona.
-          </motion.p>
+          <motion.div variants={fadeUp} className="mt-4">
+            <SanityProse blocks={body} />
+          </motion.div>
         </motion.div>
       </div>
     </section>

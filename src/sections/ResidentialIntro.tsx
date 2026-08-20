@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
+import SanityProse from '../components/SanityProse'
+import type { PageIntroProps } from '../lib/pageContent'
 
 const INTRO_BG = '#000000'
 
 /** Residential page header (reference/BRIEF.md §8 `/residential`, §9A pattern). */
-export default function ResidentialIntro() {
+export default function ResidentialIntro({ h1, body }: PageIntroProps) {
   return (
     <section className="relative z-10" style={{ backgroundColor: INTRO_BG }}>
       <div className="mx-auto max-w-6xl px-6 pb-10 pt-28 sm:pb-12 sm:pt-32">
@@ -27,12 +29,11 @@ export default function ResidentialIntro() {
             variants={fadeUp}
             className="mt-2 font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight text-white sm:text-5xl"
           >
-            Residential
+            {h1}
           </motion.h1>
-          <motion.p variants={fadeUp} className="mt-4 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
-            4X stronger than epoxy with a lifetime warranty, our six-step polyaspartic process
-            upgrades garages, patios, and pool decks alike.
-          </motion.p>
+          <motion.div variants={fadeUp} className="mt-4">
+            <SanityProse blocks={body} />
+          </motion.div>
         </motion.div>
       </div>
     </section>

@@ -4,20 +4,23 @@ import ResidentialDetails from '../sections/ResidentialDetails'
 import ResidentialCTA from '../sections/ResidentialCTA'
 import CallNowButton from '../components/CallNowButton'
 import Seo from '../components/Seo'
+import { usePageContent } from '../lib/pageContent'
 
 /** Residential service page (reference/BRIEF.md §8 `/residential`, §9). */
 export default function Residential() {
+  const { metaTitle, metaDescription, h1, bodyContent, bodySections, ogImage } = usePageContent('/residential')
+
   return (
     <main>
       <Seo
-        title="Residential Polyaspartic Floor Coating | Next Level Coatings"
-        description="4X stronger than epoxy with a lifetime warranty. Our six-step polyaspartic process upgrades garages, patios, and pool decks. Licensed, bonded & insured. Free quotes."
+        title={metaTitle}
+        description={metaDescription}
         path="/residential"
-        image="https://www.nextlevelcoatingsaz.com/services/residential/residential-01.webp"
+        image={ogImage}
       />
-      <ResidentialIntro />
+      <ResidentialIntro h1={h1} body={bodyContent} />
       <ResidentialGallery />
-      <ResidentialDetails />
+      <ResidentialDetails sections={bodySections} />
       <ResidentialCTA />
       <CallNowButton />
     </main>

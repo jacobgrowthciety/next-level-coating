@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
+import { PageSectionBody, PageSectionHeading } from '../components/PageSectionBody'
+import type { PageDetailsProps } from '../lib/pageContent'
 
 const SECTION_BG = '#f4f3ef'
 const PREV_SECTION_BG = '#141414' // ConcreteCoatingsGallery's section background
@@ -14,8 +16,14 @@ const SPACES: { name: string; iconPath: string }[] = [
   { name: 'Patios', iconPath: 'M12 3 4 7l8 4 8-4-8-4Zm-8 4v10l8 4 8-4V7' },
 ]
 
-/** Concrete Coatings main content (reference: old site /concrete-coatings page copy, cleaned for React). */
-export default function ConcreteCoatingsDetails() {
+/**
+ * Concrete Coatings main content (reference: old site /concrete-coatings page copy).
+ *
+ * Two prose slots, editable in Sanity: slot 0 is the lead copy, slot 1's heading introduces the
+ * SPACES chips and its copy follows them. The chips themselves stay in code — they are design,
+ * not prose.
+ */
+export default function ConcreteCoatingsDetails({ sections }: PageDetailsProps) {
   return (
     <section className="relative z-30" style={{ backgroundColor: SECTION_BG }}>
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
@@ -28,17 +36,9 @@ export default function ConcreteCoatingsDetails() {
           viewport={{ once: true, amount: 0.2 }}
           className="mx-auto max-w-4xl"
         >
-          <motion.p variants={fadeUp} className="text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            At Next Level Coatings, we provide durable, high-performance flooring solutions
-            designed to handle Arizona's heat, dust, and daily wear. As a family-owned business
-            serving the Greater Phoenix area, we specialize in premium resurfacing services,
-            including concrete floor coatings, epoxy systems, and polyaspartic concrete coatings
-            for residential and commercial properties.
-          </motion.p>
+          <PageSectionBody blocks={sections[0]?.body ?? []} />
 
-          <motion.h2 variants={fadeUp} className="mt-12 font-script text-3xl text-brand-teal sm:text-4xl">
-            Coatings For Every Space
-          </motion.h2>
+          <PageSectionHeading>{sections[1]?.heading}</PageSectionHeading>
           <motion.div variants={fadeUp} className="mt-6 flex flex-wrap justify-center gap-3">
             {SPACES.map((space) => (
               <span
@@ -54,22 +54,7 @@ export default function ConcreteCoatingsDetails() {
             ))}
           </motion.div>
 
-          <motion.p variants={fadeUp} className="mt-12 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Our advanced epoxy and polyaspartic systems create a seamless, professional finish
-            while resisting moisture, stains, chemicals, UV exposure, and heavy use, perfect for
-            homes and businesses alike.
-          </motion.p>
-          <motion.p variants={fadeUp} className="mt-6 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            What makes our process different is the attention we give to every project. We don't
-            believe in shortcuts or cookie-cutter solutions. Instead, we take the time to assess
-            your space, discuss your goals, and recommend the best coating system for your needs.
-          </motion.p>
-          <motion.p variants={fadeUp} className="mt-6 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Our polyaspartic concrete coatings are especially popular for their fast cure times,
-            durability, and modern appearance. We complete many projects in as little as one day,
-            minimizing downtime without sacrificing quality. As a local, family-run company, Next
-            Level Coatings is built on trust, quality craftsmanship, and clear communication.
-          </motion.p>
+          <PageSectionBody blocks={sections[1]?.body ?? []} className="mt-12" />
         </motion.div>
       </div>
     </section>

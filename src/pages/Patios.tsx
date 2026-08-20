@@ -4,20 +4,23 @@ import PatiosDetails from '../sections/PatiosDetails'
 import PatiosCTA from '../sections/PatiosCTA'
 import CallNowButton from '../components/CallNowButton'
 import Seo from '../components/Seo'
+import { usePageContent } from '../lib/pageContent'
 
 /** Patios, Sidewalks & Driveways service page (reference/BRIEF.md §8 `/patios`, §9). */
 export default function Patios() {
+  const { metaTitle, metaDescription, h1, bodyContent, bodySections, ogImage } = usePageContent('/patios')
+
   return (
     <main>
       <Seo
-        title="Concrete Patio Coatings | Next Level Coatings"
-        description="100% UV-stable polyaspartic patio, sidewalk, and driveway coatings, 4X stronger than epoxy. Cooler underfoot, built for the Arizona sun. Free quotes."
+        title={metaTitle}
+        description={metaDescription}
         path="/patios"
-        image="https://www.nextlevelcoatingsaz.com/services/patios/patios-01.webp"
+        image={ogImage}
       />
-      <PatiosIntro />
+      <PatiosIntro h1={h1} body={bodyContent} />
       <PatiosGallery />
-      <PatiosDetails />
+      <PatiosDetails sections={bodySections} />
       <PatiosCTA />
       <CallNowButton />
     </main>

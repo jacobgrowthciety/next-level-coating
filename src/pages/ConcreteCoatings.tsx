@@ -4,20 +4,23 @@ import ConcreteCoatingsDetails from '../sections/ConcreteCoatingsDetails'
 import ConcreteCoatingsCTA from '../sections/ConcreteCoatingsCTA'
 import CallNowButton from '../components/CallNowButton'
 import Seo from '../components/Seo'
+import { usePageContent } from '../lib/pageContent'
 
 /** Concrete Coatings service page (reference/BRIEF.md §8 `/concrete-coatings`, §9). */
 export default function ConcreteCoatings() {
+  const { metaTitle, metaDescription, h1, bodyContent, bodySections, ogImage } = usePageContent('/concrete-coatings')
+
   return (
     <main>
       <Seo
-        title="Concrete Coatings in Phoenix | Next Level Coatings"
-        description="Family-owned epoxy and polyaspartic concrete coatings for garages, warehouses, offices, and patios across the Greater Phoenix area. Fast cure times. Free quotes."
+        title={metaTitle}
+        description={metaDescription}
         path="/concrete-coatings"
-        image="https://www.nextlevelcoatingsaz.com/services/concrete-coatings/concrete-coatings-01.webp"
+        image={ogImage}
       />
-      <ConcreteCoatingsIntro />
+      <ConcreteCoatingsIntro h1={h1} body={bodyContent} />
       <ConcreteCoatingsGallery />
-      <ConcreteCoatingsDetails />
+      <ConcreteCoatingsDetails sections={bodySections} />
       <ConcreteCoatingsCTA />
       <CallNowButton />
     </main>

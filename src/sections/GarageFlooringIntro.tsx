@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
+import SanityProse from '../components/SanityProse'
+import type { PageIntroProps } from '../lib/pageContent'
 
 // Compact page header (reference/BRIEF.md §9A) — service pages do NOT use the full video hero,
 // that treatment is homepage-only. Solid dark background, no image/video, minimal vertical
@@ -9,7 +11,7 @@ import { fadeUp, staggerContainer } from '../animations/variants'
 const INTRO_BG = '#000000'
 
 /** Garage Flooring page header (reference/BRIEF.md §8 `/garage-flooring`, §9A pattern). */
-export default function GarageFlooringIntro() {
+export default function GarageFlooringIntro({ h1, body }: PageIntroProps) {
   return (
     <section className="relative z-10" style={{ backgroundColor: INTRO_BG }}>
       <div className="mx-auto max-w-6xl px-6 pb-10 pt-28 sm:pb-12 sm:pt-32">
@@ -32,12 +34,11 @@ export default function GarageFlooringIntro() {
             variants={fadeUp}
             className="mt-2 font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight text-white sm:text-5xl"
           >
-            Garage Flooring
+            {h1}
           </motion.h1>
-          <motion.p variants={fadeUp} className="mt-4 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
-            Solid color or full broadcast flake, prepped and finished by a crew that treats garage
-            floors as our specialty — not a side job.
-          </motion.p>
+          <motion.div variants={fadeUp} className="mt-4">
+            <SanityProse blocks={body} />
+          </motion.div>
         </motion.div>
       </div>
     </section>

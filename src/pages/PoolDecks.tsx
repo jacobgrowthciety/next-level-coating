@@ -4,20 +4,23 @@ import PoolDecksDetails from '../sections/PoolDecksDetails'
 import PoolDecksCTA from '../sections/PoolDecksCTA'
 import CallNowButton from '../components/CallNowButton'
 import Seo from '../components/Seo'
+import { usePageContent } from '../lib/pageContent'
 
 /** Pool Decks service page (reference/BRIEF.md §8 `/pool-decks`, §9). */
 export default function PoolDecks() {
+  const { metaTitle, metaDescription, h1, bodyContent, bodySections, ogImage } = usePageContent('/pool-decks')
+
   return (
     <main>
       <Seo
-        title="Polyaspartic Pool Deck Coating | Next Level Coatings"
-        description="Non-slip, 100% UV-stable polyaspartic pool deck coatings that stay cool underfoot. Double diamond ground and full-flake finished. Free quotes."
+        title={metaTitle}
+        description={metaDescription}
         path="/pool-decks"
-        image="https://www.nextlevelcoatingsaz.com/services/pool-decks/pool-decks-01.webp"
+        image={ogImage}
       />
-      <PoolDecksIntro />
+      <PoolDecksIntro h1={h1} body={bodyContent} />
       <PoolDecksGallery />
-      <PoolDecksDetails />
+      <PoolDecksDetails sections={bodySections} />
       <PoolDecksCTA />
       <CallNowButton />
     </main>

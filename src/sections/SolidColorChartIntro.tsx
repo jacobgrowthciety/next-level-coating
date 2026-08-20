@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeUp, staggerContainer } from '../animations/variants'
+import SanityProse from '../components/SanityProse'
+import type { PageIntroProps } from '../lib/pageContent'
 
 // Compact page header (reference/BRIEF.md §9A pattern) — mirrors FlakeColorChartIntro exactly so
 // the two color-chart pages read as siblings. "Solid Color Chart" is a top-level primary nav link
@@ -8,7 +10,7 @@ import { fadeUp, staggerContainer } from '../animations/variants'
 const INTRO_BG = '#000000'
 
 /** Solid Color Chart page header (reference/BRIEF.md §8 `/solid-color-chart`, §9A pattern). */
-export default function SolidColorChartIntro() {
+export default function SolidColorChartIntro({ h1, body }: PageIntroProps) {
   return (
     <section className="relative z-10" style={{ backgroundColor: INTRO_BG }}>
       <div className="mx-auto max-w-6xl px-6 pb-10 pt-28 sm:pb-12 sm:pt-32">
@@ -28,14 +30,11 @@ export default function SolidColorChartIntro() {
             variants={fadeUp}
             className="mt-2 font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight text-white sm:text-5xl"
           >
-            Solid Color Chart
+            {h1}
           </motion.h1>
-          {/* Unique copy written for this page — the old site's version of this URL was a Wix
-              duplicate slug with no body text at all (reference/BRIEF.md §11). */}
-          <motion.p variants={fadeUp} className="mt-4 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
-            Prefer a clean, single-color floor over a full flake broadcast? Choose from our
-            solid polyaspartic base coat colors below.
-          </motion.p>
+          <motion.div variants={fadeUp} className="mt-4">
+            <SanityProse blocks={body} />
+          </motion.div>
         </motion.div>
       </div>
     </section>

@@ -7,7 +7,7 @@
  * Sanity document, so they are effectively permanent — renaming one changes a live URL and
  * orphans any gallery document pointing at the old value. That's why the positional ones
  * (`flake-02`) keep their names even though the real color is "Raven": the *identifier* is a
- * key, the *name* is presentation. Studio mirrors this list (studio/schemas/flakeGallery.ts);
+ * key, the *name* is presentation. Studio mirrors this list (src/admin/schemas/flakeGallery.ts);
  * update both together.
  *
  * Names and order-only status were transcribed from the text printed inside each swatch image

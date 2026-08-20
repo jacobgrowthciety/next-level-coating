@@ -4,6 +4,7 @@ import PolishedConcreteDetails from '../sections/PolishedConcreteDetails'
 import PolishedConcreteCTA from '../sections/PolishedConcreteCTA'
 import CallNowButton from '../components/CallNowButton'
 import Seo from '../components/Seo'
+import { usePageContent } from '../lib/pageContent'
 
 /**
  * Polished Concrete service page (reference/BRIEF.md §8 `/polished-concrete`, §9).
@@ -20,17 +21,19 @@ import Seo from '../components/Seo'
  * once a polished concrete job has one.
  */
 export default function PolishedConcrete() {
+  const { metaTitle, metaDescription, h1, bodyContent, bodySections, ogImage } = usePageContent('/polished-concrete')
+
   return (
     <main>
       <Seo
-        title="Polished Concrete Flooring | Next Level Coatings"
-        description="Diamond-ground and honed polished concrete flooring, a sleek, low-maintenance finish with no topical coating to maintain. Free quotes."
+        title={metaTitle}
+        description={metaDescription}
         path="/polished-concrete"
-        image="https://www.nextlevelcoatingsaz.com/services/polished-concrete/polished-concrete-01.webp"
+        image={ogImage}
       />
-      <PolishedConcreteIntro />
+      <PolishedConcreteIntro h1={h1} body={bodyContent} />
       <PolishedConcreteGallery />
-      <PolishedConcreteDetails />
+      <PolishedConcreteDetails sections={bodySections} />
       <PolishedConcreteCTA />
       <CallNowButton />
     </main>

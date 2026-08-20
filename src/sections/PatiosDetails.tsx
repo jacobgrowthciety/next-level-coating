@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { fadeUp, staggerContainer } from '../animations/variants'
 import RoughDivider from '../components/RoughDivider'
+import { PageSectionBody, PageSectionHeading } from '../components/PageSectionBody'
+import type { PageDetailsProps } from '../lib/pageContent'
 
 const SECTION_BG = '#f4f3ef'
 const PREV_SECTION_BG = '#141414' // PatiosGallery's section background
@@ -24,8 +26,13 @@ const BENEFITS: { title: string; description: string; iconPath: string }[] = [
   },
 ]
 
-/** Patios, Sidewalks & Driveways main content (reference: old site /patios page copy, cleaned for React). */
-export default function PatiosDetails() {
+/**
+ * Patios, Sidewalks & Driveways main content (reference: old site /patios page copy).
+ *
+ * Two prose slots, editable in Sanity: slot 0 is the lead copy, slot 1's heading introduces the
+ * BENEFITS cards and its copy follows them. The cards stay in code.
+ */
+export default function PatiosDetails({ sections }: PageDetailsProps) {
   return (
     <section className="relative z-30" style={{ backgroundColor: SECTION_BG }}>
       <RoughDivider fillColor={SECTION_BG} revealColor={PREV_SECTION_BG} />
@@ -38,25 +45,9 @@ export default function PatiosDetails() {
           viewport={{ once: true, amount: 0.2 }}
           className="mx-auto max-w-4xl"
         >
-          <motion.p variants={fadeUp} className="text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Our patios, sidewalks, and driveways are an affordable solution to bring your
-            concrete to life. Our polyaspartic system is 100% UV stable and 4X stronger than
-            epoxy, built to last a lifetime outside in the Arizona sun. We leave our patios with
-            more chip texture than our garage floors to create more traction, but can also add a
-            non-slip additive for even more grip. Not only is it a strength and aesthetic
-            upgrade, but this material will drop the surface temperature from the heat as well.
-          </motion.p>
+          <PageSectionBody blocks={sections[0]?.body ?? []} />
 
-          <motion.p variants={fadeUp} className="mt-6 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Applying concrete patio coatings requires precision. Achieving an even and smooth
-            finish involves techniques that take time and practice to perfect, such as rolling,
-            spraying, and troweling. Our professionals use specialized tools to evenly spread the
-            coating without streaks, bubbles, or patches.
-          </motion.p>
-
-          <motion.h2 variants={fadeUp} className="mt-12 font-script text-3xl text-brand-teal sm:text-4xl">
-            Made For The Arizona Sun
-          </motion.h2>
+          <PageSectionHeading>{sections[1]?.heading}</PageSectionHeading>
           <motion.div variants={fadeUp} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {BENEFITS.map((b) => (
               <div
@@ -77,18 +68,7 @@ export default function PatiosDetails() {
             ))}
           </motion.div>
 
-          <motion.p variants={fadeUp} className="mt-12 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Concrete patio coatings serve as a protective barrier for your patio surface. Better
-            than epoxy, our coatings are made from polyaspartic material to better shield the
-            concrete from weather damage, wear, and tear. We offer finishes ranging from high
-            gloss to natural textures.
-          </motion.p>
-          <motion.p variants={fadeUp} className="mt-6 text-lg leading-relaxed text-brand-black/80 sm:text-xl">
-            Your concrete patio should be a space to gather, relax, and create lasting memories.
-            A professional-grade polyaspartic patio coating adds years to its lifespan, ensures
-            safety, and enhances its visual appeal, turning your patio into an investment rather
-            than an expense.
-          </motion.p>
+          <PageSectionBody blocks={sections[1]?.body ?? []} className="mt-12" />
         </motion.div>
       </div>
     </section>
