@@ -20,6 +20,13 @@ const HERO_TRIGGER_MARGIN = `-${HEADER_HEIGHT}px 0px 0px 0px`
  */
 const ZONE_MARGIN = '-55% 0px 0px 0px'
 
+/**
+ * Shrinks the observer root to the bottom half of the viewport, so a `data-sticky-cta-after`
+ * section counts as passed once its bottom edge has risen above the midline — i.e. the next
+ * section fills the lower half of the screen, where the pill sits.
+ */
+const AFTER_MARGIN = '-50% 0px 0px 0px'
+
 /** How long every show condition must hold before the bar comes in. See the gate near the JSX. */
 const SHOW_DELAY = 400
 
@@ -55,6 +62,26 @@ export default function CallNowButton() {
   const [suppressed, setSuppressed] = useState(false)
 
   useEffect(() => {
+    /* A page can push the bar's arrival further down than its hero by marking a section with
+       `data-sticky-cta-after` — the homepage marks its reel carousel, because gating on the hero
+       alone brought the bar in mid-carousel, where it then had to hide again for the carousel's
+       controls (see the suppression effect below) and reappear in Services. Unlike the hero gate
+       this section is not at the top of the page, so "not intersecting" is ambiguous: it is also
+       true while the section is still below the fold. Only count it as passed when it is above
+       the zone. */
+    const after = document.querySelector('[data-sticky-cta-after]')
+    if (after) {
+      const observer = new IntersectionObserver(
+        ([entry]) =>
+          setPastHero(
+            !entry.isIntersecting && entry.boundingClientRect.top < (entry.rootBounds?.top ?? 0),
+          ),
+        { rootMargin: AFTER_MARGIN },
+      )
+      observer.observe(after)
+      return () => observer.disconnect()
+    }
+
     const anchor = document.querySelector('[data-hero-cta]') ?? document.getElementById('hero')
 
     /* Pages with no hero at all (Contact, Blog, legal) fall back to scroll position. The show and

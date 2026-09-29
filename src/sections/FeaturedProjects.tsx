@@ -67,7 +67,10 @@ function InstagramGlyph({ className }: { className?: string }) {
  */
 export default function FeaturedProjects() {
   return (
-    <section className="relative z-10">
+    /* data-sticky-cta-after: the mobile Call Now pill waits until this section has scrolled
+       past, rather than arriving mid-carousel and then ducking out of the way of its controls
+       (components/CallNowButton.tsx). */
+    <section className="relative z-10" data-sticky-cta-after>
       {/* Hero → Featured Projects: the frayed charcoal shape reveals the dark, stickied hero
           video through its torn gaps (no revealColor = transparent overlap). Dark-on-dark now,
           so this boundary reads as a texture change rather than a hard colour flip. */}
