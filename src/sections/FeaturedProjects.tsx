@@ -19,12 +19,17 @@ const INSTAGRAM_PROFILE = 'https://instagram.com/nextlevelcoatings_' // per refe
  * nothing for an ad blocker to break, and no CDN round-trip. Re-encoded to 720x1280 (the card
  * renders at 360px, so this is 2x for retina); only the active clip is ever fetched.
  *
- * All three are verified Next Level Coatings posts. Instagram's `/reel/<id>/` URL opens a
+ * All four are verified Next Level Coatings posts. Instagram's `/reel/<id>/` URL opens a
  * scrolling feed player that auto-advances, so anything captured from it can silently end up
  * being a different account's clip — use the profile-scoped `/nextlevelcoatings_/reel/<id>/`
  * form and confirm the author before and after capture if these are ever refreshed.
  */
 const REELS: ReelItem[] = [
+  {
+    src: '/reels/reel-4.mp4',
+    poster: '/reels/reel-4.jpg',
+    label: 'A finished floor in a brand-new custom home — big job or small, the same Next Level finish',
+  },
   {
     src: '/reels/reel-1.mp4',
     poster: '/reels/reel-1.jpg',

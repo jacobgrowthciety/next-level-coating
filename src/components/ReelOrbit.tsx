@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 
 /**
  * ReelOrbit — 3D video carousel for vertical (9:16) reels.
@@ -10,7 +10,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
  * parameter default below; they were the only source of defaults for all but one prop.
  *
  * Behaviour differs from the original in five deliberate ways, all documented at their sites:
- *   1. The rAF loop writes transforms straight to the DOM instead of through React state.
+ *   1. The rAF loop writes transforms straight to the DOM instead of through React state
+ *      (the FIRST frame still comes from React, so the markup is correct before hydration).
  *   2. The loop parks itself when the carousel settles, and while the section is off screen.
  *   3. `prefers-reduced-motion` actually removes motion rather than swapping its mechanism.
  *   4. Card spacing is decoupled from a literal 360° ring, though ordering stays cyclic — LAYOUT.
@@ -122,6 +123,67 @@ const TAP_SLOP = 6
 /** Floor so distant cards stay faintly present instead of vanishing. */
 const MIN_CARD_OPACITY = 0.16
 
+/** The geometry props `cardStyleAt` needs, bundled so they travel as one value. */
+interface CardGeometry {
+  count: number
+  spreadX: number
+  spreadAngle: number
+  depthRatio: number
+  scaleFalloff: number
+  opacityFalloff: number
+}
+
+/**
+ * The full visual state of card `index` at continuous ring position `position`.
+ *
+ * Pure, and deliberately module-level with two callers: `paint()` writes these values
+ * straight to the DOM on every frame, and the initial render puts the same values in each
+ * card's `style` attribute. That second caller is what makes the component render
+ * correctly without JavaScript.
+ *
+ * It matters under server rendering. Cards are `absolute inset-0` with no transform of
+ * their own, so if positioning only ever happened in `paint()` — which runs in a mount
+ * effect — server-rendered markup would ship with every card stacked flat on top of the
+ * others at full opacity, and stay that way until hydration. In a client-rendered SPA
+ * nothing paints before JS runs, so that was invisible; under SSR (and especially behind a
+ * lazily-hydrated island, where hydration is deliberately late) the visitor watches a
+ * single flat card snap into a fanned deck.
+ *
+ * The formula must therefore exist exactly once. Two copies would drift, and the drift
+ * would only show as a one-frame jump at hydration — the kind of thing nobody reproduces.
+ */
+function cardStyleAt(index: number, position: number, geometry: CardGeometry): CSSProperties {
+  const { count, spreadX, spreadAngle, depthRatio, scaleFalloff, opacityFalloff } = geometry
+  // Wrapped, shortest-path offset — this is what makes the deck read as a rotating ring
+  // rather than a stack that fans off to one side. Raw `index - position` puts every other
+  // card to the RIGHT of the front one, so sitting on the first clip left both neighbours
+  // crowded to one side and the composition lopsided. Folding the offset into
+  // [-count/2, count/2) means each card takes the short way round, so with three clips
+  // there is always exactly one to the left and one to the right, at every position.
+  const offset = wrapOffset(index - position, count)
+  const distance = Math.abs(offset)
+  const scale = clamp(1 - distance * scaleFalloff, 0.5, 1)
+
+  return {
+    // translateX and translateZ are both relative to card width (a % of the element's own
+    // width, and a multiple of the shared --reel-card-w), so the fan geometry scales with
+    // the card as one piece rather than drifting apart at small sizes.
+    transform: `translateX(${offset * spreadX}%) translateZ(calc(var(--reel-card-w) * ${(-distance * depthRatio).toFixed(4)})) rotateY(${-offset * spreadAngle}deg) scale(${scale})`,
+    // Only the front card and one neighbour each side are ever shown. With four or more clips
+    // the rest would pile up in the middle behind the front card, so anything past one step
+    // fades out over the next step — a gradual fade rather than a cut, so a card still slides
+    // into place smoothly as the deck turns.
+    opacity:
+      clamp(1 - Math.min(distance, 1) * opacityFalloff, MIN_CARD_OPACITY, 1) *
+      clamp(2 - distance, 0, 1),
+    zIndex: 100 - Math.round(distance * 10),
+    // Only the front card should take pointer events, or a faded neighbour swallows taps
+    // meant for the video beneath it.
+    pointerEvents: distance < 0.5 ? 'auto' : 'none',
+  }
+}
+
+
 export default function ReelOrbit({
   items,
   cardWidth = CARD_WIDTH,
@@ -176,6 +238,16 @@ export default function ReelOrbit({
   }, [])
 
   /**
+   * Bundled so `cardStyleAt` takes one argument instead of six, and memoised so `paint`'s
+   * identity is unchanged from when it depended on these six values individually — several
+   * effects and `startLoop` list `paint` as a dependency.
+   */
+  const geometry = useMemo<CardGeometry>(
+    () => ({ count, spreadX, spreadAngle, depthRatio, scaleFalloff, opacityFalloff }),
+    [count, depthRatio, opacityFalloff, scaleFalloff, spreadAngle, spreadX],
+  )
+
+  /**
    * Writes the transform for every card at a given continuous position.
    *
    * Deliberately imperative. The original called `setRingRotation` inside `startTransition` on
@@ -184,34 +256,21 @@ export default function ReelOrbit({
    * could defer the very thing driving the animation. Writing to `style` directly keeps React
    * out of the frame loop entirely; `activeIndex` is the only state the animation touches, and
    * it changes once per navigation.
+   *
+   * Shares its geometry with the initial render via `cardStyleAt` — see the note there.
    */
   const paint = useCallback(
     (position: number) => {
       cardRefs.current.forEach((card, index) => {
         if (!card) return
-        // Wrapped, shortest-path offset — this is what makes the deck read as a rotating ring
-        // rather than a stack that fans off to one side. Raw `index - position` puts every
-        // other card to the RIGHT of the front one, so sitting on the first clip left both
-        // neighbours crowded to one side and the composition lopsided. Folding the offset into
-        // [-count/2, count/2) means each card takes the short way round, so with three clips
-        // there is always exactly one to the left and one to the right, at every position.
-        const offset = wrapOffset(index - position, count)
-        const distance = Math.abs(offset)
-        const scale = clamp(1 - distance * scaleFalloff, 0.5, 1)
-        const opacity = clamp(1 - distance * opacityFalloff, MIN_CARD_OPACITY, 1)
-
-        // translateX and translateZ are both relative to card width (a % of the element's own
-        // width, and a multiple of the shared --reel-card-w), so the fan geometry scales with
-        // the card as one piece rather than drifting apart at small sizes.
-        card.style.transform = `translateX(${offset * spreadX}%) translateZ(calc(var(--reel-card-w) * ${(-distance * depthRatio).toFixed(4)})) rotateY(${-offset * spreadAngle}deg) scale(${scale})`
-        card.style.opacity = String(opacity)
-        card.style.zIndex = String(100 - Math.round(distance * 10))
-        // Only the front card should take pointer events, or a faded neighbour swallows taps
-        // meant for the video beneath it.
-        card.style.pointerEvents = distance < 0.5 ? 'auto' : 'none'
+        const next = cardStyleAt(index, position, geometry)
+        card.style.transform = String(next.transform)
+        card.style.opacity = String(next.opacity)
+        card.style.zIndex = String(next.zIndex)
+        card.style.pointerEvents = String(next.pointerEvents)
       })
     },
-    [count, depthRatio, opacityFalloff, scaleFalloff, spreadAngle, spreadX],
+    [geometry],
   )
 
   /**
@@ -466,6 +525,17 @@ export default function ReelOrbit({
                   }}
                   className="absolute inset-0 overflow-hidden"
                   style={{
+                    // The deck's opening pose, rendered rather than painted. Without this the
+                    // markup ships with all cards stacked flat and only fans out once the mount
+                    // effect runs — invisible in a client-rendered SPA, glaring under SSR.
+                    //
+                    // A literal 0, never `positionRef.current`: this value has to be CONSTANT
+                    // across renders. React diffs `style` against the previous render's object,
+                    // not against the DOM, so an unchanged value means React writes nothing and
+                    // the frame loop's own writes survive untouched. Reading the live position
+                    // here would make React fight the animation for control of the same four
+                    // properties on every unrelated re-render.
+                    ...cardStyleAt(index, 0, geometry),
                     borderRadius: `${cornerRadius}px`,
                     background: cardBackground,
                     boxShadow: `0 14px 34px ${shadowColor}`,
