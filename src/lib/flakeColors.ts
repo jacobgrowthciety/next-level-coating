@@ -44,7 +44,7 @@ export interface FlakeColor {
  *    "Artic". The typo is baked into the image pixels, but the name is user-facing copy and a
  *    search term, so the corrected spelling wins.
  *  - Qualifiers are kept ("Premium Blend", the 1"/1/4" flake sizes) because they distinguish
- *    otherwise-colliding names: "Domino" vs "Domino Premium 1\"", and the two Nester grinds.
+ *    otherwise-colliding names, such as the two Nester grinds.
  */
 const CATALOG: { id: string; name: string; orderOnly?: true }[] = [
   { id: 'domino', name: 'Domino' }, // replaced flake-01
@@ -67,10 +67,8 @@ const CATALOG: { id: string; name: string; orderOnly?: true }[] = [
   { id: 'flake-20', name: 'Slate Red', orderOnly: true },
   { id: 'flake-21', name: 'Glacier Blue', orderOnly: true },
   { id: 'flake-22', name: 'Arctic Volt', orderOnly: true },
-  { id: 'flake-23', name: 'Domino Premium 1"', orderOnly: true },
   { id: 'flake-24', name: 'Iron Red', orderOnly: true },
   { id: 'flake-25', name: 'Madras', orderOnly: true },
-  { id: 'flake-26', name: 'Midnight Granite (Premium Blend)' },
   { id: 'flake-27', name: 'Marsh', orderOnly: true },
   { id: 'flake-28', name: 'Dolerite' },
 ]

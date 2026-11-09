@@ -53,10 +53,8 @@ const FLAKE_SLUG_OPTIONS: { title: string; value: string }[] = [
   { title: 'Slate Red (Order only)', value: 'flake-20' },
   { title: 'Glacier Blue (Order only)', value: 'flake-21' },
   { title: 'Arctic Volt (Order only)', value: 'flake-22' },
-  { title: 'Domino Premium 1" (Order only)', value: 'flake-23' },
   { title: 'Iron Red (Order only)', value: 'flake-24' },
   { title: 'Madras (Order only)', value: 'flake-25' },
-  { title: 'Midnight Granite (Premium Blend)', value: 'flake-26' },
   { title: 'Marsh (Order only)', value: 'flake-27' },
   { title: 'Dolerite', value: 'flake-28' },
 ]

@@ -51,6 +51,18 @@ async function fetchPopulatedSlugs(projectId) {
   return [...new Set((result ?? []).filter(Boolean))].sort()
 }
 
+/**
+ * Identifiers of the colors currently on the chart. A retired color (Slate, flake-15) can still
+ * have a populated gallery in Sanity, but its page renders "Color Not Found", so it must not be
+ * listed. Parsed from the site catalog rather than duplicated here so the two can't drift.
+ */
+async function loadCatalogIds() {
+  const src = await readFile(path.join(ROOT, 'src', 'lib', 'flakeColors.ts'), 'utf8')
+  const ids = new Set([...src.matchAll(/\{ id: '([^']+)'/g)].map((m) => m[1]))
+  if (ids.size === 0) throw new Error('No flake ids found in src/lib/flakeColors.ts — has its format changed?')
+  return ids
+}
+
 function buildEntry(slug, lastmod) {
   return [
     '  <url>',
@@ -68,7 +80,13 @@ if (!projectId) {
   process.exit(1)
 }
 
-const slugs = await fetchPopulatedSlugs(projectId)
+const catalogIds = await loadCatalogIds()
+const populated = await fetchPopulatedSlugs(projectId)
+const slugs = populated.filter((slug) => catalogIds.has(slug))
+const retired = populated.filter((slug) => !catalogIds.has(slug))
+if (retired.length > 0) {
+  console.log(`Skipping galleries for colors no longer on the chart: ${retired.join(', ')}`)
+}
 let xml = await readFile(SITEMAP, 'utf8')
 
 // Drop every existing per-color entry, then re-add the current set. Rebuilding rather than
