@@ -60,6 +60,7 @@ const CATALOG: { id: string; name: string; orderOnly?: true }[] = [
   { id: 'flake-12', name: 'Nester 1/4" (Premium Blend)' },
   { id: 'flake-13', name: 'Gravel' },
   { id: 'flake-14', name: 'Schist' },
+  { id: 'flake-15', name: 'Slate', orderOnly: true },
   { id: 'flake-16', name: 'Garnet' },
   { id: 'flake-17', name: 'Basalt' },
   { id: 'flake-18', name: 'Keystone', orderOnly: true },
@@ -71,6 +72,7 @@ const CATALOG: { id: string; name: string; orderOnly?: true }[] = [
   { id: 'flake-25', name: 'Madras', orderOnly: true },
   { id: 'flake-27', name: 'Marsh', orderOnly: true },
   { id: 'flake-28', name: 'Dolerite' },
+  { id: 'wombat', name: 'Wombat' },
 ]
 
 export const FLAKE_COLORS: FlakeColor[] = CATALOG.map(({ id, name, orderOnly }) => ({

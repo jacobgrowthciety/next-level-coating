@@ -46,6 +46,7 @@ const FLAKE_SLUG_OPTIONS: { title: string; value: string }[] = [
   { title: 'Nester 1/4" (Premium Blend)', value: 'flake-12' },
   { title: 'Gravel', value: 'flake-13' },
   { title: 'Schist', value: 'flake-14' },
+  { title: 'Slate (Order only)', value: 'flake-15' },
   { title: 'Garnet', value: 'flake-16' },
   { title: 'Basalt', value: 'flake-17' },
   { title: 'Keystone (Order only)', value: 'flake-18' },
@@ -57,6 +58,7 @@ const FLAKE_SLUG_OPTIONS: { title: string; value: string }[] = [
   { title: 'Madras (Order only)', value: 'flake-25' },
   { title: 'Marsh (Order only)', value: 'flake-27' },
   { title: 'Dolerite', value: 'flake-28' },
+  { title: 'Wombat', value: 'wombat' },
 ]
 
 export default defineType({

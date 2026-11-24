@@ -52,7 +52,7 @@ async function fetchPopulatedSlugs(projectId) {
 }
 
 /**
- * Identifiers of the colors currently on the chart. A retired color (Slate, flake-15) can still
+ * Identifiers of the colors currently on the chart. A retired color can still
  * have a populated gallery in Sanity, but its page renders "Color Not Found", so it must not be
  * listed. Parsed from the site catalog rather than duplicated here so the two can't drift.
  */
